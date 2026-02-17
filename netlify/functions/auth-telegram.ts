@@ -1,6 +1,7 @@
 import type { Handler } from '@netlify/functions';
 import { verifyTelegramInitData, signSession } from './lib/auth';
 import { json } from './lib/http';
+import { withSentry, captureException } from './lib/sentry';
 import { getDb } from './lib/db';
 
 function createReferralCode(telegramUserId: number) {
@@ -11,7 +12,7 @@ function todayUtc() {
   return new Date().toISOString().slice(0, 10);
 }
 
-export const handler: Handler = async (event) => {
+const baseHandler: Handler = async (event) => {
   try {
     if (event.httpMethod !== 'POST') {
       return json(405, { error: 'Method not allowed. Use POST /api/auth/telegram' });
@@ -61,6 +62,9 @@ export const handler: Handler = async (event) => {
     const token = await signSession({ user_id: String(user._id), telegram_user_id: user.telegram_user_id });
     return json(200, { token, user: { ...user, id: String(user._id) } });
   } catch (error) {
+    captureException(error, { path: event.path, http_method: event.httpMethod });
     return json(401, { error: (error as Error).message });
   }
 };
+
+export const handler = withSentry(baseHandler);

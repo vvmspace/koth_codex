@@ -3,8 +3,9 @@ import { ObjectId } from 'mongodb';
 import { requireUser } from './lib/auth';
 import { getDb } from './lib/db';
 import { json } from './lib/http';
+import { withSentry } from './lib/sentry';
 
-export const handler: Handler = async (event) => {
+const baseHandler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' });
   const user = await requireUser(event);
   const { amount = 1, currency = 'TON' } = JSON.parse(event.body || '{}');
@@ -21,3 +22,5 @@ export const handler: Handler = async (event) => {
   const intent = await db.collection('purchases').findOne({ _id: data.insertedId });
   return json(200, { intent });
 };
+
+export const handler = withSentry(baseHandler);

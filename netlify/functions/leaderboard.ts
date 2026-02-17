@@ -1,9 +1,10 @@
 import type { Handler } from '@netlify/functions';
 import { requireUser } from './lib/auth';
 import { json } from './lib/http';
+import { withSentry, captureException } from './lib/sentry';
 import { getDb } from './lib/db';
 
-export const handler: Handler = async (event) => {
+const baseHandler: Handler = async (event) => {
   if (event.httpMethod !== 'GET') return json(405, { error: 'Method not allowed' });
   try {
     const user = await requireUser(event);
@@ -29,6 +30,9 @@ export const handler: Handler = async (event) => {
       current_user_rank: higherCount + 1
     });
   } catch (error) {
+    captureException(error, { path: event.path, http_method: event.httpMethod });
     return json(401, { error: (error as Error).message });
   }
 };
+
+export const handler = withSentry(baseHandler);

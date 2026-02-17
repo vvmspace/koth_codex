@@ -268,6 +268,7 @@ ENV VARS (.env.example)
 - TELEGRAM_BOT_USERNAME
 - REQUIRED_CHANNEL_ID (optional, for join_channel mission)
 - APP_BASE_URL (Netlify URL)
+- SENTRY_DSN (for backend error tracking)
 
 LOCAL DEV
 - Frontend: yarn dev (vite)

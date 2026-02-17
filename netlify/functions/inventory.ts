@@ -3,8 +3,9 @@ import { ObjectId } from 'mongodb';
 import { requireUser } from './lib/auth';
 import { getDb } from './lib/db';
 import { json } from './lib/http';
+import { withSentry, captureException } from './lib/sentry';
 
-export const handler: Handler = async (event) => {
+const baseHandler: Handler = async (event) => {
   if (event.httpMethod !== 'GET') return json(405, { error: 'Method not allowed' });
   try {
     const user = await requireUser(event);
@@ -20,6 +21,9 @@ export const handler: Handler = async (event) => {
       items
     });
   } catch (error) {
+    captureException(error, { path: event.path, http_method: event.httpMethod });
     return json(401, { error: (error as Error).message });
   }
 };
+
+export const handler = withSentry(baseHandler);

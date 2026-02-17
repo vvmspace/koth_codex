@@ -25,6 +25,7 @@ Fill `.env`:
 - `REQUIRED_CHANNEL_ID` (optional)
 - `APP_BASE_URL`
 - `VITE_TELEGRAM_BOT_USERNAME`
+- `SENTRY_DSN` (optional, enables backend error tracking)
 
 ## MongoDB init
 Run once against your MongoDB:
