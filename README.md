@@ -37,7 +37,9 @@ Run migration `supabase/migrations/001_init.sql` in Supabase SQL editor.
 Start app with Netlify local routing + functions + Vite:
 
 ```bash
-npx netlify-cli@23.15.1 dev --filter web
+yarn dev:functions
+# in a second terminal:
+yarn dev:web
 ```
 
 Or run only frontend:
@@ -45,6 +47,16 @@ Or run only frontend:
 ```bash
 yarn dev
 ```
+
+If `netlify dev` is unstable in your environment, use split mode:
+
+```bash
+yarn dev:functions
+# in second terminal
+yarn dev:web
+```
+
+In split mode, Vite proxies `/api` to `http://localhost:9999` (configurable via `VITE_API_PROXY_TARGET`).
 
 ### Local smoke-check (quick emulate)
 
@@ -63,6 +75,7 @@ If `netlify dev` crashes in a container because of Edge runtime bootstrap, still
 ## 3.1) Local Telegram emulation tips
 
 - In desktop/mobile browser outside Telegram, `window.Telegram.WebApp.initData` is empty by default.
+- In local `vite` dev without Telegram, the app auto-switches to **Local demo mode** (mocked auth/data) so you can click through screens.
 - For full auth flow testing, open the app from Telegram via bot `web_app` button.
 - For local webhook testing, use `APP_BASE_URL` from `netlify dev --live` or ngrok and set Telegram webhook to `/api/telegram-webhook`.
 

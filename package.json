@@ -8,6 +8,8 @@
   ],
   "scripts": {
     "dev": "yarn workspace web dev",
+    "dev:functions": "npx -y netlify-cli@23.15.1 functions:serve --port 9999 --filter web",
+    "dev:web": "yarn workspace web dev",
     "build": "yarn workspace web build",
     "test": "yarn workspace @koth/shared test",
     "typecheck": "yarn workspace web typecheck"
