@@ -1,0 +1,14 @@
+/api/auth/telegram /.netlify/functions/auth-telegram 200
+/api/action/wake /.netlify/functions/action-wake 200
+/api/inventory /.netlify/functions/inventory 200
+/api/leaderboard /.netlify/functions/leaderboard 200
+/api/missions /.netlify/functions/missions 200
+/api/missions/complete /.netlify/functions/missions 200
+/api/items/buy /.netlify/functions/items-buy 200
+/api/items/use /.netlify/functions/items-use 200
+/api/admin/missions/create /.netlify/functions/admin-missions-create 200
+/api/admin/missions/activate-latest-post /.netlify/functions/admin-missions-activate-latest-post 200
+/api/admin/users/set-premium /.netlify/functions/admin-users-set-premium 200
+/api/payments/ton/create-intent /.netlify/functions/payments-ton-create-intent 200
+/api/payments/ton/confirm /.netlify/functions/payments-ton-confirm 200
+/api/telegram-webhook /.netlify/functions/telegram-webhook 200
