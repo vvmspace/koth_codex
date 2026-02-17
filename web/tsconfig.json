@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "types": ["vite/client"],
+    "paths": {
+      "@koth/shared": ["../packages/shared/types.ts"],
+      "@koth/shared/*": ["../packages/shared/*"]
+    }
+  },
+  "include": ["src", "vite.config.ts"]
+}
