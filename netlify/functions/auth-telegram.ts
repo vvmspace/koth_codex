@@ -7,6 +7,20 @@ function createReferralCode(telegramUserId: number) {
   return telegramUserId.toString(36);
 }
 
+function normalizeLanguageCode(languageCode?: string) {
+  if (!languageCode) return null;
+  return languageCode.toLowerCase();
+}
+
+function countryCodeToFlag(countryCode?: string | null) {
+  if (!countryCode || !/^[a-z]{2}$/i.test(countryCode)) return null;
+  return countryCode
+    .toUpperCase()
+    .split('')
+    .map((char) => String.fromCodePoint(127397 + char.charCodeAt(0)))
+    .join('');
+}
+
 function formatDbError(message: string) {
   if (message.includes("Could not find the table 'public.users'")) {
     return {
@@ -44,11 +58,18 @@ export const handler: Handler = async (event) => {
     const tgUser = verifyTelegramInitData(initData);
     const db = getServiceDb();
 
+    const netlifyCountryCode =
+      event.headers['x-country'] ||
+      event.headers['X-Country'] ||
+      event.headers['x-nf-geo-country'];
+
     const payload = {
       telegram_user_id: tgUser.id,
       username: tgUser.username ?? null,
       first_name: tgUser.first_name ?? null,
       last_name: tgUser.last_name ?? null,
+      language_code: normalizeLanguageCode(tgUser.language_code),
+      country_flag: countryCodeToFlag(netlifyCountryCode),
       referral_code: createReferralCode(tgUser.id)
     };
 

@@ -12,7 +12,7 @@ export const handler: Handler = async (event) => {
 
     const { data: top } = await db
       .from('users')
-      .select('id,first_name,last_name,username,steps')
+.select('id,first_name,last_name,username,country_flag,steps')
       .order('steps', { ascending: false })
       .limit(limit);
 
@@ -22,6 +22,7 @@ export const handler: Handler = async (event) => {
       top: (top || []).map((u, idx) => ({
         user_id: u.id,
         display_name: [u.first_name, u.last_name].filter(Boolean).join(' ') || u.username || 'Anonymous',
+        country_flag: u.country_flag ?? null,
         steps: u.steps,
         rank: idx + 1
       })),

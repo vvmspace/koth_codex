@@ -20,6 +20,7 @@ Fill `.env` with:
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `SUPABASE_ANON_KEY`
+- `SUPABASE_DB_URL` (for deploy-time migrations)
 - `JWT_SECRET`
 - `ADMIN_SECRET`
 - `TELEGRAM_BOT_TOKEN`
@@ -36,6 +37,7 @@ Fill `.env` with:
 | `SUPABASE_URL` | В Supabase: **Project Settings → API → Project URL** | https://supabase.com/dashboard/project/_/settings/api |
 | `SUPABASE_ANON_KEY` | В Supabase: **Project Settings → API → anon public key** | https://supabase.com/dashboard/project/_/settings/api |
 | `SUPABASE_SERVICE_ROLE_KEY` | В Supabase: **Project Settings → API → service_role key** (хранить только на backend/Netlify) | https://supabase.com/dashboard/project/_/settings/api |
+| `SUPABASE_DB_URL` | Connection string к Postgres (Supabase: **Project Settings → Database → Connection string**). Нужен для автоматических миграций на деплое. | https://supabase.com/dashboard/project/_/settings/database |
 | `JWT_SECRET` | Сгенерировать локально случайную строку (минимум 32 байта), например `openssl rand -base64 48` | https://www.openssl.org/docs/manmaster/man1/openssl-rand.html |
 | `ADMIN_SECRET` | Любой отдельный длинный секрет для admin endpoint'ов (также `openssl rand -base64 48`) | https://www.openssl.org/docs/manmaster/man1/openssl-rand.html |
 | `TELEGRAM_BOT_TOKEN` | Создать бота в BotFather командой `/newbot`, токен выдаст BotFather | https://t.me/BotFather |
@@ -56,7 +58,16 @@ openssl rand -base64 48
 
 ## 2) Supabase schema
 
-Run migration `supabase/migrations/001_init.sql` in Supabase SQL editor.
+Migrations are stored in `supabase/migrations`.
+
+- Manual first-run option: run `supabase/migrations/001_init.sql` in Supabase SQL editor.
+- Deploy option (recommended): set `SUPABASE_DB_URL` and run:
+
+```bash
+yarn migrate:deploy
+```
+
+`yarn build` on Netlify now automatically executes migrations before frontend build.
 
 ## 3) Local dev
 
@@ -130,6 +141,7 @@ If local, use one of:
    - `SUPABASE_URL`
    - `SUPABASE_SERVICE_ROLE_KEY`
    - `SUPABASE_ANON_KEY`
+   - `SUPABASE_DB_URL` (for deploy-time migrations)
    - `JWT_SECRET`
    - `ADMIN_SECRET`
    - `TELEGRAM_BOT_TOKEN`
@@ -155,7 +167,7 @@ curl -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/setWebhook" \
 
 ## API overview
 
-- `POST /api/auth/telegram`
+- `POST /api/auth/telegram` (also stores `language_code` + `country_flag`)
 - `POST /api/action/wake`
 - `GET /api/inventory`
 - `POST /api/items/buy` (stub)
@@ -200,3 +212,9 @@ This means your app is connected to Supabase, but the schema from `supabase/migr
 4. Confirm `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` come from the **same** Supabase project.
 5. Redeploy/restart Netlify functions after updating env vars.
 
+
+## Localization + leaderboard flags
+
+- UI language is auto-detected (`en`/`es`) from Telegram `language_code`, fallback to browser language.
+- Backend stores user language and country flag separately in `users.language_code` and `users.country_flag`.
+- Leaderboard renders each user country flag when present.

@@ -14,6 +14,8 @@ export interface UserProfile {
   username: string | null;
   first_name: string | null;
   last_name: string | null;
+  language_code: string | null;
+  country_flag: string | null;
   referral_code: string;
   referrer_id: string | null;
   steps: number;
@@ -56,6 +58,7 @@ export interface Mission {
 export interface LeaderboardEntry {
   user_id: string;
   display_name: string;
+  country_flag: string | null;
   steps: number;
   rank: number;
 }

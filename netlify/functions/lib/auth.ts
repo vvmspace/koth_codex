@@ -46,7 +46,13 @@ export function verifyTelegramInitData(initData: string) {
   if (!userRaw) {
     throw new Error('Missing telegram user');
   }
-  return JSON.parse(userRaw) as { id: number; username?: string; first_name?: string; last_name?: string };
+  return JSON.parse(userRaw) as {
+    id: number;
+    username?: string;
+    first_name?: string;
+    last_name?: string;
+    language_code?: string;
+  };
 }
 
 export async function signSession(payload: { user_id: string; telegram_user_id: number }) {

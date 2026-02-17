@@ -33,6 +33,8 @@ bot.command('start', async (ctx) => {
       username: telegramUser.username ?? null,
       first_name: telegramUser.first_name ?? null,
       last_name: telegramUser.last_name ?? null,
+      language_code: telegramUser.language_code?.toLowerCase() ?? null,
+      country_flag: null,
       referral_code,
       referrer_id
     });
