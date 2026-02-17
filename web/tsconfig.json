@@ -2,11 +2,21 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "types": ["vite/client"],
+    "types": [
+      "vite/client",
+      "node"
+    ],
     "paths": {
-      "@koth/shared": ["../packages/shared/types.ts"],
-      "@koth/shared/*": ["../packages/shared/*"]
+      "@koth/shared": [
+        "../packages/shared/types.ts"
+      ],
+      "@koth/shared/*": [
+        "../packages/shared/*"
+      ]
     }
   },
-  "include": ["src", "vite.config.ts"]
+  "include": [
+    "src",
+    "vite.config.ts"
+  ]
 }
