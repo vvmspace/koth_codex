@@ -5,7 +5,7 @@ export function Missions({ data, onComplete }: { data: any; onComplete: (mission
       <h2>Missions</h2>
       {(data?.missions || []).map((m: any) => (
         <div key={m.id} className="card">
-          <strong>{m.title}</strong>
+          <h3>{m.title}</h3>
           <p>{m.description}</p>
           <p className="small">Type: {m.type}</p>
           <button onClick={() => void onComplete(m.id)} disabled={completed.has(m.id)}>

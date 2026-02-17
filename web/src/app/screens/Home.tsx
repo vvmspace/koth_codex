@@ -22,9 +22,20 @@ export function Home({ inventory, onWake }: Props) {
   return (
     <div className="card">
       <h2>King Status</h2>
-      <p>Steps: {inventory?.steps ?? 0}</p>
-      <p>Sandwiches: {inventory?.sandwiches ?? 0}</p>
-      <p>Coffee: {inventory?.coffee ?? 0}</p>
+      <div className="stats-grid">
+        <div className="stat-pill">
+          <span>Steps</span>
+          <strong>{inventory?.steps ?? 0}</strong>
+        </div>
+        <div className="stat-pill">
+          <span>Sandwiches</span>
+          <strong>{inventory?.sandwiches ?? 0}</strong>
+        </div>
+        <div className="stat-pill">
+          <span>Coffee</span>
+          <strong>{inventory?.coffee ?? 0}</strong>
+        </div>
+      </div>
       <p>Next wake: {timer}</p>
       <p>Remaining free actions today: {freeLeft}</p>
       <button onClick={() => void onWake()} disabled={disabled}>Wake the King</button>

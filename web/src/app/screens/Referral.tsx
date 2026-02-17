@@ -15,8 +15,8 @@ export function Referral({ user }: { user: any }) {
     <div className="card">
       <h2>Referral</h2>
       <input readOnly value={link} />
-      <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
-        <button onClick={() => navigator.clipboard.writeText(link)}>Copy</button>
+      <div className="row" style={{ marginTop: 8 }}>
+        <button className="secondary" onClick={() => navigator.clipboard.writeText(link)}>Copy</button>
         <button onClick={share}>Share</button>
       </div>
       <p className="small">Option: share this link in chats where it is allowed.</p>
