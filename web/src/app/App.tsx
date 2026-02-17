@@ -54,8 +54,8 @@ const DEMO_LEADERBOARD = {
 
 const tabs: Array<{ id: Tab; label: string }> = [
   { id: 'home', label: 'Home' },
-  { id: 'missions', label: 'Missions' },
-  { id: 'leaderboard', label: 'Top' },
+  { id: 'missions', label: 'Quests' },
+  { id: 'leaderboard', label: 'Arena' },
   { id: 'referral', label: 'Referral' },
   { id: 'premium', label: 'Premium' }
 ];
@@ -136,7 +136,7 @@ export function App() {
   return (
     <div className="container">
       <header className="hero">
-        <h1>King of the Hill</h1>
+        <h1>👑 King of the Hill</h1>
         <p>{isDemoMode ? 'Demo mode for local preview.' : `Welcome, ${user?.first_name || 'King'}`}</p>
       </header>
 
