@@ -10,15 +10,17 @@
     "dev": "yarn workspace web dev",
     "dev:functions": "npx -y netlify-cli@23.15.1 functions:serve --port 9999 --filter web",
     "dev:web": "yarn workspace web dev",
-    "build": "yarn workspace web build",
+    "build": "yarn migrate:deploy && yarn workspace web build",
     "test": "yarn workspace @koth/shared test",
-    "typecheck": "yarn workspace web typecheck"
+    "typecheck": "yarn workspace web typecheck",
+    "migrate:deploy": "node scripts/run-migrations.mjs"
   },
   "dependencies": {
     "@koth/shared": "0.0.1",
     "@supabase/supabase-js": "^2.49.4",
     "grammy": "^1.35.0",
     "jose": "^5.9.6",
-    "@netlify/functions": "^2.8.2"
+    "@netlify/functions": "^2.8.2",
+    "pg": "^8.13.1"
   }
 }

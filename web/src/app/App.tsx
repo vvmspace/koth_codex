@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { api, setSessionToken } from './api';
 import { getTelegramInitData } from './auth';
+import { detectLanguage, t, type SupportedLanguage } from './i18n';
 import { Home } from './screens/Home';
 import { Leaderboard } from './screens/Leaderboard';
 import { Missions } from './screens/Missions';
@@ -13,7 +14,8 @@ const DEMO_USER = {
   id: 'demo-user',
   first_name: 'Local',
   username: 'demo',
-  referral_code: 'demo123'
+  referral_code: 'demo123',
+  language_code: null
 };
 
 const DEMO_INVENTORY = {
@@ -45,9 +47,9 @@ const DEMO_MISSIONS = {
 
 const DEMO_LEADERBOARD = {
   top: [
-    { user_id: '1', display_name: 'Alice', steps: 25, rank: 1 },
-    { user_id: '2', display_name: 'Bob', steps: 20, rank: 2 },
-    { user_id: 'demo-user', display_name: 'Local demo', steps: 10, rank: 3 }
+    { user_id: '1', display_name: 'Alice', country_flag: '🇪🇸', steps: 25, rank: 1 },
+    { user_id: '2', display_name: 'Bob', country_flag: '🇺🇸', steps: 20, rank: 2 },
+    { user_id: 'demo-user', display_name: 'Local demo', country_flag: '🏁', steps: 10, rank: 3 }
   ],
   current_user_rank: 3
 };
@@ -68,6 +70,19 @@ export function App() {
   const [leaderboard, setLeaderboard] = useState<any>(null);
   const [error, setError] = useState('');
   const [isDemoMode, setIsDemoMode] = useState(false);
+
+  const lang: SupportedLanguage = useMemo(() => detectLanguage(user?.language_code), [user?.language_code]);
+
+  const tabs: Array<{ id: Tab; label: string; icon: string }> = useMemo(
+    () => [
+      { id: 'home', label: t(lang, 'tabs.home'), icon: '🏠' },
+      { id: 'missions', label: t(lang, 'tabs.missions'), icon: '🎯' },
+      { id: 'leaderboard', label: t(lang, 'tabs.leaderboard'), icon: '🏆' },
+      { id: 'referral', label: t(lang, 'tabs.referral'), icon: '👥' },
+      { id: 'premium', label: t(lang, 'tabs.premium'), icon: '💎' }
+    ],
+    [lang]
+  );
 
   const load = async () => {
     const [inv, m, l] = await Promise.all([api('/inventory'), api('/missions'), api('/leaderboard?limit=20')]);
@@ -137,17 +152,17 @@ export function App() {
     <div className="container">
       <header className="hero">
         <h1>👑 King of the Hill</h1>
-        <p>{isDemoMode ? 'Demo mode for local preview.' : `Welcome, ${user?.first_name || 'King'}`}</p>
+        <p>{isDemoMode ? t(lang, 'hero.demo') : t(lang, 'hero.welcome', { name: user?.first_name || 'King' })}</p>
       </header>
 
       {error && <p className="small">{error}</p>}
 
       <main>
-        {tab === 'home' && <Home inventory={inventory} onWake={wake} />}
-        {tab === 'missions' && <Missions data={missions} onComplete={completeMission} />}
-        {tab === 'leaderboard' && <Leaderboard data={leaderboard} />}
-        {tab === 'referral' && <Referral user={user} />}
-        {tab === 'premium' && <Premium />}
+        {tab === 'home' && <Home inventory={inventory} onWake={wake} lang={lang} />}
+        {tab === 'missions' && <Missions data={missions} onComplete={completeMission} lang={lang} />}
+        {tab === 'leaderboard' && <Leaderboard data={leaderboard} lang={lang} />}
+        {tab === 'referral' && <Referral user={user} lang={lang} />}
+        {tab === 'premium' && <Premium lang={lang} />}
       </main>
 
       <nav className="bottom-tabs" aria-label="Main navigation">
