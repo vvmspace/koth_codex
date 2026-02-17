@@ -61,8 +61,6 @@ export function Home({ inventory, onWake }: Props) {
 
   const next = inventory?.next_available_at ? new Date(inventory.next_available_at).getTime() : now;
   const disabled = next > now;
-  const freeLeft = Math.max(3 - (inventory?.daily_free_count || 0), 0);
-
   const timer = useMemo(() => formatCountdown(next, now), [next, now]);
 
   const backpack = useMemo(() => buildBackpack(inventory), [inventory]);
@@ -77,7 +75,6 @@ export function Home({ inventory, onWake }: Props) {
       <div className="countdown-panel">
         <p className="small">Next wake in</p>
         <strong>{timer}</strong>
-        <p className="small">Free wakes left today: {freeLeft}/3</p>
       </div>
 
       <button className="wake-button" onClick={() => void onWake()} disabled={disabled}>
@@ -97,7 +94,6 @@ export function Home({ inventory, onWake }: Props) {
         </div>
       </div>
 
-      <p className="small">Optional: share referral link where appropriate.</p>
     </div>
   );
 }

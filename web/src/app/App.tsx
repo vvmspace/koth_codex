@@ -52,12 +52,12 @@ const DEMO_LEADERBOARD = {
   current_user_rank: 3
 };
 
-const tabs: Array<{ id: Tab; label: string }> = [
-  { id: 'home', label: 'Home' },
-  { id: 'missions', label: 'Quests' },
-  { id: 'leaderboard', label: 'Arena' },
-  { id: 'referral', label: 'Referral' },
-  { id: 'premium', label: 'Premium' }
+const tabs: Array<{ id: Tab; label: string; icon: string }> = [
+  { id: 'home', label: 'Home', icon: '🏠' },
+  { id: 'missions', label: 'Quests', icon: '🎯' },
+  { id: 'leaderboard', label: 'Arena', icon: '🏆' },
+  { id: 'referral', label: 'Friends', icon: '👥' },
+  { id: 'premium', label: 'Boost', icon: '💎' }
 ];
 
 export function App() {
@@ -142,19 +142,22 @@ export function App() {
 
       {error && <p className="small">{error}</p>}
 
-      <nav className="tab-nav">
+      <main>
+        {tab === 'home' && <Home inventory={inventory} onWake={wake} />}
+        {tab === 'missions' && <Missions data={missions} onComplete={completeMission} />}
+        {tab === 'leaderboard' && <Leaderboard data={leaderboard} />}
+        {tab === 'referral' && <Referral user={user} />}
+        {tab === 'premium' && <Premium />}
+      </main>
+
+      <nav className="bottom-tabs" aria-label="Main navigation">
         {tabs.map((item) => (
           <button key={item.id} className={tab === item.id ? 'active' : ''} onClick={() => setTab(item.id)}>
-            {item.label}
+            <span className="tab-icon" aria-hidden="true">{item.icon}</span>
+            <span className="tab-label">{item.label}</span>
           </button>
         ))}
       </nav>
-
-      {tab === 'home' && <Home inventory={inventory} onWake={wake} />}
-      {tab === 'missions' && <Missions data={missions} onComplete={completeMission} />}
-      {tab === 'leaderboard' && <Leaderboard data={leaderboard} />}
-      {tab === 'referral' && <Referral user={user} />}
-      {tab === 'premium' && <Premium />}
     </div>
   );
 }
