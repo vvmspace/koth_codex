@@ -2,7 +2,7 @@ import type { Handler } from '@netlify/functions';
 import { getServiceDb } from './lib/db';
 import { json } from './lib/http';
 import { signSession, verifyTelegramInitData } from './lib/auth';
-import { normalizeLanguageCode, resolveCountryCode } from './lib/geo';
+import { normalizeLanguageCode } from './lib/geo';
 
 function createReferralCode(telegramUserId: number) {
   return telegramUserId.toString(36);
@@ -45,21 +45,12 @@ export const handler: Handler = async (event) => {
     const tgUser = verifyTelegramInitData(initData);
     const db = getServiceDb();
 
-    const netlifyCountryCode =
-      event.headers['x-country'] ||
-      event.headers['X-Country'] ||
-      event.headers['x-nf-geo-country'];
-
     const payload = {
       telegram_user_id: tgUser.id,
       username: tgUser.username ?? null,
       first_name: tgUser.first_name ?? null,
       last_name: tgUser.last_name ?? null,
       language_code: normalizeLanguageCode(tgUser.language_code),
-      country_code: resolveCountryCode({
-        countryCode: netlifyCountryCode,
-        languageCode: tgUser.language_code
-      }),
       referral_code: createReferralCode(tgUser.id)
     };
 

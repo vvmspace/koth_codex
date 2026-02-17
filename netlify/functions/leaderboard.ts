@@ -2,7 +2,6 @@ import type { Handler } from '@netlify/functions';
 import { getServiceDb } from './lib/db';
 import { requireUser } from './lib/auth';
 import { json } from './lib/http';
-import { countryCodeToFlag } from './lib/geo';
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== 'GET') return json(405, { error: 'Method not allowed' });
@@ -13,7 +12,7 @@ export const handler: Handler = async (event) => {
 
     const { data: top } = await db
       .from('users')
-.select('id,first_name,last_name,username,country_code,steps')
+.select('id,first_name,last_name,username,steps')
       .order('steps', { ascending: false })
       .limit(limit);
 
@@ -23,7 +22,6 @@ export const handler: Handler = async (event) => {
       top: (top || []).map((u, idx) => ({
         user_id: u.id,
         display_name: [u.first_name, u.last_name].filter(Boolean).join(' ') || u.username || 'Anonymous',
-        country_flag: countryCodeToFlag(u.country_code) ?? null,
         steps: u.steps,
         rank: idx + 1
       })),

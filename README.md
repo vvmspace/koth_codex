@@ -168,7 +168,7 @@ curl -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/setWebhook" \
 
 ## API overview
 
-- `POST /api/auth/telegram` (also stores `language_code` + `country_code`)
+- `POST /api/auth/telegram` (also stores `language_code`)
 - `POST /api/action/wake`
 - `GET /api/inventory`
 - `POST /api/items/buy` (stub)
@@ -217,5 +217,5 @@ This means your app is connected to Supabase, but the schema from `supabase/migr
 ## Localization + leaderboard flags
 
 - UI language is auto-detected (`en`/`es`) from Telegram `language_code`, fallback to browser language.
-- Backend stores user language and country code separately in `users.language_code` and `users.country_code`.
+- Backend stores user language in `users.language_code`.
 - Leaderboard renders each user country flag when present.
