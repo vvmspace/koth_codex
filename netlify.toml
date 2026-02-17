@@ -9,7 +9,73 @@
   functions = "netlify/functions"
   publish = "web/dist"
 
+# Pretty API routes -> Netlify Function filenames
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  from = "/api/auth/telegram"
+  to = "/.netlify/functions/auth-telegram"
+  status = 200
+
+[[redirects]]
+  from = "/api/action/wake"
+  to = "/.netlify/functions/action-wake"
+  status = 200
+
+[[redirects]]
+  from = "/api/inventory"
+  to = "/.netlify/functions/inventory"
+  status = 200
+
+[[redirects]]
+  from = "/api/leaderboard"
+  to = "/.netlify/functions/leaderboard"
+  status = 200
+
+[[redirects]]
+  from = "/api/missions"
+  to = "/.netlify/functions/missions"
+  status = 200
+
+[[redirects]]
+  from = "/api/missions/complete"
+  to = "/.netlify/functions/missions"
+  status = 200
+
+[[redirects]]
+  from = "/api/items/buy"
+  to = "/.netlify/functions/items-buy"
+  status = 200
+
+[[redirects]]
+  from = "/api/items/use"
+  to = "/.netlify/functions/items-use"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/missions/create"
+  to = "/.netlify/functions/admin-missions-create"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/missions/activate-latest-post"
+  to = "/.netlify/functions/admin-missions-activate-latest-post"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin/users/set-premium"
+  to = "/.netlify/functions/admin-users-set-premium"
+  status = 200
+
+[[redirects]]
+  from = "/api/payments/ton/create-intent"
+  to = "/.netlify/functions/payments-ton-create-intent"
+  status = 200
+
+[[redirects]]
+  from = "/api/payments/ton/confirm"
+  to = "/.netlify/functions/payments-ton-confirm"
+  status = 200
+
+[[redirects]]
+  from = "/api/telegram-webhook"
+  to = "/.netlify/functions/telegram-webhook"
   status = 200
