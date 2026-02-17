@@ -8,9 +8,6 @@ function createReferralCode(telegramUserId: number) {
   return telegramUserId.toString(36);
 }
 
-function todayUtc() {
-  return new Date().toISOString().slice(0, 10);
-}
 
 const baseHandler: Handler = async (event) => {
   try {
@@ -47,9 +44,8 @@ const baseHandler: Handler = async (event) => {
           sandwiches: 0,
           coffee: 0,
           premium_until: null,
+          last_awake: null,
           next_available_at: now,
-          daily_free_count: 0,
-          daily_free_reset_date: todayUtc(),
           created_at: now
         }
       },

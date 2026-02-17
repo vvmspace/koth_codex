@@ -5,7 +5,7 @@ GOAL
 Create a working MVP that:
 - Runs as a Telegram Mini App (WebApp) opened from a Telegram bot.
 - Authenticates users via Telegram WebApp initData verification on the backend.
-- Lets a user "Wake the King" (main action) on a cooldown timer (default: 8h) and max 3 free actions/day.
+- Lets a user "Wake the King" (main action) on a cooldown timer configured via env var in ms (default: 8h / 28800000).
 - Tracks steps (score), sandwiches, coffee (inventory currencies).
 - Implements 2-level referrals with rewards triggered only when the referred user performs the main action during the active window.
 - Has a leaderboard (rank by steps).
@@ -49,12 +49,11 @@ B) Main action: Wake the King
 - Endpoint: POST /api/action/wake
 - Server enforces:
   - action is available only if now >= next_available_at
-  - max 3 free wake actions per user per UTC day (or configurable timezone, but start with UTC).
-  - if user exceeded free limit, action requires "paid credits" (placeholder) or premium status (placeholder).
+  - wake interval is configured through env var `WAKE_INTERVAL_MS` (milliseconds), default `28800000`.
 - On success:
   - increment steps by CONFIG.steps_per_wake (default: 1).
-  - update next_available_at = now + CONFIG.cooldown_ms (default: 8h).
-  - increment daily counter.
+  - set `last_awake` = now.
+  - update next_available_at = now + WAKE_INTERVAL_MS (default: 8h).
   - referral rewards:
     - if user.referrer_id exists (level 1): grant to referrer sandwiches += CONFIG.sandwich_per_ref_action (default: 1).
     - if referrer.referrer_id exists (level 2): grant to level2 coffee += CONFIG.coffee_per_ref2_action (default: 1).
@@ -134,9 +133,8 @@ users:
 - `sandwiches`: NumberLong, required, default 0
 - `coffee`: NumberLong, required, default 0
 - `premium_until`: ISODate | null
+- `last_awake`: ISODate | null
 - `next_available_at`: ISODate, required, default now
-- `daily_free_count`: int, required, default 0
-- `daily_free_reset_date`: string (YYYY-MM-DD, UTC), required
 - `created_at`: ISODate, required, default now
 - `updated_at`: ISODate, required, default now
 
@@ -147,7 +145,6 @@ config:
 - `updated_at`: ISODate, required, default now
 - seed keys:
   - `cooldown_ms`
-  - `max_free_actions_per_day`
   - `steps_per_wake`
   - `sandwich_per_ref_action`
   - `coffee_per_ref2_action`
@@ -209,7 +206,7 @@ SECURITY + ENGINEERING PRACTICES
 - Use idempotency keys for wake action and mission completion to prevent duplicates.
 - No secrets in frontend; use Netlify environment variables.
 - Types shared between frontend and backend (packages/shared).
-- Provide minimal unit tests for core domain logic (cooldown, daily limit, referral rewards).
+- Provide minimal unit tests for core domain logic (cooldown interval, referral rewards).
 - Keep functions small, pure where possible.
 
 PROJECT STRUCTURE (REQUIRED)
@@ -269,6 +266,7 @@ ENV VARS (.env.example)
 - REQUIRED_CHANNEL_ID (optional, for join_channel mission)
 - APP_BASE_URL (Netlify URL)
 - SENTRY_DSN (for backend error tracking)
+- WAKE_INTERVAL_MS (milliseconds between wakes, default 28800000 = 8h)
 
 LOCAL DEV
 - Frontend: yarn dev (vite)
@@ -279,7 +277,7 @@ LOCAL DEV
 UI REQUIREMENTS (MINIMAL)
 Home screen:
 - Shows King status, steps, sandwiches, coffee
-- Shows next available timer and remaining free actions today
+- Shows next available timer
 - Button "Wake the King" (disabled when not available)
 - Small text: "Optional: share referral link where appropriate."
 

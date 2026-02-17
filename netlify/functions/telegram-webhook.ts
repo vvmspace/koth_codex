@@ -15,9 +15,6 @@ function parseRefCode(text?: string) {
   return ref.startsWith('ref_') ? ref.slice(4) : null;
 }
 
-function todayUtc() {
-  return new Date().toISOString().slice(0, 10);
-}
 
 bot.command('start', async (ctx) => {
   const appUrl = requiredEnv('APP_BASE_URL');
@@ -44,9 +41,8 @@ bot.command('start', async (ctx) => {
       sandwiches: 0,
       coffee: 0,
       premium_until: null,
+      last_awake: null,
       next_available_at: new Date(),
-      daily_free_count: 0,
-      daily_free_reset_date: todayUtc(),
       created_at: new Date(),
       updated_at: new Date()
     });
