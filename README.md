@@ -67,7 +67,7 @@ Migrations are stored in `supabase/migrations`.
 yarn migrate:deploy
 ```
 
-`yarn build` on Netlify now automatically executes migrations before frontend build.
+Use `yarn migrate:deploy` as a separate step (manual or CI) before deployment. `yarn build` now builds only the frontend so Netlify builds do not fail when DB networking is unavailable in the build environment.
 
 ## 3) Local dev
 
@@ -136,6 +136,7 @@ If local, use one of:
 3. Build settings:
    - Base directory: *(empty)*
    - Build command: `yarn build`
+   - (Optional pre-step) run `yarn migrate:deploy` in CI or manually before deploy
    - Publish directory: `web/dist`
 4. Set environment variables in **Site settings → Environment variables**:
    - `SUPABASE_URL`
