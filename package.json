@@ -1,0 +1,22 @@
+{
+  "name": "koth-tma",
+  "private": true,
+  "packageManager": "yarn@1.22.22",
+  "workspaces": [
+    "web",
+    "packages/shared"
+  ],
+  "scripts": {
+    "dev": "yarn workspace web dev",
+    "build": "yarn workspace web build",
+    "test": "yarn workspace @koth/shared test",
+    "typecheck": "yarn workspace web typecheck"
+  },
+  "dependencies": {
+    "@koth/shared": "0.0.1",
+    "@supabase/supabase-js": "^2.49.4",
+    "grammy": "^1.35.0",
+    "jose": "^5.9.6",
+    "@netlify/functions": "^2.8.2"
+  }
+}
