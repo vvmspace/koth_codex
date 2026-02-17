@@ -54,6 +54,14 @@ const DEMO_LEADERBOARD = {
   current_user_rank: 3
 };
 
+const tabs: Array<{ id: Tab; label: string; icon: string }> = [
+  { id: 'home', label: 'Home', icon: '🏠' },
+  { id: 'missions', label: 'Quests', icon: '🎯' },
+  { id: 'leaderboard', label: 'Arena', icon: '🏆' },
+  { id: 'referral', label: 'Friends', icon: '👥' },
+  { id: 'premium', label: 'Boost', icon: '💎' }
+];
+
 export function App() {
   const [tab, setTab] = useState<Tab>('home');
   const [user, setUser] = useState<any>(null);
