@@ -7,6 +7,18 @@ function createReferralCode(telegramUserId: number) {
   return telegramUserId.toString(36);
 }
 
+function formatDbError(message: string) {
+  if (message.includes("Could not find the table 'public.users'")) {
+    return {
+      error: 'Database schema is not initialized',
+      details:
+        'Run supabase/migrations/001_init.sql in your Supabase SQL editor, then verify SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY point to the same project.'
+    };
+  }
+
+  return { error: message || 'Database request failed' };
+}
+
 export const handler: Handler = async (event) => {
   try {
     if (event.httpMethod !== 'POST') {
@@ -46,7 +58,7 @@ export const handler: Handler = async (event) => {
       .select('*')
       .single();
 
-    if (error || !user) return json(500, { error: error?.message || 'Failed to upsert user' });
+    if (error || !user) return json(500, formatDbError(error?.message || 'Failed to upsert user'));
 
     const token = await signSession({ user_id: user.id, telegram_user_id: user.telegram_user_id });
     return json(200, { token, user });
