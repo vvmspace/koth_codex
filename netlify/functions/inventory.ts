@@ -16,8 +16,8 @@ const baseHandler: Handler = async (event) => {
       steps: user.steps,
       sandwiches: user.sandwiches,
       coffee: user.coffee,
+      last_awake: user.last_awake ?? null,
       next_available_at: user.next_available_at,
-      daily_free_count: user.daily_free_count,
       items
     });
   } catch (error) {

@@ -26,6 +26,7 @@ Fill `.env`:
 - `APP_BASE_URL`
 - `VITE_TELEGRAM_BOT_USERNAME`
 - `SENTRY_DSN` (optional, enables backend error tracking)
+- `WAKE_INTERVAL_MS` (optional, default `28800000`, 8h between wakes)
 
 ## MongoDB init
 Run once against your MongoDB:

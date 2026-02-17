@@ -1,10 +1,10 @@
 import type { Handler } from '@netlify/functions';
 import { ObjectId } from 'mongodb';
-import { computeReferralGrants, getWakeEligibility, resetDailyCountIfNeeded } from '@koth/shared/domain/rules';
+import { computeReferralGrants, getWakeEligibility } from '@koth/shared/domain/rules';
 import { requireUser } from './lib/auth';
 import { json } from './lib/http';
 import { withSentry, captureException } from './lib/sentry';
-import { loadConfig } from './lib/config';
+import { getWakeIntervalMs, loadConfig } from './lib/config';
 import { enforceRateLimit } from './lib/rate-limit';
 import { getDb } from './lib/db';
 
@@ -22,14 +22,11 @@ const baseHandler: Handler = async (event) => {
     const db = await getDb();
     const config = await loadConfig();
     const now = new Date();
+    const wakeIntervalMs = getWakeIntervalMs();
 
-    const daily = resetDailyCountIfNeeded(user.daily_free_reset_date, user.daily_free_count, now);
     const eligibility = getWakeEligibility({
       now,
-      nextAvailableAt: new Date(user.next_available_at),
-      dailyFreeCount: daily.dailyCount,
-      config,
-      isPremium: !!(user.premium_until && new Date(user.premium_until) > now)
+      nextAvailableAt: new Date(user.next_available_at)
     });
 
     if (!eligibility.available) return json(400, { error: 'Action unavailable', eligibility });
@@ -37,16 +34,14 @@ const baseHandler: Handler = async (event) => {
     const existing = await db.collection('ledger').findOne({ idempotency_key: idempotencyKey });
     if (existing) return json(200, { ok: true, deduped: true, eligibility });
 
-    const next = new Date(now.getTime() + config.cooldown_ms);
-    const newDailyCount = daily.dailyCount + 1;
+    const next = new Date(now.getTime() + wakeIntervalMs);
 
     await db.collection('users').updateOne(
       { _id: new ObjectId(user.id) },
       {
         $set: {
+          last_awake: now,
           next_available_at: next,
-          daily_free_count: newDailyCount,
-          daily_free_reset_date: daily.dailyResetDate,
           updated_at: now
         },
         $inc: { steps: config.steps_per_wake }
@@ -60,7 +55,7 @@ const baseHandler: Handler = async (event) => {
       delta_sandwiches: 0,
       delta_coffee: 0,
       idempotency_key: idempotencyKey,
-      meta: { at: now.toISOString() },
+      meta: { at: now.toISOString(), wake_interval_ms: wakeIntervalMs },
       created_at: now
     });
 
@@ -101,8 +96,9 @@ const baseHandler: Handler = async (event) => {
 
     return json(200, {
       ok: true,
+      last_awake: now.toISOString(),
       next_available_at: next.toISOString(),
-      remaining_free_actions: Math.max(config.max_free_actions_per_day - newDailyCount, 0)
+      wake_interval_ms: wakeIntervalMs
     });
   } catch (error) {
     captureException(error, { path: event.path, http_method: event.httpMethod });

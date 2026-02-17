@@ -21,14 +21,11 @@ export interface UserProfile {
   sandwiches: number;
   coffee: number;
   premium_until: string | null;
+  last_awake: string | null;
   next_available_at: string;
-  daily_free_count: number;
-  daily_free_reset_date: string;
 }
 
 export interface ConfigValues {
-  cooldown_ms: number;
-  max_free_actions_per_day: number;
   steps_per_wake: number;
   sandwich_per_ref_action: number;
   coffee_per_ref2_action: number;
@@ -36,10 +33,8 @@ export interface ConfigValues {
 
 export interface WakeEligibility {
   available: boolean;
-  reason?: 'cooldown' | 'daily_limit';
+  reason?: 'cooldown';
   next_available_at: string;
-  remaining_free_actions: number;
-  requires_premium: boolean;
 }
 
 export interface Mission {
