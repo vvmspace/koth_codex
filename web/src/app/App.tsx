@@ -44,13 +44,21 @@ const DEMO_MISSIONS = {
 };
 
 const DEMO_LEADERBOARD = {
-  rows: [
+  top: [
     { user_id: '1', display_name: 'Alice', steps: 25, rank: 1 },
     { user_id: '2', display_name: 'Bob', steps: 20, rank: 2 },
     { user_id: 'demo-user', display_name: 'Local demo', steps: 10, rank: 3 }
   ],
-  me: { rank: 3, steps: 10 }
+  current_user_rank: 3
 };
+
+const tabs: Array<{ id: Tab; label: string; icon: string }> = [
+  { id: 'home', label: 'Home', icon: '🏠' },
+  { id: 'missions', label: 'Quests', icon: '🎯' },
+  { id: 'leaderboard', label: 'Arena', icon: '🏆' },
+  { id: 'referral', label: 'Friends', icon: '👥' },
+  { id: 'premium', label: 'Boost', icon: '💎' }
+];
 
 export function App() {
   const [tab, setTab] = useState<Tab>('home');
@@ -127,21 +135,29 @@ export function App() {
 
   return (
     <div className="container">
-      <h1>King of the Hill</h1>
-      {isDemoMode && <p className="small">Local demo mode: Telegram auth/backend calls are mocked for UI checks.</p>}
-      {error && <p>{error}</p>}
-      <nav>
-        <button onClick={() => setTab('home')}>Home</button>
-        <button onClick={() => setTab('missions')}>Missions</button>
-        <button onClick={() => setTab('leaderboard')}>Leaderboard</button>
-        <button onClick={() => setTab('referral')}>Referral</button>
-        <button onClick={() => setTab('premium')}>Premium</button>
+      <header className="hero">
+        <h1>👑 King of the Hill</h1>
+        <p>{isDemoMode ? 'Demo mode for local preview.' : `Welcome, ${user?.first_name || 'King'}`}</p>
+      </header>
+
+      {error && <p className="small">{error}</p>}
+
+      <main>
+        {tab === 'home' && <Home inventory={inventory} onWake={wake} />}
+        {tab === 'missions' && <Missions data={missions} onComplete={completeMission} />}
+        {tab === 'leaderboard' && <Leaderboard data={leaderboard} />}
+        {tab === 'referral' && <Referral user={user} />}
+        {tab === 'premium' && <Premium />}
+      </main>
+
+      <nav className="bottom-tabs" aria-label="Main navigation">
+        {tabs.map((item) => (
+          <button key={item.id} className={tab === item.id ? 'active' : ''} onClick={() => setTab(item.id)}>
+            <span className="tab-icon" aria-hidden="true">{item.icon}</span>
+            <span className="tab-label">{item.label}</span>
+          </button>
+        ))}
       </nav>
-      {tab === 'home' && <Home inventory={inventory} onWake={wake} />}
-      {tab === 'missions' && <Missions data={missions} onComplete={completeMission} />}
-      {tab === 'leaderboard' && <Leaderboard data={leaderboard} />}
-      {tab === 'referral' && <Referral user={user} />}
-      {tab === 'premium' && <Premium />}
     </div>
   );
 }
