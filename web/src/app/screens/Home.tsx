@@ -107,7 +107,6 @@ export function Home({ inventory, onWake, lang, isLoadingUser = false }: Props) 
                 </div>
               ))}
             </div>
-            <p className="small backpack-footnote">{t(lang, 'home.itemsFlexHint')}</p>
           </>
         )}
       </div>
