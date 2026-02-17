@@ -28,6 +28,32 @@ Fill `.env` with:
 - `APP_BASE_URL` (Netlify URL or local tunnel URL)
 - `VITE_TELEGRAM_BOT_USERNAME`
 
+
+## 1.1) Где брать переменные окружения (с ссылками)
+
+| Переменная | Где взять | Ссылка |
+|---|---|---|
+| `SUPABASE_URL` | В Supabase: **Project Settings → API → Project URL** | https://supabase.com/dashboard/project/_/settings/api |
+| `SUPABASE_ANON_KEY` | В Supabase: **Project Settings → API → anon public key** | https://supabase.com/dashboard/project/_/settings/api |
+| `SUPABASE_SERVICE_ROLE_KEY` | В Supabase: **Project Settings → API → service_role key** (хранить только на backend/Netlify) | https://supabase.com/dashboard/project/_/settings/api |
+| `JWT_SECRET` | Сгенерировать локально случайную строку (минимум 32 байта), например `openssl rand -base64 48` | https://www.openssl.org/docs/manmaster/man1/openssl-rand.html |
+| `ADMIN_SECRET` | Любой отдельный длинный секрет для admin endpoint'ов (также `openssl rand -base64 48`) | https://www.openssl.org/docs/manmaster/man1/openssl-rand.html |
+| `TELEGRAM_BOT_TOKEN` | Создать бота в BotFather командой `/newbot`, токен выдаст BotFather | https://t.me/BotFather |
+| `TELEGRAM_BOT_USERNAME` | Username этого же бота в BotFather (без `@`) | https://t.me/BotFather |
+| `REQUIRED_CHANNEL_ID` (optional) | ID канала для mission `join_channel`; можно получить через Telegram Bot API (`getChat`) | https://core.telegram.org/bots/api#getchat |
+| `APP_BASE_URL` | URL вашего Netlify сайта (`https://<site>.netlify.app`) или локальный публичный tunnel URL | https://docs.netlify.com/manage/domains/manage-domains/ |
+| `VITE_TELEGRAM_BOT_USERNAME` | Обычно равен `TELEGRAM_BOT_USERNAME` (используется на фронте для ссылки/шаринга) | https://core.telegram.org/bots/features#deep-linking |
+
+Пример генерации секретов:
+
+```bash
+openssl rand -base64 48
+```
+
+Важно:
+- `SUPABASE_SERVICE_ROLE_KEY`, `JWT_SECRET`, `ADMIN_SECRET`, `TELEGRAM_BOT_TOKEN` — только server-side (Netlify env), не в клиентский код.
+- Все переменные из `.env` добавьте и в Netlify: **Site settings → Environment variables**.
+
 ## 2) Supabase schema
 
 Run migration `supabase/migrations/001_init.sql` in Supabase SQL editor.
