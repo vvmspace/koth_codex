@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import { requireUser } from './lib/auth';
 import { getDb } from './lib/db';
 import { json } from './lib/http';
+import { withSentry, captureException } from './lib/sentry';
 import { enforceRateLimit } from './lib/rate-limit';
 import { requiredEnv } from './lib/env';
 
@@ -14,7 +15,7 @@ async function checkChannelMembership(channelId: string, telegramUserId: number)
   return body.ok && ['member', 'administrator', 'creator'].includes(body.result?.status);
 }
 
-export const handler: Handler = async (event) => {
+const baseHandler: Handler = async (event) => {
   try {
     const user = await requireUser(event);
     const db = await getDb();
@@ -88,6 +89,9 @@ export const handler: Handler = async (event) => {
 
     return json(405, { error: 'Method not allowed' });
   } catch (error) {
+    captureException(error, { path: event.path, http_method: event.httpMethod });
     return json(401, { error: (error as Error).message });
   }
 };
+
+export const handler = withSentry(baseHandler);

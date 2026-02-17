@@ -1,9 +1,10 @@
 import type { Handler } from '@netlify/functions';
 import { getDb } from './lib/db';
 import { json } from './lib/http';
+import { withSentry } from './lib/sentry';
 import { requiredEnv } from './lib/env';
 
-export const handler: Handler = async (event) => {
+const baseHandler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' });
   if (event.headers['x-admin-secret'] !== requiredEnv('ADMIN_SECRET')) return json(403, { error: 'Forbidden' });
   const { post_url } = JSON.parse(event.body || '{}');
@@ -24,3 +25,5 @@ export const handler: Handler = async (event) => {
   const mission = await db.collection('missions').findOne({ _id: result.insertedId });
   return json(200, { mission, note: 'Stub endpoint created a manual confirm mission for latest post.' });
 };
+
+export const handler = withSentry(baseHandler);

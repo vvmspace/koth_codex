@@ -3,11 +3,12 @@ import { ObjectId } from 'mongodb';
 import { computeReferralGrants, getWakeEligibility, resetDailyCountIfNeeded } from '@koth/shared/domain/rules';
 import { requireUser } from './lib/auth';
 import { json } from './lib/http';
+import { withSentry, captureException } from './lib/sentry';
 import { loadConfig } from './lib/config';
 import { enforceRateLimit } from './lib/rate-limit';
 import { getDb } from './lib/db';
 
-export const handler: Handler = async (event) => {
+const baseHandler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' });
 
   try {
@@ -104,6 +105,9 @@ export const handler: Handler = async (event) => {
       remaining_free_actions: Math.max(config.max_free_actions_per_day - newDailyCount, 0)
     });
   } catch (error) {
+    captureException(error, { path: event.path, http_method: event.httpMethod });
     return json(401, { error: (error as Error).message });
   }
 };
+
+export const handler = withSentry(baseHandler);

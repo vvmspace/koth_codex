@@ -1,6 +1,7 @@
 import type { Handler } from '@netlify/functions';
 import { Bot, InlineKeyboard } from 'grammy';
 import { json } from './lib/http';
+import { withSentry } from './lib/sentry';
 import { requiredEnv } from './lib/env';
 import { getDb } from './lib/db';
 
@@ -55,8 +56,10 @@ bot.command('start', async (ctx) => {
   await ctx.reply('Welcome to King of the Hill! Tap to play.', { reply_markup: keyboard });
 });
 
-export const handler: Handler = async (event) => {
+const baseHandler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' });
   await bot.handleUpdate(JSON.parse(event.body || '{}'));
   return json(200, { ok: true });
 };
+
+export const handler = withSentry(baseHandler);
