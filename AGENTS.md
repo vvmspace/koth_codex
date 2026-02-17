@@ -16,10 +16,10 @@ Create a working MVP that:
 
 HOSTING + STACK
 - Hosting: Netlify (static frontend + Netlify Functions).
-- DB: Supabase Postgres (free tier friendly).
+- DB: MongoDB (Atlas/free tier friendly).
 - Language: TypeScript everywhere.
 - Frontend: Vite + React + TypeScript.
-- Backend: Netlify Functions (TypeScript) + supabase-js.
+- Backend: Netlify Functions (TypeScript) + MongoDB Node.js driver.
 - Telegram Bot framework: grammY (webhook-based).
 - Package manager: Yarn.
 - Repo structure: single repo with clear separation.
@@ -31,9 +31,9 @@ NON-GOALS (MVP)
 
 DELIVERABLES
 1) A complete codebase that runs locally and deploys to Netlify.
-2) SQL migration(s) for Supabase schema.
+2) MongoDB initialization/setup script(s) for required collections and indexes.
 3) .env.example with all required vars.
-4) README with step-by-step setup (Supabase, Telegram bot, Netlify deploy, local dev).
+4) README with step-by-step setup (MongoDB, Telegram bot, Netlify deploy, local dev).
 5) Minimal UI that works inside Telegram.
 
 CORE DOMAIN RULES
@@ -114,79 +114,92 @@ PAYMENTS (TON) - SCAFFOLD ONLY
 - For now, premium can be toggled by admin endpoint for testing:
   - POST /api/admin/users/set-premium
 
-DATABASE SCHEMA (Supabase Postgres)
-Create migrations for:
-- users:
-  - id uuid pk default gen_random_uuid()
-  - telegram_user_id bigint unique not null
-  - username text
-  - first_name text
-  - last_name text
-  - referral_code text unique not null
-  - referrer_id uuid null references users(id)
-  - steps bigint not null default 0
-  - sandwiches bigint not null default 0
-  - coffee bigint not null default 0
-  - premium_until timestamptz null
-  - next_available_at timestamptz not null default now()
-  - daily_free_count int not null default 0
-  - daily_free_reset_date date not null default current_date
-  - created_at timestamptz not null default now()
-  - updated_at timestamptz not null default now()
-- config:
-  - key text pk
-  - value jsonb not null
-  - updated_at timestamptz not null default now()
-  Seed keys:
-    - cooldown_ms
-    - max_free_actions_per_day
-    - steps_per_wake
-    - sandwich_per_ref_action
-    - coffee_per_ref2_action
-- ledger:
-  - id uuid pk default gen_random_uuid()
-  - user_id uuid not null references users(id)
-  - kind text not null (wake, ref_reward_lvl1, ref_reward_lvl2, mission_reward, admin_grant)
-  - delta_steps bigint default 0
-  - delta_sandwiches bigint default 0
-  - delta_coffee bigint default 0
-  - meta jsonb default '{}'::jsonb
-  - idempotency_key text unique
-  - created_at timestamptz not null default now()
-- missions:
-  - id uuid pk default gen_random_uuid()
-  - type text not null
-  - title text not null
-  - description text not null
-  - payload jsonb not null
-  - reward jsonb not null
-  - is_active boolean not null default true
-  - starts_at timestamptz null
-  - ends_at timestamptz null
-  - created_at timestamptz not null default now()
-- user_missions:
-  - id uuid pk default gen_random_uuid()
-  - user_id uuid not null references users(id)
-  - mission_id uuid not null references missions(id)
-  - status text not null (pending, completed)
-  - completed_at timestamptz null
-  - unique(user_id, mission_id)
-- purchases (stub):
-  - id uuid pk default gen_random_uuid()
-  - user_id uuid not null references users(id)
-  - provider text not null (ton)
-  - status text not null (created, pending, confirmed, failed)
-  - amount numeric
-  - currency text
-  - meta jsonb default '{}'::jsonb
-  - created_at timestamptz not null default now()
+DATABASE SCHEMA (MongoDB)
+Use the following fixed model schema (MongoDB collections).
+
+Conventions:
+- `_id`: ObjectId
+- Foreign keys are stored as ObjectId references (`user_id`, `referrer_id`, `mission_id`).
+- Timestamps are ISODate.
+
+users:
+- `_id`: ObjectId
+- `telegram_user_id`: NumberLong, unique, required
+- `username`: string | null
+- `first_name`: string | null
+- `last_name`: string | null
+- `referral_code`: string, unique, required
+- `referrer_id`: ObjectId | null
+- `steps`: NumberLong, required, default 0
+- `sandwiches`: NumberLong, required, default 0
+- `coffee`: NumberLong, required, default 0
+- `premium_until`: ISODate | null
+- `next_available_at`: ISODate, required, default now
+- `daily_free_count`: int, required, default 0
+- `daily_free_reset_date`: string (YYYY-MM-DD, UTC), required
+- `created_at`: ISODate, required, default now
+- `updated_at`: ISODate, required, default now
+
+config:
+- `_id`: ObjectId
+- `key`: string, unique, required
+- `value`: object, required
+- `updated_at`: ISODate, required, default now
+- seed keys:
+  - `cooldown_ms`
+  - `max_free_actions_per_day`
+  - `steps_per_wake`
+  - `sandwich_per_ref_action`
+  - `coffee_per_ref2_action`
+
+ledger:
+- `_id`: ObjectId
+- `user_id`: ObjectId, required
+- `kind`: string, required (`wake`, `ref_reward_lvl1`, `ref_reward_lvl2`, `mission_reward`, `admin_grant`)
+- `delta_steps`: NumberLong, default 0
+- `delta_sandwiches`: NumberLong, default 0
+- `delta_coffee`: NumberLong, default 0
+- `meta`: object, default {}
+- `idempotency_key`: string | null, unique when present
+- `created_at`: ISODate, required, default now
+
+missions:
+- `_id`: ObjectId
+- `type`: string, required (`join_channel`, `manual_confirm`, future types)
+- `title`: string, required
+- `description`: string, required
+- `payload`: object, required
+- `reward`: object, required
+- `is_active`: boolean, required, default true
+- `starts_at`: ISODate | null
+- `ends_at`: ISODate | null
+- `created_at`: ISODate, required, default now
+
+user_missions:
+- `_id`: ObjectId
+- `user_id`: ObjectId, required
+- `mission_id`: ObjectId, required
+- `status`: string, required (`pending`, `completed`)
+- `completed_at`: ISODate | null
+- unique pair: (`user_id`, `mission_id`)
+
+purchases (stub):
+- `_id`: ObjectId
+- `user_id`: ObjectId, required
+- `provider`: string, required (`ton`)
+- `status`: string, required (`created`, `pending`, `confirmed`, `failed`)
+- `amount`: Decimal128 | string | null
+- `currency`: string | null
+- `meta`: object, default {}
+- `created_at`: ISODate, required, default now
 
 Indexes:
-- users(steps desc)
-- users(referrer_id)
-- ledger(user_id, created_at)
-- missions(is_active)
-- user_missions(user_id, status)
+- users: `{ telegram_user_id: 1 }` unique, `{ referral_code: 1 }` unique, `{ steps: -1 }`, `{ referrer_id: 1 }`
+- config: `{ key: 1 }` unique
+- ledger: `{ idempotency_key: 1 }` unique (sparse), `{ user_id: 1, created_at: -1 }`
+- missions: `{ is_active: 1 }`
+- user_missions: `{ user_id: 1, mission_id: 1 }` unique, `{ user_id: 1, status: 1 }`
+- purchases: `{ user_id: 1, created_at: -1 }`
 
 SECURITY + ENGINEERING PRACTICES
 - Verify Telegram initData server-side always.
@@ -231,9 +244,9 @@ PROJECT STRUCTURE (REQUIRED)
       types.ts
       domain/
         rules.ts (pure functions)
-  supabase/
-    migrations/
-      001_init.sql
+  mongodb/
+    init/
+      001_init.js
   README.md
   package.json (yarn workspaces)
   .env.example
@@ -248,9 +261,7 @@ TELEGRAM BOT FLOW
 - When /start includes ref code, call backend logic to set referrer if needed.
 
 ENV VARS (.env.example)
-- SUPABASE_URL
-- SUPABASE_SERVICE_ROLE_KEY (server only)
-- SUPABASE_ANON_KEY (frontend)
+- MONGODB_CONNECTION_STRING
 - JWT_SECRET
 - ADMIN_SECRET
 - TELEGRAM_BOT_TOKEN
@@ -287,7 +298,7 @@ Premium screen:
 
 OUTPUT FORMAT
 - Produce all files with full code (not pseudo code).
-- Include SQL migrations.
+- Include MongoDB initialization scripts (collections/indexes).
 - Include README with exact commands.
 - Make sure everything builds and runs with minimal setup.
 - Keep the MVP small and clear; prioritize correctness and extendability.
