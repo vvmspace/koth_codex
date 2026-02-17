@@ -1,0 +1,39 @@
+const db = db.getSiblingDB(process.env.MONGODB_DB_NAME || 'koth');
+
+const now = new Date();
+
+db.createCollection('users');
+db.createCollection('config');
+db.createCollection('ledger');
+db.createCollection('missions');
+db.createCollection('user_missions');
+db.createCollection('purchases');
+db.createCollection('items');
+db.createCollection('user_items');
+
+db.users.createIndex({ telegram_user_id: 1 }, { unique: true });
+db.users.createIndex({ referral_code: 1 }, { unique: true });
+db.users.createIndex({ steps: -1 });
+db.users.createIndex({ referrer_id: 1 });
+
+db.config.createIndex({ key: 1 }, { unique: true });
+
+db.ledger.createIndex({ idempotency_key: 1 }, { unique: true, sparse: true });
+db.ledger.createIndex({ user_id: 1, created_at: -1 });
+
+db.missions.createIndex({ is_active: 1 });
+
+db.user_missions.createIndex({ user_id: 1, mission_id: 1 }, { unique: true });
+db.user_missions.createIndex({ user_id: 1, status: 1 });
+
+db.purchases.createIndex({ user_id: 1, created_at: -1 });
+
+[
+  { key: 'cooldown_ms', value: 28800000 },
+  { key: 'max_free_actions_per_day', value: 3 },
+  { key: 'steps_per_wake', value: 1 },
+  { key: 'sandwich_per_ref_action', value: 1 },
+  { key: 'coffee_per_ref2_action', value: 1 }
+].forEach((doc) => {
+  db.config.updateOne({ key: doc.key }, { $set: { value: doc.value, updated_at: now } }, { upsert: true });
+});

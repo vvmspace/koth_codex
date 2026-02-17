@@ -1,18 +1,10 @@
 import type { Handler } from '@netlify/functions';
 import { Bot, InlineKeyboard } from 'grammy';
-import { getServiceDb } from './lib/db';
 import { json } from './lib/http';
 import { requiredEnv } from './lib/env';
-import { normalizeLanguageCode } from './lib/geo';
+import { getDb } from './lib/db';
 
 const bot = new Bot(requiredEnv('TELEGRAM_BOT_TOKEN'));
-
-function isMissingUsersLocaleColumnError(message: string) {
-  return (
-    message.includes("Could not find the column 'language_code' of 'users'") ||
-    message.includes("Could not find the 'language_code' column of 'users'")
-  );
-}
 
 function parseRefCode(text?: string) {
   if (!text) return null;
@@ -22,42 +14,41 @@ function parseRefCode(text?: string) {
   return ref.startsWith('ref_') ? ref.slice(4) : null;
 }
 
+function todayUtc() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 bot.command('start', async (ctx) => {
   const appUrl = requiredEnv('APP_BASE_URL');
   const refCode = parseRefCode(ctx.message?.text);
-  const db = getServiceDb();
+  const db = await getDb();
   const telegramUser = ctx.from;
-  const referral_code = telegramUser.id.toString(36);
 
-  const { data: existing } = await db.from('users').select('*').eq('telegram_user_id', telegramUser.id).maybeSingle();
+  const existing = await db.collection('users').findOne({ telegram_user_id: telegramUser.id });
   if (!existing) {
-    let referrer_id: string | null = null;
+    let referrerId = null;
     if (refCode) {
-      const { data: referrer } = await db.from('users').select('id').eq('referral_code', refCode).maybeSingle();
-      referrer_id = referrer?.id ?? null;
+      const referrer = await db.collection('users').findOne({ referral_code: refCode }, { projection: { _id: 1 } });
+      referrerId = referrer?._id ?? null;
     }
-    let insertResult = await db.from('users').insert({
+
+    await db.collection('users').insertOne({
       telegram_user_id: telegramUser.id,
       username: telegramUser.username ?? null,
       first_name: telegramUser.first_name ?? null,
       last_name: telegramUser.last_name ?? null,
-      language_code: normalizeLanguageCode(telegramUser.language_code),
-      referral_code,
-      referrer_id
+      referral_code: telegramUser.id.toString(36),
+      referrer_id: referrerId,
+      steps: 0,
+      sandwiches: 0,
+      coffee: 0,
+      premium_until: null,
+      next_available_at: new Date(),
+      daily_free_count: 0,
+      daily_free_reset_date: todayUtc(),
+      created_at: new Date(),
+      updated_at: new Date()
     });
-
-    if (insertResult.error && isMissingUsersLocaleColumnError(insertResult.error.message)) {
-      insertResult = await db.from('users').insert({
-        telegram_user_id: telegramUser.id,
-        username: telegramUser.username ?? null,
-        first_name: telegramUser.first_name ?? null,
-        last_name: telegramUser.last_name ?? null,
-        referral_code,
-        referrer_id
-      });
-    }
-
-    if (insertResult.error) throw insertResult.error;
   }
 
   const keyboard = new InlineKeyboard().webApp('Open Mini App', appUrl);

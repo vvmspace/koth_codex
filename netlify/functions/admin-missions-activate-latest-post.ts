@@ -1,5 +1,5 @@
 import type { Handler } from '@netlify/functions';
-import { getServiceDb } from './lib/db';
+import { getDb } from './lib/db';
 import { json } from './lib/http';
 import { requiredEnv } from './lib/env';
 
@@ -9,15 +9,18 @@ export const handler: Handler = async (event) => {
   const { post_url } = JSON.parse(event.body || '{}');
   if (!post_url) return json(400, { error: 'post_url required' });
 
-  const db = getServiceDb();
-  const { data, error } = await db.from('missions').insert({
+  const db = await getDb();
+  const result = await db.collection('missions').insertOne({
     type: 'manual_confirm',
     title: 'React/Like latest post',
     description: 'React to the latest post then tap complete.',
     payload: { post_url },
     reward: { steps: 1 },
-    is_active: true
-  }).select('*').single();
-  if (error) return json(400, { error: error.message });
-  return json(200, { mission: data, note: 'Stub endpoint created a manual confirm mission for latest post.' });
+    is_active: true,
+    starts_at: null,
+    ends_at: null,
+    created_at: new Date()
+  });
+  const mission = await db.collection('missions').findOne({ _id: result.insertedId });
+  return json(200, { mission, note: 'Stub endpoint created a manual confirm mission for latest post.' });
 };

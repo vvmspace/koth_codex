@@ -1,5 +1,5 @@
 import type { ConfigValues } from '@koth/shared/types';
-import { getServiceDb } from './db';
+import { getDb } from './db';
 
 const defaults: ConfigValues = {
   cooldown_ms: 28_800_000,
@@ -10,9 +10,9 @@ const defaults: ConfigValues = {
 };
 
 export async function loadConfig(): Promise<ConfigValues> {
-  const db = getServiceDb();
-  const { data } = await db.from('config').select('key,value');
-  const map = new Map((data || []).map((r) => [r.key, r.value]));
+  const db = await getDb();
+  const rows = await db.collection('config').find({ key: { $in: Object.keys(defaults) } }).toArray();
+  const map = new Map(rows.map((r) => [r.key, r.value]));
   return {
     cooldown_ms: Number(map.get('cooldown_ms') ?? defaults.cooldown_ms),
     max_free_actions_per_day: Number(map.get('max_free_actions_per_day') ?? defaults.max_free_actions_per_day),

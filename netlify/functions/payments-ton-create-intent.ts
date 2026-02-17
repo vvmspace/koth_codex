@@ -1,21 +1,23 @@
 import type { Handler } from '@netlify/functions';
+import { ObjectId } from 'mongodb';
 import { requireUser } from './lib/auth';
-import { getServiceDb } from './lib/db';
+import { getDb } from './lib/db';
 import { json } from './lib/http';
 
 export const handler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' });
   const user = await requireUser(event);
   const { amount = 1, currency = 'TON' } = JSON.parse(event.body || '{}');
-  const db = getServiceDb();
-  const { data, error } = await db.from('purchases').insert({
-    user_id: user.id,
+  const db = await getDb();
+  const data = await db.collection('purchases').insertOne({
+    user_id: new ObjectId(user.id),
     provider: 'ton',
     status: 'created',
-    amount,
+    amount: String(amount),
     currency,
-    meta: { note: 'Scaffold intent only' }
-  }).select('*').single();
-  if (error) return json(400, { error: error.message });
-  return json(200, { intent: data });
+    meta: { note: 'Scaffold intent only' },
+    created_at: new Date()
+  });
+  const intent = await db.collection('purchases').findOne({ _id: data.insertedId });
+  return json(200, { intent });
 };

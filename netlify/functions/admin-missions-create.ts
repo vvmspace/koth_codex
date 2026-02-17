@@ -1,5 +1,5 @@
 import type { Handler } from '@netlify/functions';
-import { getServiceDb } from './lib/db';
+import { getDb } from './lib/db';
 import { json } from './lib/http';
 import { requiredEnv } from './lib/env';
 
@@ -12,10 +12,10 @@ export const handler: Handler = async (event) => {
   try {
     assertAdmin(event);
     const payload = JSON.parse(event.body || '{}');
-    const db = getServiceDb();
-    const { data, error } = await db.from('missions').insert(payload).select('*').single();
-    if (error) return json(400, { error: error.message });
-    return json(200, { mission: data });
+    const db = await getDb();
+    const data = await db.collection('missions').insertOne({ ...payload, created_at: new Date() });
+    const mission = await db.collection('missions').findOne({ _id: data.insertedId });
+    return json(200, { mission });
   } catch (error) {
     return json(403, { error: (error as Error).message });
   }
