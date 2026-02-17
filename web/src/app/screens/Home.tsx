@@ -5,6 +5,7 @@ type Props = {
   inventory: any;
   onWake: () => Promise<void>;
   lang: SupportedLanguage;
+  isLoadingUser?: boolean;
 };
 
 type BackpackItem = {
@@ -54,7 +55,7 @@ const buildBackpack = (inventory: any, lang: SupportedLanguage): BackpackItem[] 
   return allItems.filter((item) => item.amount > 0);
 };
 
-export function Home({ inventory, onWake, lang }: Props) {
+export function Home({ inventory, onWake, lang, isLoadingUser = false }: Props) {
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
@@ -66,7 +67,7 @@ export function Home({ inventory, onWake, lang }: Props) {
   }, []);
 
   const next = inventory?.next_available_at ? new Date(inventory.next_available_at).getTime() : now;
-  const disabled = next > now;
+  const disabled = isLoadingUser || !inventory || next > now;
   const timer = useMemo(() => formatCountdown(next, now, lang), [next, now, lang]);
 
   const backpack = useMemo(() => buildBackpack(inventory, lang), [inventory, lang]);
