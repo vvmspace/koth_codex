@@ -1,4 +1,3 @@
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 const apiProxyTarget = process.env.VITE_API_PROXY_TARGET || 'http://localhost:9999';
@@ -24,7 +23,7 @@ function rewriteApiPath(path: string): string {
   return routeMap[path] || path;
 }
 
-export default defineConfig({
+const config = {
   plugins: [react()],
   server: {
     port: 5173,
@@ -36,4 +35,6 @@ export default defineConfig({
       }
     }
   }
-});
+} as const;
+
+export default config;
