@@ -182,3 +182,21 @@ Covers pure domain rules:
 - daily limit checks
 - daily reset
 - referral grant computation
+
+
+## Troubleshooting
+
+### Error: `Could not find the table 'public.users' in the schema cache`
+
+This means your app is connected to Supabase, but the schema from `supabase/migrations/001_init.sql` is missing in that project (or env vars point to a different project).
+
+1. Open Supabase SQL Editor for the same project as `SUPABASE_URL`.
+2. Run `supabase/migrations/001_init.sql`.
+3. Verify the table exists:
+   ```sql
+   select to_regclass('public.users');
+   ```
+   It should return `public.users`.
+4. Confirm `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` come from the **same** Supabase project.
+5. Redeploy/restart Netlify functions after updating env vars.
+
