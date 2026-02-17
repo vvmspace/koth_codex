@@ -8,6 +8,15 @@ function createReferralCode(telegramUserId: number) {
   return telegramUserId.toString(36);
 }
 
+function isMissingUsersLocaleColumnError(message: string) {
+  return (
+    message.includes("Could not find the column 'language_code' of 'users'") ||
+    message.includes("Could not find the 'language_code' column of 'users'") ||
+    message.includes("Could not find the column 'country_code' of 'users'") ||
+    message.includes("Could not find the 'country_code' column of 'users'")
+  );
+}
+
 function formatDbError(message: string) {
   if (message.includes("Could not find the table 'public.users'")) {
     return {
@@ -17,12 +26,7 @@ function formatDbError(message: string) {
     };
   }
 
-  if (
-    message.includes("Could not find the column 'language_code' of 'users'") ||
-    message.includes("Could not find the 'language_code' column of 'users'") ||
-    message.includes("Could not find the column 'country_code' of 'users'") ||
-    message.includes("Could not find the 'country_code' column of 'users'")
-  ) {
+  if (isMissingUsersLocaleColumnError(message)) {
     return {
       error: 'Database schema is out of date',
       details:
@@ -58,21 +62,25 @@ export const handler: Handler = async (event) => {
     const tgUser = verifyTelegramInitData(initData);
     const db = getServiceDb();
 
-    const payload = {
+    const basePayload = {
       telegram_user_id: tgUser.id,
       username: tgUser.username ?? null,
       first_name: tgUser.first_name ?? null,
       last_name: tgUser.last_name ?? null,
-      language_code: normalizeLanguageCode(tgUser.language_code),
       referral_code: createReferralCode(tgUser.id)
     };
 
-    const { data: user, error } = await db
+    let result = await db
       .from('users')
-      .upsert(payload, { onConflict: 'telegram_user_id' })
+      .upsert({ ...basePayload, language_code: normalizeLanguageCode(tgUser.language_code) }, { onConflict: 'telegram_user_id' })
       .select('*')
       .single();
 
+    if (result.error && isMissingUsersLocaleColumnError(result.error.message)) {
+      result = await db.from('users').upsert(basePayload, { onConflict: 'telegram_user_id' }).select('*').single();
+    }
+
+    const { data: user, error } = result;
     if (error || !user) return json(500, formatDbError(error?.message || 'Failed to upsert user'));
 
     const token = await signSession({ user_id: user.id, telegram_user_id: user.telegram_user_id });

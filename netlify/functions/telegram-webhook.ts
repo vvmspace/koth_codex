@@ -7,6 +7,13 @@ import { normalizeLanguageCode } from './lib/geo';
 
 const bot = new Bot(requiredEnv('TELEGRAM_BOT_TOKEN'));
 
+function isMissingUsersLocaleColumnError(message: string) {
+  return (
+    message.includes("Could not find the column 'language_code' of 'users'") ||
+    message.includes("Could not find the 'language_code' column of 'users'")
+  );
+}
+
 function parseRefCode(text?: string) {
   if (!text) return null;
   const parts = text.trim().split(/\s+/);
@@ -29,7 +36,7 @@ bot.command('start', async (ctx) => {
       const { data: referrer } = await db.from('users').select('id').eq('referral_code', refCode).maybeSingle();
       referrer_id = referrer?.id ?? null;
     }
-    await db.from('users').insert({
+    let insertResult = await db.from('users').insert({
       telegram_user_id: telegramUser.id,
       username: telegramUser.username ?? null,
       first_name: telegramUser.first_name ?? null,
@@ -38,6 +45,19 @@ bot.command('start', async (ctx) => {
       referral_code,
       referrer_id
     });
+
+    if (insertResult.error && isMissingUsersLocaleColumnError(insertResult.error.message)) {
+      insertResult = await db.from('users').insert({
+        telegram_user_id: telegramUser.id,
+        username: telegramUser.username ?? null,
+        first_name: telegramUser.first_name ?? null,
+        last_name: telegramUser.last_name ?? null,
+        referral_code,
+        referrer_id
+      });
+    }
+
+    if (insertResult.error) throw insertResult.error;
   }
 
   const keyboard = new InlineKeyboard().webApp('Open Mini App', appUrl);
