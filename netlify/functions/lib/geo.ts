@@ -1,46 +1,45 @@
-const LANGUAGE_TO_COUNTRY: Record<string, string> = {
+const FALLBACK_COUNTRY_BY_LANGUAGE: Record<'en' | 'es', string> = {
   en: 'US',
-  es: 'ES',
-  pt: 'BR',
-  fr: 'FR',
-  de: 'DE',
-  it: 'IT',
-  tr: 'TR',
-  ru: 'RU',
-  uk: 'UA',
-  pl: 'PL',
-  nl: 'NL',
-  ar: 'SA',
-  hi: 'IN',
-  ja: 'JP',
-  ko: 'KR',
-  id: 'ID',
-  vi: 'VN'
+  es: 'ES'
 };
 
+export function normalizeLanguageCode(languageCode?: string | null): 'en' | 'es' {
+  const base = (languageCode || 'en').toLowerCase().split('-')[0];
+  return base === 'es' ? 'es' : 'en';
+}
+
+export function normalizeCountryCode(countryCode?: string | null) {
+  if (!countryCode) return null;
+  const normalized = countryCode.trim().toUpperCase();
+  if (!/^[A-Z]{2}$/.test(normalized)) return null;
+  return normalized;
+}
+
 export function countryCodeToFlag(countryCode?: string | null) {
-  if (!countryCode || !/^[a-z]{2}$/i.test(countryCode)) return null;
-  return countryCode
-    .toUpperCase()
+  const normalized = normalizeCountryCode(countryCode);
+  if (!normalized) return null;
+  return normalized
     .split('')
     .map((char) => String.fromCodePoint(127397 + char.charCodeAt(0)))
     .join('');
 }
 
-export function guessCountryCodeFromLanguage(languageCode?: string | null) {
+function countryCodeFromLanguageTag(languageCode?: string | null) {
   if (!languageCode) return null;
-  const normalized = languageCode.toLowerCase();
-  const explicitCountry = normalized.includes('-') ? normalized.split('-')[1] : null;
-  if (explicitCountry && /^[a-z]{2}$/i.test(explicitCountry)) {
-    return explicitCountry.toUpperCase();
+  const parts = languageCode.split('-');
+  if (parts.length > 1) {
+    return normalizeCountryCode(parts[1]);
   }
-  const base = normalized.split('-')[0];
-  return LANGUAGE_TO_COUNTRY[base] ?? null;
+  return null;
 }
 
-export function resolveCountryFlag(params: { languageCode?: string | null; countryCode?: string | null }) {
-  const direct = countryCodeToFlag(params.countryCode);
+export function resolveCountryCode(params: { languageCode?: string | null; countryCode?: string | null }) {
+  const direct = normalizeCountryCode(params.countryCode);
   if (direct) return direct;
-  const guessedCountry = guessCountryCodeFromLanguage(params.languageCode);
-  return countryCodeToFlag(guessedCountry);
+
+  const fromLanguageTag = countryCodeFromLanguageTag(params.languageCode);
+  if (fromLanguageTag) return fromLanguageTag;
+
+  const lang = normalizeLanguageCode(params.languageCode);
+  return FALLBACK_COUNTRY_BY_LANGUAGE[lang];
 }

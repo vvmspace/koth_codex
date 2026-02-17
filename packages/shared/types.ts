@@ -15,7 +15,7 @@ export interface UserProfile {
   first_name: string | null;
   last_name: string | null;
   language_code: string | null;
-  country_flag: string | null;
+  country_code: string | null;
   referral_code: string;
   referrer_id: string | null;
   steps: number;
