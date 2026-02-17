@@ -67,7 +67,7 @@ Migrations are stored in `supabase/migrations`.
 yarn migrate:deploy
 ```
 
-`yarn build` on Netlify now automatically executes migrations before frontend build.
+On Netlify production deploys, migrations are executed automatically **after successful deploy** via a local Netlify Build Plugin (`onSuccess`). `yarn build` remains frontend-only.
 
 ## 3) Local dev
 
@@ -136,6 +136,7 @@ If local, use one of:
 3. Build settings:
    - Base directory: *(empty)*
    - Build command: `yarn build`
+   - Post-deploy migrations run automatically via `netlify/plugins/postdeploy-migrate`
    - Publish directory: `web/dist`
 4. Set environment variables in **Site settings → Environment variables**:
    - `SUPABASE_URL`
@@ -212,6 +213,21 @@ This means your app is connected to Supabase, but the schema from `supabase/migr
 4. Confirm `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` come from the **same** Supabase project.
 5. Redeploy/restart Netlify functions after updating env vars.
 
+
+
+### Error: `Could not find the 'country_code' column of 'users' in the schema cache`
+
+Your database is missing newer locale columns. Apply latest migrations:
+
+```bash
+yarn migrate:deploy
+```
+
+Or run SQL manually from:
+- `supabase/migrations/003_user_country_code.sql`
+- `supabase/migrations/004_user_locale_guard.sql`
+
+Then retry the request.
 
 ## Localization + leaderboard flags
 

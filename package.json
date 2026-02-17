@@ -10,10 +10,11 @@
     "dev": "yarn workspace web dev",
     "dev:functions": "npx -y netlify-cli@23.15.1 functions:serve --port 9999 --filter web",
     "dev:web": "yarn workspace web dev",
-    "build": "yarn migrate:deploy && yarn workspace web build",
+    "build": "yarn workspace web build",
     "test": "yarn workspace @koth/shared test",
     "typecheck": "yarn workspace web typecheck",
-    "migrate:deploy": "node scripts/run-migrations.mjs"
+    "migrate:deploy": "node scripts/run-migrations.mjs",
+    "build:with-migrations": "yarn migrate:deploy && yarn workspace web build"
   },
   "dependencies": {
     "@koth/shared": "0.0.1",
