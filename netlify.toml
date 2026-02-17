@@ -1,0 +1,15 @@
+[build]
+  command = "yarn build"
+  publish = "web/dist"
+  functions = "netlify/functions"
+
+[dev]
+  command = "yarn workspace web dev"
+  targetPort = 5173
+  functions = "netlify/functions"
+  publish = "web/dist"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200

@@ -1,0 +1,13 @@
+{
+  "name": "@koth/shared",
+  "version": "0.0.1",
+  "main": "types.ts",
+  "types": "types.ts",
+  "private": true,
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.8"
+  }
+}
