@@ -33,22 +33,26 @@ const formatCountdown = (targetMs: number, nowMs: number, lang: SupportedLanguag
   return `${hours}:${minutes}:${seconds}`;
 };
 
-const buildBackpack = (inventory: any, lang: SupportedLanguage): BackpackItem[] => [
-  {
-    key: 'sandwiches',
-    label: t(lang, 'home.sandwiches'),
-    icon: '🥪',
-    amount: Number(inventory?.sandwiches || 0),
-    rarity: 'common'
-  },
-  {
-    key: 'coffee',
-    label: t(lang, 'home.coffee'),
-    icon: '☕',
-    amount: Number(inventory?.coffee || 0),
-    rarity: 'rare'
-  }
-];
+const buildBackpack = (inventory: any, lang: SupportedLanguage): BackpackItem[] => {
+  const allItems: BackpackItem[] = [
+    {
+      key: 'sandwiches',
+      label: t(lang, 'home.sandwiches'),
+      icon: '🥪',
+      amount: Number(inventory?.sandwiches || 0),
+      rarity: 'common'
+    },
+    {
+      key: 'coffee',
+      label: t(lang, 'home.coffee'),
+      icon: '☕',
+      amount: Number(inventory?.coffee || 0),
+      rarity: 'rare'
+    }
+  ];
+
+  return allItems.filter((item) => item.amount > 0);
+};
 
 export function Home({ inventory, onWake, lang }: Props) {
   const [now, setNow] = useState(Date.now());
@@ -85,15 +89,26 @@ export function Home({ inventory, onWake, lang }: Props) {
 
       <div className="inventory-panel">
         <h3>{t(lang, 'home.backpack')}</h3>
-        <div className="backpack-grid">
-          {backpack.map((item) => (
-            <div key={item.key} className={`item-slot ${item.rarity}`}>
-              <span className="item-icon" aria-hidden="true">{item.icon}</span>
-              <span className="item-name">{item.label}</span>
-              <strong>x{item.amount}</strong>
+        {backpack.length === 0 ? (
+          <div className="backpack-empty">
+            <p>{t(lang, 'home.backpackEmpty')}</p>
+            <p className="small">{t(lang, 'home.referralRewardsHint')}</p>
+            <p className="small">{t(lang, 'home.itemsFlexHint')}</p>
+          </div>
+        ) : (
+          <>
+            <div className="backpack-grid">
+              {backpack.map((item) => (
+                <div key={item.key} className={`item-slot ${item.rarity}`}>
+                  <span className="item-icon" aria-hidden="true">{item.icon}</span>
+                  <span className="item-name">{item.label}</span>
+                  <strong>x{item.amount}</strong>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+            <p className="small backpack-footnote">{t(lang, 'home.itemsFlexHint')}</p>
+          </>
+        )}
       </div>
     </div>
   );

@@ -301,3 +301,11 @@ OUTPUT FORMAT
 - Include README with exact commands.
 - Make sure everything builds and runs with minimal setup.
 - Keep the MVP small and clear; prioritize correctness and extendability.
+
+UPDATE (Backpack UX + Referral explanation)
+- Backpack UI must hide zero-balance items (do not render empty item slots).
+- If backpack has no items, show guidance to invite friends to earn sandwiches and coffee.
+- Empty-state text must explain 2-level referral rewards clearly:
+  - Level 1: when your invited friend wakes the King, you receive sandwiches.
+  - Level 2: when your friend's invited friend wakes the King, Level 1 receives sandwiches and Level 2 inviter receives coffee.
+- Sandwiches and coffee are game items; their gameplay effect (e.g., granting steps) must remain configurable and extensible so reward types/effects can change without hardcoded frontend assumptions.

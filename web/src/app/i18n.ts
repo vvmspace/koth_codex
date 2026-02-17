@@ -15,6 +15,9 @@ type Dictionary = {
     | 'home.readyNow'
     | 'home.wake'
     | 'home.backpack'
+    | 'home.backpackEmpty'
+    | 'home.referralRewardsHint'
+    | 'home.itemsFlexHint'
     | 'home.sandwiches'
     | 'home.coffee'
     | 'missions.title'
@@ -52,6 +55,9 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'home.readyNow': 'Ready now',
     'home.wake': 'Wake up The King',
     'home.backpack': '🎒 Backpack',
+    'home.backpackEmpty': 'Your backpack is empty. Invite friends to start earning rewards.',
+    'home.referralRewardsHint': 'Referral rewards: when your invited friend wakes the King, you get sandwiches. If their invited friend wakes the King too, your friend gets sandwiches and you get coffee (2 levels).',
+    'home.itemsFlexHint': 'Sandwiches and coffee are game items that can grant steps through future mechanics. Reward types and effects are configurable for flexible balancing.',
     'home.sandwiches': 'Sandwiches',
     'home.coffee': 'Coffee',
     'missions.title': 'Missions',
@@ -87,6 +93,9 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'home.readyNow': 'Disponible ahora',
     'home.wake': 'Wake up The King',
     'home.backpack': '🎒 Mochila',
+    'home.backpackEmpty': 'Tu mochila está vacía. Invita amigos para empezar a ganar recompensas.',
+    'home.referralRewardsHint': 'Recompensas por referidos: cuando tu amigo invitado despierta al Rey, tú ganas sándwiches. Si el amigo de tu amigo también despierta al Rey, tu amigo gana sándwiches y tú ganas café (2 niveles).',
+    'home.itemsFlexHint': 'Sándwiches y café son ítems del juego que podrán otorgar pasos con mecánicas futuras. Los tipos de recompensa y sus efectos son configurables para mantener flexibilidad.',
     'home.sandwiches': 'Sándwiches',
     'home.coffee': 'Café',
     'missions.title': 'Misiones',
