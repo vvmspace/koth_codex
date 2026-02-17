@@ -9,9 +9,24 @@ function createReferralCode(telegramUserId: number) {
 
 export const handler: Handler = async (event) => {
   try {
-    if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' });
-    const { initData } = JSON.parse(event.body || '{}');
-    if (!initData) return json(400, { error: 'initData required' });
+    if (event.httpMethod !== 'POST') {
+      return json(405, {
+        error: 'Method not allowed. Use POST /api/auth/telegram with JSON body: {"initData":"..."}'
+      });
+    }
+
+    const parsedBody = JSON.parse(event.body || '{}');
+    const initData =
+      parsedBody?.initData ||
+      parsedBody?.init_data ||
+      event.queryStringParameters?.initData ||
+      event.queryStringParameters?.init_data;
+
+    if (!initData) {
+      return json(400, {
+        error: 'initData required (Telegram WebApp init data). Send POST JSON body: {"initData":"..."}'
+      });
+    }
 
     const tgUser = verifyTelegramInitData(initData);
     const db = getServiceDb();
