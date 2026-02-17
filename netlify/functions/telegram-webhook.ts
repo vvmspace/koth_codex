@@ -3,6 +3,7 @@ import { Bot, InlineKeyboard } from 'grammy';
 import { getServiceDb } from './lib/db';
 import { json } from './lib/http';
 import { requiredEnv } from './lib/env';
+import { resolveCountryFlag } from './lib/geo';
 
 const bot = new Bot(requiredEnv('TELEGRAM_BOT_TOKEN'));
 
@@ -34,7 +35,7 @@ bot.command('start', async (ctx) => {
       first_name: telegramUser.first_name ?? null,
       last_name: telegramUser.last_name ?? null,
       language_code: telegramUser.language_code?.toLowerCase() ?? null,
-      country_flag: null,
+      country_flag: resolveCountryFlag({ languageCode: telegramUser.language_code ?? null }),
       referral_code,
       referrer_id
     });

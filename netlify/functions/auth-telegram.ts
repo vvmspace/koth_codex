@@ -2,6 +2,7 @@ import type { Handler } from '@netlify/functions';
 import { getServiceDb } from './lib/db';
 import { json } from './lib/http';
 import { signSession, verifyTelegramInitData } from './lib/auth';
+import { resolveCountryFlag } from './lib/geo';
 
 function createReferralCode(telegramUserId: number) {
   return telegramUserId.toString(36);
@@ -10,15 +11,6 @@ function createReferralCode(telegramUserId: number) {
 function normalizeLanguageCode(languageCode?: string) {
   if (!languageCode) return null;
   return languageCode.toLowerCase();
-}
-
-function countryCodeToFlag(countryCode?: string | null) {
-  if (!countryCode || !/^[a-z]{2}$/i.test(countryCode)) return null;
-  return countryCode
-    .toUpperCase()
-    .split('')
-    .map((char) => String.fromCodePoint(127397 + char.charCodeAt(0)))
-    .join('');
 }
 
 function formatDbError(message: string) {
@@ -69,7 +61,10 @@ export const handler: Handler = async (event) => {
       first_name: tgUser.first_name ?? null,
       last_name: tgUser.last_name ?? null,
       language_code: normalizeLanguageCode(tgUser.language_code),
-      country_flag: countryCodeToFlag(netlifyCountryCode),
+      country_flag: resolveCountryFlag({
+        countryCode: netlifyCountryCode,
+        languageCode: tgUser.language_code
+      }),
       referral_code: createReferralCode(tgUser.id)
     };
 
