@@ -6,6 +6,8 @@ create table if not exists users (
   username text,
   first_name text,
   last_name text,
+  language_code text,
+  country_code text,
   referral_code text unique not null,
   referrer_id uuid references users(id),
   steps bigint not null default 0,
@@ -100,6 +102,8 @@ create table if not exists user_items (
 
 create index if not exists idx_users_steps on users (steps desc);
 create index if not exists idx_users_referrer_id on users (referrer_id);
+create index if not exists idx_users_language_code on users (language_code);
+create index if not exists idx_users_country_code on users (country_code);
 create index if not exists idx_ledger_user_created on ledger (user_id, created_at);
 create index if not exists idx_missions_active on missions (is_active);
 create index if not exists idx_user_missions_user_status on user_missions (user_id, status);

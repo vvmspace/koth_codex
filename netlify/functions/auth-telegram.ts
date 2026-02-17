@@ -13,7 +13,20 @@ function formatDbError(message: string) {
     return {
       error: 'Database schema is not initialized',
       details:
-        'Run supabase/migrations/001_init.sql in your Supabase SQL editor, then verify SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY point to the same project.'
+        'Apply all SQL migrations from supabase/migrations (001..latest), then verify SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY point to the same project.'
+    };
+  }
+
+  if (
+    message.includes("Could not find the column 'language_code' of 'users'") ||
+    message.includes("Could not find the 'language_code' column of 'users'") ||
+    message.includes("Could not find the column 'country_code' of 'users'") ||
+    message.includes("Could not find the 'country_code' column of 'users'")
+  ) {
+    return {
+      error: 'Database schema is out of date',
+      details:
+        'Apply all SQL migrations from supabase/migrations (001..latest), then restart functions so Supabase schema cache refreshes.'
     };
   }
 

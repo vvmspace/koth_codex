@@ -60,7 +60,7 @@ openssl rand -base64 48
 
 Migrations are stored in `supabase/migrations`.
 
-- Manual first-run option: run `supabase/migrations/001_init.sql` in Supabase SQL editor.
+- Manual first-run option: run **all** SQL files from `supabase/migrations` in lexical order (`001` → latest).
 - Deploy option (recommended): set `SUPABASE_DB_URL` and run:
 
 ```bash
@@ -204,7 +204,7 @@ Covers pure domain rules:
 This means your app is connected to Supabase, but the schema from `supabase/migrations/001_init.sql` is missing in that project (or env vars point to a different project).
 
 1. Open Supabase SQL Editor for the same project as `SUPABASE_URL`.
-2. Run `supabase/migrations/001_init.sql`.
+2. Run all migrations from `supabase/migrations` (not only `001_init.sql`).
 3. Verify the table exists:
    ```sql
    select to_regclass('public.users');
@@ -219,3 +219,18 @@ This means your app is connected to Supabase, but the schema from `supabase/migr
 - UI language is auto-detected (`en`/`es`) from Telegram `language_code`, fallback to browser language.
 - Backend stores user language in `users.language_code`.
 - Leaderboard renders each user country flag when present.
+
+
+### Error: `Could not find the 'language_code' column of 'users' in the schema cache`
+
+This means your `users` table exists, but later migrations were not applied (or schema cache is stale).
+
+1. Run all migrations in order: `001_init.sql`, `002_user_locale_country.sql`, `003_user_country_code.sql`, `004_users_add_locale_columns_guard.sql`.
+2. Restart Netlify functions / redeploy to refresh Supabase schema cache in runtime.
+3. Verify columns exist:
+   ```sql
+   select column_name
+   from information_schema.columns
+   where table_schema = 'public' and table_name = 'users'
+     and column_name in ('language_code', 'country_code');
+   ```
