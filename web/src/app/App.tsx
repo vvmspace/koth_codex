@@ -69,6 +69,7 @@ export function App() {
   const [leaderboard, setLeaderboard] = useState<any>(null);
   const [error, setError] = useState('');
   const [isDemoMode, setIsDemoMode] = useState(false);
+  const isLoadingUser = !user && !error;
 
   const lang: SupportedLanguage = useMemo(() => detectLanguage(user?.language_code), [user?.language_code]);
 
@@ -156,7 +157,7 @@ export function App() {
       {error && <p className="small">{error}</p>}
 
       <main>
-        {tab === 'home' && <Home inventory={inventory} onWake={wake} lang={lang} />}
+        {tab === 'home' && <Home inventory={inventory} onWake={wake} lang={lang} isLoadingUser={isLoadingUser} />}
         {tab === 'missions' && <Missions data={missions} onComplete={completeMission} lang={lang} />}
         {tab === 'leaderboard' && <Leaderboard data={leaderboard} lang={lang} />}
         {tab === 'referral' && <Referral user={user} lang={lang} />}
