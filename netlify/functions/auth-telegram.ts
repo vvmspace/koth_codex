@@ -24,7 +24,8 @@ export const handler: Handler = async (event) => {
 
     if (!initData) {
       return json(400, {
-        error: 'initData required (Telegram WebApp init data). Send POST JSON body: {"initData":"..."}'
+        error: 'initData required',
+        details: 'Send POST JSON body with Telegram WebApp init data: {"initData":"..."}'
       });
     }
 
