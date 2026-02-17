@@ -2,7 +2,7 @@ import type { Handler } from '@netlify/functions';
 import { getServiceDb } from './lib/db';
 import { json } from './lib/http';
 import { signSession, verifyTelegramInitData } from './lib/auth';
-import { normalizeLanguageCode, resolveCountryCode } from './lib/geo';
+import { normalizeLanguageCode } from './lib/geo';
 
 function createReferralCode(telegramUserId: number) {
   return telegramUserId.toString(36);
@@ -13,7 +13,20 @@ function formatDbError(message: string) {
     return {
       error: 'Database schema is not initialized',
       details:
-        'Run supabase/migrations/001_init.sql in your Supabase SQL editor, then verify SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY point to the same project.'
+        'Apply all SQL migrations from supabase/migrations (001..latest), then verify SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY point to the same project.'
+    };
+  }
+
+  if (
+    message.includes("Could not find the column 'language_code' of 'users'") ||
+    message.includes("Could not find the 'language_code' column of 'users'") ||
+    message.includes("Could not find the column 'country_code' of 'users'") ||
+    message.includes("Could not find the 'country_code' column of 'users'")
+  ) {
+    return {
+      error: 'Database schema is out of date',
+      details:
+        'Apply all SQL migrations from supabase/migrations (001..latest), then restart functions so Supabase schema cache refreshes.'
     };
   }
 
@@ -45,21 +58,12 @@ export const handler: Handler = async (event) => {
     const tgUser = verifyTelegramInitData(initData);
     const db = getServiceDb();
 
-    const netlifyCountryCode =
-      event.headers['x-country'] ||
-      event.headers['X-Country'] ||
-      event.headers['x-nf-geo-country'];
-
     const payload = {
       telegram_user_id: tgUser.id,
       username: tgUser.username ?? null,
       first_name: tgUser.first_name ?? null,
       last_name: tgUser.last_name ?? null,
       language_code: normalizeLanguageCode(tgUser.language_code),
-      country_code: resolveCountryCode({
-        countryCode: netlifyCountryCode,
-        languageCode: tgUser.language_code
-      }),
       referral_code: createReferralCode(tgUser.id)
     };
 
