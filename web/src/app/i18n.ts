@@ -104,7 +104,7 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'home.itemMenuLongTapHint': 'Long tap opens this menu. Tap outside to close.',
     'home.itemActivatedStub': 'Item activated. Effects will be extended in upcoming updates.',
     'home.itemActivationError': 'Could not activate item right now. Please try again.',
-    'home.rankBadge': '🏅 Rank {{rank}}/{{total}}',
+    'home.rankBadge': '🏅 {{rank}}/{{total}}',
     'home.rankTierTop30': 'Top 30% 🔥',
     'home.rankTierTop50': 'Top 50% ⚡',
     'home.rankTierKeepGoing': 'Keep pushing 💪',
