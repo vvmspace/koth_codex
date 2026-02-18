@@ -21,6 +21,7 @@ const baseHandler: Handler = async (event) => {
       coffee: user.coffee,
       last_awake: user.last_awake ?? null,
       wake_interval_ms: wakeIntervalMs,
+      ton_wallet_address: user.ton_wallet_address ?? null,
       items
     });
   } catch (error) {

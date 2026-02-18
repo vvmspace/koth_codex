@@ -65,6 +65,8 @@ type Dictionary = {
     | 'premium.title'
     | 'premium.subtitle'
     | 'premium.connectWallet'
+    | 'premium.connectedWallet'
+    | 'premium.walletConnected'
     | 'premium.buyStub'
     | 'premium.intentCreated'
     | 'premium.connectStub']: string;

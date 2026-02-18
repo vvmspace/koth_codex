@@ -22,6 +22,7 @@ export interface UserProfile {
   coffee: number;
   premium_until: string | null;
   last_awake: string | null;
+  ton_wallet_address?: string | null;
 }
 
 export interface ConfigValues {
