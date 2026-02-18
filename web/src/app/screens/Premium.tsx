@@ -6,7 +6,6 @@ import { t, type SupportedLanguage } from '../i18n';
 export function Premium({ lang }: { lang: SupportedLanguage }) {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
-  const [isDisconnecting, setIsDisconnecting] = useState(false);
 
   const tonConnect = useMemo(
     () =>
@@ -43,24 +42,13 @@ export function Premium({ lang }: { lang: SupportedLanguage }) {
   }, [tonConnect]);
 
   const connectWallet = async () => {
+    if (walletAddress) return;
+
     setIsConnecting(true);
     try {
       await tonConnect.openModal();
     } finally {
       setIsConnecting(false);
-    }
-  };
-
-  const disconnectWallet = async () => {
-    if (!walletAddress) return;
-
-    setIsDisconnecting(true);
-    try {
-      await tonConnect.disconnect();
-      await api('/payments/ton/disconnect', { method: 'POST', body: '{}' });
-      setWalletAddress(null);
-    } finally {
-      setIsDisconnecting(false);
     }
   };
 
@@ -73,18 +61,22 @@ export function Premium({ lang }: { lang: SupportedLanguage }) {
     <div className="card">
       <h2>{t(lang, 'premium.title')}</h2>
       <p className="small">{t(lang, 'premium.subtitle')}</p>
-      <div className="row">
-        <button className="secondary" onClick={() => void connectWallet()} disabled={isConnecting || isDisconnecting}>
-          {walletAddress ? t(lang, 'premium.connectedWallet') : t(lang, 'premium.connectWallet')}
+      <div className="premium-actions">
+        <button className="secondary premium-button" onClick={() => void connectWallet()} disabled={isConnecting || Boolean(walletAddress)}>
+          <span className="button-icon" aria-hidden="true">{walletAddress ? '✅' : '🔌'}</span>
+          <span>{walletAddress ? t(lang, 'premium.connectedWallet') : t(lang, 'premium.connectWallet')}</span>
         </button>
-        {walletAddress && (
-          <button className="secondary" onClick={() => void disconnectWallet()} disabled={isDisconnecting || isConnecting}>
-            {t(lang, 'premium.disconnectWallet')}
-          </button>
-        )}
-        <button onClick={() => void createIntent()}>{t(lang, 'premium.buyStub')}</button>
+        <button className="premium-button" onClick={() => void createIntent()}>
+          <span className="button-icon" aria-hidden="true">💎</span>
+          <span>{t(lang, 'premium.buyStub')}</span>
+        </button>
       </div>
-      {walletAddress && <p className="small">{t(lang, 'premium.walletConnected', { address: `${walletAddress.slice(0, 8)}...${walletAddress.slice(-6)}` })}</p>}
+      {walletAddress && (
+        <p className="small premium-wallet-hint">
+          <span className="wallet-dot" aria-hidden="true" />
+          {t(lang, 'premium.walletConnected', { address: `${walletAddress.slice(0, 8)}...${walletAddress.slice(-6)}` })}
+        </p>
+      )}
     </div>
   );
 }
