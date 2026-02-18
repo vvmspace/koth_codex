@@ -8,6 +8,21 @@ import { enforceRateLimit } from './lib/rate-limit';
 import { requiredEnv } from './lib/env';
 import { ensureDefaultMissions } from './lib/mission-seeds';
 
+function normalizeLanguage(languageCode: string | null | undefined) {
+  const code = String(languageCode || 'en').toLowerCase();
+  return code.startsWith('es') ? 'es' : 'en';
+}
+
+function resolveLocalizedText(
+  map: Record<string, unknown> | null | undefined,
+  language: string,
+  fallback: unknown
+) {
+  if (!map || typeof map !== 'object') return String(fallback || '');
+  const localized = map[language] || map.en;
+  return typeof localized === 'string' ? localized : String(fallback || '');
+}
+
 async function checkChannelMembership(channelId: string, telegramUserId: number) {
   const token = requiredEnv('TELEGRAM_BOT_TOKEN');
   const url = `https://api.telegram.org/bot${token}/getChatMember?chat_id=${encodeURIComponent(channelId)}&user_id=${telegramUserId}`;
@@ -24,6 +39,7 @@ const baseHandler: Handler = async (event) => {
 
     if (event.httpMethod === 'GET') {
       const now = new Date();
+      const language = normalizeLanguage((user as { language_code?: string | null }).language_code);
       const missions = await db
         .collection('missions')
         .find({
@@ -33,7 +49,20 @@ const baseHandler: Handler = async (event) => {
         .toArray();
       const userMissions = await db.collection('user_missions').find({ user_id: new ObjectId(user.id) }).toArray();
       return json(200, {
-        missions: missions.map((mission) => ({ ...mission, id: String(mission._id) })),
+        missions: missions.map((mission) => ({
+          ...mission,
+          title: resolveLocalizedText(
+            mission.title_i18n as Record<string, unknown> | undefined,
+            language,
+            mission.title
+          ),
+          description: resolveLocalizedText(
+            mission.description_i18n as Record<string, unknown> | undefined,
+            language,
+            mission.description
+          ),
+          id: String(mission._id)
+        })),
         user_missions: userMissions.map((mission) => ({ ...mission, id: String(mission._id), mission_id: String(mission.mission_id) }))
       });
     }

@@ -45,6 +45,14 @@ db.missions.updateOne(
   {
     $set: {
       description: 'Connect your TON wallet and claim the reward.',
+      title_i18n: {
+        en: 'Connect wallet',
+        es: 'Conectar wallet'
+      },
+      description_i18n: {
+        en: 'Connect your TON wallet and claim the reward.',
+        es: 'Conecta tu wallet TON y reclama la recompensa.'
+      },
       payload: {},
       reward: { sandwiches: 50, coffee: 50 },
       is_active: true,

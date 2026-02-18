@@ -76,7 +76,6 @@ export function Missions({
         >
           <h3>{m.title}</h3>
           <p>{m.description}</p>
-          <p className="small">{t(lang, 'missions.type', { type: m.type })}</p>
           <button
             onClick={(event) => {
               event.stopPropagation();

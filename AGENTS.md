@@ -93,6 +93,7 @@ E) Missions
   - payload: JSON (channel_id, post_url, etc)
   - reward: JSON (steps, sandwiches, coffee)
   - is_active, starts_at, ends_at
+- Missions shown to users must support multilingual content (at least EN/ES), with English as required fallback when a translation is missing.
 - User mission completion table records status.
 - Implement:
   - GET /api/missions (active + user status)

@@ -37,7 +37,6 @@ type Dictionary = {
     | 'home.rankTierTop50'
     | 'home.rankTierKeepGoing'
     | 'missions.title'
-    | 'missions.type'
     | 'missions.complete'
     | 'missions.completed'
     | 'missions.connectWalletAndComplete'
@@ -110,7 +109,6 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'home.rankTierTop50': 'Top 50% ⚡',
     'home.rankTierKeepGoing': 'Keep pushing 💪',
     'missions.title': 'Missions',
-    'missions.type': 'Type: {{type}}',
     'missions.complete': 'Complete',
     'missions.completed': 'Completed',
     'missions.connectWalletAndComplete': 'Connect wallet & complete',
@@ -136,14 +134,12 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'referral.promoIdea6': 'Forum posts',
     'referral.promoIdea7': 'Forum signatures',
     'referral.promoIdea8': 'Links in social profile bios',
-    'premium.title': 'Premium (TON Scaffold)',
-    'premium.subtitle': 'TonConnect UI and on-chain verification will be added later.',
+    'premium.title': 'Premium',
+    'premium.subtitle': 'Connect your TON wallet to prepare for premium features.',
     'premium.connectWallet': 'Connect wallet',
-    'premium.connectedWallet': 'Wallet connected',
-    'premium.walletConnected': 'Connected: {{address}}',
-    'premium.buyStub': 'Buy Premium (stub)',
-    'premium.intentCreated': 'TON payment intent created (stub).',
-    'premium.connectStub': 'TonConnect placeholder: integrate wallet SDK later.'
+    'premium.buyStub': 'Buy Premium',
+    'premium.intentCreated': 'Payment request created.',
+    'premium.connectStub': 'Wallet connection will open here.'
   },
   es: {
     'tabs.home': 'Inicio',
@@ -181,7 +177,6 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'home.rankTierTop50': 'Top 50% ⚡',
     'home.rankTierKeepGoing': 'Sigue subiendo 💪',
     'missions.title': 'Misiones',
-    'missions.type': 'Tipo: {{type}}',
     'missions.complete': 'Completar',
     'missions.completed': 'Completada',
     'missions.connectWalletAndComplete': 'Conectar wallet y completar',
@@ -207,14 +202,12 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'referral.promoIdea6': 'Publicaciones en foros',
     'referral.promoIdea7': 'Firmas en foros',
     'referral.promoIdea8': 'Enlaces en biografías de perfiles sociales',
-    'premium.title': 'Premium (estructura TON)',
-    'premium.subtitle': 'TonConnect y la verificación on-chain se agregarán después.',
+    'premium.title': 'Premium',
+    'premium.subtitle': 'Conecta tu wallet TON para preparar las funciones premium.',
     'premium.connectWallet': 'Conectar wallet',
-    'premium.connectedWallet': 'Wallet conectada',
-    'premium.walletConnected': 'Conectada: {{address}}',
-    'premium.buyStub': 'Comprar Premium (stub)',
-    'premium.intentCreated': 'Intento de pago TON creado (stub).',
-    'premium.connectStub': 'Placeholder de TonConnect: integrar SDK de wallet luego.'
+    'premium.buyStub': 'Comprar Premium',
+    'premium.intentCreated': 'Solicitud de pago creada.',
+    'premium.connectStub': 'La conexión de wallet se abrirá aquí.'
   }
 };
 
