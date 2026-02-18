@@ -6,8 +6,7 @@ type BackpackItemKey = 'sandwiches' | 'coffee';
 type Props = {
   inventory: any;
   onWake: () => Promise<void>;
-  onItemTap: (itemKey: BackpackItemKey) => Promise<void>;
-  itemActionMessage?: string;
+  onUseItem: (itemKey: 'sandwiches' | 'coffee', mode: 'tap' | 'hold') => Promise<void>;
   lang: SupportedLanguage;
   isLoadingUser?: boolean;
 };
@@ -64,11 +63,11 @@ const buildBackpack = (inventory: any, lang: SupportedLanguage): BackpackItem[] 
   return allItems.filter((item) => item.amount > 0);
 };
 
-export function Home({ inventory, onWake, onItemTap, itemActionMessage = '', lang, isLoadingUser = false }: Props) {
+const HOLD_DELAY_MS = 550;
+
+export function Home({ inventory, onWake, onUseItem, lang, isLoadingUser = false }: Props) {
   const [now, setNow] = useState(Date.now());
-  const [selectedItem, setSelectedItem] = useState<BackpackItem | null>(null);
-  const longTapTimeoutRef = useRef<number | null>(null);
-  const longTapTriggeredRef = useRef(false);
+  const [itemActionText, setItemActionText] = useState<string>('');
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -89,43 +88,10 @@ export function Home({ inventory, onWake, onItemTap, itemActionMessage = '', lan
 
   const backpack = useMemo(() => buildBackpack(inventory, lang), [inventory, lang]);
 
-  const clearLongTapTimeout = () => {
-    if (longTapTimeoutRef.current !== null) {
-      window.clearTimeout(longTapTimeoutRef.current);
-      longTapTimeoutRef.current = null;
-    }
-  };
-
-  const handleItemPointerDown = (itemKey: BackpackItemKey) => {
-    longTapTriggeredRef.current = false;
-    clearLongTapTimeout();
-    longTapTimeoutRef.current = window.setTimeout(() => {
-      longTapTriggeredRef.current = true;
-      longTapTimeoutRef.current = null;
-      const item = backpack.find((entry) => entry.key === itemKey) || null;
-      setSelectedItem(item);
-    }, LONG_TAP_MS);
-  };
-
-  const handleItemPointerUp = (itemKey: BackpackItemKey) => {
-    clearLongTapTimeout();
-    if (longTapTriggeredRef.current) {
-      longTapTriggeredRef.current = false;
-    }
-  };
-
-  const handleItemClick = (itemKey: BackpackItemKey) => {
-    if (longTapTriggeredRef.current) {
-      longTapTriggeredRef.current = false;
-      return;
-    }
-
-    void onItemTap(itemKey);
-  };
-
-  const handlePointerCancel = () => {
-    clearLongTapTimeout();
-    longTapTriggeredRef.current = false;
+  const runItemAction = async (itemKey: 'sandwiches' | 'coffee', mode: 'tap' | 'hold') => {
+    await onUseItem(itemKey, mode);
+    const actionName = mode === 'hold' ? 'hold' : 'tap';
+    setItemActionText(`${itemKey}: ${actionName}`);
   };
 
   return (
@@ -153,27 +119,53 @@ export function Home({ inventory, onWake, onItemTap, itemActionMessage = '', lan
             <p className="small">{t(lang, 'home.itemsFlexHint')}</p>
           </div>
         ) : (
-          <div className="backpack-grid">
-            {backpack.map((item) => (
-              <button
-                key={item.key}
-                className={`item-slot ${item.rarity}`}
-                type="button"
-                onPointerDown={() => handleItemPointerDown(item.key)}
-                onPointerUp={() => handleItemPointerUp(item.key)}
-                onPointerCancel={handlePointerCancel}
-                onPointerLeave={handlePointerCancel}
-                onClick={() => handleItemClick(item.key)}
-                onContextMenu={(event) => event.preventDefault()}
-              >
-                <span className="item-icon" aria-hidden="true">
-                  {item.icon}
-                </span>
-                <span className="item-name">{item.label}</span>
-                <strong>x{item.amount}</strong>
-              </button>
-            ))}
-          </div>
+          <>
+            <div className="backpack-grid">
+              {backpack.map((item) => (
+                <button
+                  key={item.key}
+                  type="button"
+                  className={`item-slot ${item.rarity}`}
+                  onClick={(event) => {
+                    if (event.currentTarget.dataset.holdTriggered === 'true') {
+                      event.currentTarget.dataset.holdTriggered = 'false';
+                      return;
+                    }
+                    void runItemAction(item.key, 'tap');
+                  }}
+                  onPointerDown={(event) => {
+                    if (disabled) return;
+                    const element = event.currentTarget;
+                    const holdTimeout = window.setTimeout(() => {
+                      element.dataset.holdTriggered = 'true';
+                      void runItemAction(item.key, 'hold');
+                    }, HOLD_DELAY_MS);
+
+                    element.dataset.holdTriggered = 'false';
+                    element.dataset.holdTimeout = String(holdTimeout);
+                  }}
+                  onPointerUp={(event) => {
+                    const timeoutId = Number(event.currentTarget.dataset.holdTimeout || 0);
+                    if (timeoutId) {
+                      window.clearTimeout(timeoutId);
+                    }
+                  }}
+                  onPointerLeave={(event) => {
+                    const timeoutId = Number(event.currentTarget.dataset.holdTimeout || 0);
+                    if (timeoutId) {
+                      window.clearTimeout(timeoutId);
+                    }
+                  }}
+                  disabled={disabled}
+                >
+                  <span className="item-icon" aria-hidden="true">{item.icon}</span>
+                  <span className="item-name">{item.label}</span>
+                  <strong>x{item.amount}</strong>
+                </button>
+              ))}
+            </div>
+            {itemActionText ? <p className="small">{itemActionText}</p> : null}
+          </>
         )}
         {backpack.length > 0 && <p className="small backpack-footnote">{t(lang, 'home.itemTapHint')}</p>}
         {itemActionMessage && <p className="small backpack-footnote">{itemActionMessage}</p>}

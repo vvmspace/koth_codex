@@ -148,47 +148,21 @@ export function App() {
     await load();
   };
 
-  const useItem = async (itemKey: BackpackItemKey) => {
+  const useItem = async (itemKey: 'sandwiches' | 'coffee', mode: 'tap' | 'hold') => {
     if (isDemoMode) {
-      setItemActionMessage(t(lang, 'home.itemActivatedStub'));
+      setInventory((prev: any) => ({
+        ...prev,
+        [itemKey]: Math.max(0, Number(prev?.[itemKey] || 0) - 1),
+        steps: Number(prev?.steps || 0) + (mode === 'hold' ? 2 : 1)
+      }));
       return;
     }
 
-    try {
-      await api('/items/use', {
-        method: 'POST',
-        body: JSON.stringify({ item_key: itemKey })
-      });
-      setItemActionMessage(t(lang, 'home.itemActivatedStub'));
-    } catch (error) {
-      setItemActionMessage(t(lang, 'home.itemActivationError'));
-      throw error;
-    }
-  };
-
-  const openSettings = () => {
-    setSettingsName(user?.first_name || '');
-    setSettingsLanguage(detectLanguage(user?.language_code));
-    setSettingsBackTab(tab === 'settings' ? 'home' : (tab as PublicTab));
-    setTab('settings');
-  };
-
-  const saveSettings = () => {
-    setUser((prev: any) => {
-      if (!prev) {
-        return prev;
-      }
-      return {
-        ...prev,
-        first_name: settingsName.trim() || prev.first_name,
-        language_code: settingsLanguage
-      };
+    await api('/items/use', {
+      method: 'POST',
+      body: JSON.stringify({ item_key: itemKey, mode })
     });
-    setTab(settingsBackTab);
-  };
-
-  const closeSettings = () => {
-    setTab(settingsBackTab);
+    await load();
   };
 
   return (
@@ -205,8 +179,7 @@ export function App() {
           <Home
             inventory={inventory}
             onWake={wake}
-            onItemTap={useItem}
-            itemActionMessage={itemActionMessage}
+            onUseItem={useItem}
             lang={lang}
             isLoadingUser={isLoadingUser}
           />
