@@ -53,6 +53,14 @@ yarn typecheck
 yarn build
 ```
 
+## Missions seeded by init script
+- `Connect wallet` (`connect_wallet`) rewards **50 sandwiches + 50 coffee** after wallet connection and mission completion.
+
+## TON wallet connection
+- Frontend uses TonConnect manifest from `web/public/tonconnect-manifest.json`.
+- Replace placeholder URLs/icons in the manifest before production deploy.
+- Connected wallet address is saved via `POST /api/payments/ton/confirm`.
+
 ## API
 - `POST /api/auth/telegram`
 - `POST /api/action/wake`
