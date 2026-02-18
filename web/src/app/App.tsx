@@ -188,7 +188,6 @@ export function App() {
       <button type="button" className="hero hero-button" onClick={openSettings}>
         <h1>👑 King of the Hill</h1>
         <p>{isDemoMode ? t(lang, 'hero.demo') : t(lang, 'hero.welcome', { name: user?.first_name || 'King' })}</p>
-        <p className="small hero-settings-hint">{t(lang, 'hero.settingsHint')}</p>
       </button>
 
       {error && <p className="small">{error}</p>}

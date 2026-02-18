@@ -9,7 +9,6 @@ type Dictionary = {
     | 'tabs.premium'
     | 'hero.demo'
     | 'hero.welcome'
-    | 'hero.settingsHint'
     | 'settings.title'
     | 'settings.name'
     | 'settings.language'
@@ -63,7 +62,6 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'tabs.premium': 'Boost',
     'hero.demo': 'Demo mode for local preview.',
     'hero.welcome': 'Welcome, {{name}}',
-    'hero.settingsHint': 'Tap here to open settings.',
     'settings.title': 'Settings',
     'settings.name': 'Name',
     'settings.language': 'Language',
@@ -115,7 +113,6 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'tabs.premium': 'Premium',
     'hero.demo': 'Modo demo para vista local.',
     'hero.welcome': 'Bienvenido, {{name}}',
-    'hero.settingsHint': 'Toca aquí para abrir configuración.',
     'settings.title': 'Configuración',
     'settings.name': 'Nombre',
     'settings.language': 'Idioma',
