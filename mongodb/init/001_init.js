@@ -63,3 +63,28 @@ db.missions.updateOne(
   },
   { upsert: true }
 );
+
+
+db.missions.updateOne(
+  { type: 'join_channel', title: 'Join channel' },
+  {
+    $set: {
+      description: 'Join our channel and claim your reward.',
+      title_i18n: {
+        en: 'Join channel',
+        es: 'Unirse al canal'
+      },
+      description_i18n: {
+        en: 'Join our channel and claim your reward.',
+        es: 'Únete a nuestro canal y reclama tu recompensa.'
+      },
+      payload: { channel_id: '-1003655493510' },
+      reward: { sandwiches: 5 },
+      is_active: true,
+      starts_at: null,
+      ends_at: null,
+      created_at: now
+    }
+  },
+  { upsert: true }
+);
