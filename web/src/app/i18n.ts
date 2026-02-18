@@ -137,6 +137,8 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'premium.title': 'Premium',
     'premium.subtitle': 'Connect your TON wallet to prepare for premium features.',
     'premium.connectWallet': 'Connect wallet',
+    'premium.connectedWallet': 'Wallet connected',
+    'premium.walletConnected': 'Connected wallet: {{address}}',
     'premium.buyStub': 'Buy Premium',
     'premium.intentCreated': 'Payment request created.',
     'premium.connectStub': 'Wallet connection will open here.'
@@ -205,6 +207,8 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'premium.title': 'Premium',
     'premium.subtitle': 'Conecta tu wallet TON para preparar las funciones premium.',
     'premium.connectWallet': 'Conectar wallet',
+    'premium.connectedWallet': 'Wallet conectada',
+    'premium.walletConnected': 'Wallet conectada: {{address}}',
     'premium.buyStub': 'Comprar Premium',
     'premium.intentCreated': 'Solicitud de pago creada.',
     'premium.connectStub': 'La conexión de wallet se abrirá aquí.'
