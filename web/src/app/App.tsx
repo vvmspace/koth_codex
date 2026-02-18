@@ -55,14 +55,6 @@ const DEMO_LEADERBOARD = {
   current_user_rank: 3
 };
 
-const tabs: Array<{ id: Tab; label: string; icon: string }> = [
-  { id: 'home', label: 'Home', icon: '🏠' },
-  { id: 'missions', label: 'Quests', icon: '🎯' },
-  { id: 'leaderboard', label: 'Arena', icon: '🏆' },
-  { id: 'referral', label: 'Friends', icon: '👥' },
-  { id: 'premium', label: 'Boost', icon: '💎' }
-];
-
 export function App() {
   const [tab, setTab] = useState<Tab>('home');
   const [user, setUser] = useState<any>(null);
@@ -71,6 +63,9 @@ export function App() {
   const [leaderboard, setLeaderboard] = useState<any>(null);
   const [error, setError] = useState('');
   const [isDemoMode, setIsDemoMode] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [settingsName, setSettingsName] = useState('');
+  const [settingsLanguage, setSettingsLanguage] = useState<SupportedLanguage>('en');
   const isLoadingUser = !user && !error;
 
   const lang: SupportedLanguage = useMemo(() => detectLanguage(user?.language_code), [user?.language_code]);
@@ -161,13 +156,33 @@ export function App() {
     });
   };
 
+  const openSettings = () => {
+    setSettingsName(user?.first_name || '');
+    setSettingsLanguage(detectLanguage(user?.language_code));
+    setIsSettingsOpen(true);
+  };
+
+  const saveSettings = () => {
+    setUser((prev: any) => {
+      if (!prev) {
+        return prev;
+      }
+      return {
+        ...prev,
+        first_name: settingsName.trim() || prev.first_name,
+        language_code: settingsLanguage
+      };
+    });
+    setIsSettingsOpen(false);
+  };
 
   return (
     <div className="container">
-      <header className="hero">
+      <button type="button" className="hero hero-button" onClick={openSettings}>
         <h1>👑 King of the Hill</h1>
         <p>{isDemoMode ? t(lang, 'hero.demo') : t(lang, 'hero.welcome', { name: user?.first_name || 'King' })}</p>
-      </header>
+        <p className="small hero-settings-hint">{t(lang, 'hero.settingsHint')}</p>
+      </button>
 
       {error && <p className="small">{error}</p>}
 
@@ -186,6 +201,51 @@ export function App() {
         {tab === 'referral' && <Referral user={user} lang={lang} />}
         {tab === 'premium' && <Premium lang={lang} />}
       </main>
+
+      {isSettingsOpen && (
+        <div className="modal-overlay" role="dialog" aria-modal="true" aria-label={t(lang, 'settings.title')}>
+          <button
+            type="button"
+            className="modal-backdrop"
+            aria-label={t(lang, 'settings.cancel')}
+            onClick={() => setIsSettingsOpen(false)}
+          />
+          <div className="card modal-content">
+            <h3>{t(lang, 'settings.title')}</h3>
+
+            <label className="field-label" htmlFor="settings-name">
+              {t(lang, 'settings.name')}
+            </label>
+            <input
+              id="settings-name"
+              value={settingsName}
+              onChange={(event) => setSettingsName(event.target.value)}
+              placeholder={t(lang, 'settings.name')}
+            />
+
+            <label className="field-label" htmlFor="settings-language">
+              {t(lang, 'settings.language')}
+            </label>
+            <select
+              id="settings-language"
+              value={settingsLanguage}
+              onChange={(event) => setSettingsLanguage(event.target.value as SupportedLanguage)}
+            >
+              <option value="en">{t(lang, 'settings.languageEnglish')}</option>
+              <option value="es">{t(lang, 'settings.languageSpanish')}</option>
+            </select>
+
+            <div className="row">
+              <button type="button" onClick={saveSettings}>
+                {t(lang, 'settings.save')}
+              </button>
+              <button type="button" className="secondary" onClick={() => setIsSettingsOpen(false)}>
+                {t(lang, 'settings.cancel')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <nav className="bottom-tabs" aria-label="Main navigation">
         {tabs.map((item) => (

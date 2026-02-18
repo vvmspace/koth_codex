@@ -9,6 +9,14 @@ type Dictionary = {
     | 'tabs.premium'
     | 'hero.demo'
     | 'hero.welcome'
+    | 'hero.settingsHint'
+    | 'settings.title'
+    | 'settings.name'
+    | 'settings.language'
+    | 'settings.languageEnglish'
+    | 'settings.languageSpanish'
+    | 'settings.save'
+    | 'settings.cancel'
     | 'home.kingStatus'
     | 'home.steps'
     | 'home.nextWakeIn'
@@ -55,6 +63,14 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'tabs.premium': 'Boost',
     'hero.demo': 'Demo mode for local preview.',
     'hero.welcome': 'Welcome, {{name}}',
+    'hero.settingsHint': 'Tap here to open settings.',
+    'settings.title': 'Settings',
+    'settings.name': 'Name',
+    'settings.language': 'Language',
+    'settings.languageEnglish': 'English',
+    'settings.languageSpanish': 'Spanish',
+    'settings.save': 'Save',
+    'settings.cancel': 'Cancel',
     'home.kingStatus': '👑 King Status',
     'home.steps': '🏃 {{steps}} steps',
     'home.nextWakeIn': 'Next wake in',
@@ -99,6 +115,14 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'tabs.premium': 'Premium',
     'hero.demo': 'Modo demo para vista local.',
     'hero.welcome': 'Bienvenido, {{name}}',
+    'hero.settingsHint': 'Toca aquí para abrir configuración.',
+    'settings.title': 'Configuración',
+    'settings.name': 'Nombre',
+    'settings.language': 'Idioma',
+    'settings.languageEnglish': 'Inglés',
+    'settings.languageSpanish': 'Español',
+    'settings.save': 'Guardar',
+    'settings.cancel': 'Cancelar',
     'home.kingStatus': '👑 Estado del Rey',
     'home.steps': '🏃 {{steps}} pasos',
     'home.nextWakeIn': 'Próximo despertar en',
