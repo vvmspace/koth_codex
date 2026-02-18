@@ -38,3 +38,28 @@ db.purchases.createIndex({ user_id: 1, created_at: -1 });
 ].forEach((doc) => {
   db.config.updateOne({ key: doc.key }, { $set: { value: doc.value, updated_at: now } }, { upsert: true });
 });
+
+
+db.missions.updateOne(
+  { type: 'connect_wallet', title: 'Connect wallet' },
+  {
+    $set: {
+      description: 'Connect your TON wallet and claim the reward.',
+      title_i18n: {
+        en: 'Connect wallet',
+        es: 'Conectar wallet'
+      },
+      description_i18n: {
+        en: 'Connect your TON wallet and claim the reward.',
+        es: 'Conecta tu wallet TON y reclama la recompensa.'
+      },
+      payload: {},
+      reward: { sandwiches: 50, coffee: 50 },
+      is_active: true,
+      starts_at: null,
+      ends_at: null,
+      created_at: now
+    }
+  },
+  { upsert: true }
+);

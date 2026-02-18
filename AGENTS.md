@@ -93,6 +93,7 @@ E) Missions
   - payload: JSON (channel_id, post_url, etc)
   - reward: JSON (steps, sandwiches, coffee)
   - is_active, starts_at, ends_at
+- Missions shown to users must support multilingual content (at least EN/ES), with English as required fallback when a translation is missing.
 - User mission completion table records status.
 - Implement:
   - GET /api/missions (active + user status)
@@ -320,3 +321,6 @@ UPDATE (Backpack UX + Referral explanation)
   - Tap on item: activate/use item immediately (no modal/menu before activation).
   - Long tap on item: open an informational item menu with item description only (no Activate/Close buttons).
   - The informational menu closes when user taps outside the menu content area.
+
+- Deployment/data consistency rule:
+  - Any change that affects DB schema, seed data, or required records must include an automatic deploy-time update path (migration/seed-on-deploy) so production data is updated on deploy without manual DB patching.
