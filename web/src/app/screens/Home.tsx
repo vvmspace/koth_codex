@@ -7,6 +7,7 @@ type Props = {
   inventory: any;
   onWake: () => Promise<void>;
   onItemTap: (itemKey: BackpackItemKey) => Promise<void>;
+  itemActionMessage?: string;
   lang: SupportedLanguage;
   isLoadingUser?: boolean;
 };
@@ -63,7 +64,7 @@ const buildBackpack = (inventory: any, lang: SupportedLanguage): BackpackItem[] 
   return allItems.filter((item) => item.amount > 0);
 };
 
-export function Home({ inventory, onWake, onItemTap, lang, isLoadingUser = false }: Props) {
+export function Home({ inventory, onWake, onItemTap, itemActionMessage = '', lang, isLoadingUser = false }: Props) {
   const [now, setNow] = useState(Date.now());
   const [selectedItem, setSelectedItem] = useState<BackpackItem | null>(null);
   const longTapTimeoutRef = useRef<number | null>(null);
@@ -110,6 +111,12 @@ export function Home({ inventory, onWake, onItemTap, lang, isLoadingUser = false
     clearLongTapTimeout();
     if (longTapTriggeredRef.current) {
       longTapTriggeredRef.current = false;
+    }
+  };
+
+  const handleItemClick = (itemKey: BackpackItemKey) => {
+    if (longTapTriggeredRef.current) {
+      longTapTriggeredRef.current = false;
       return;
     }
 
@@ -119,15 +126,6 @@ export function Home({ inventory, onWake, onItemTap, lang, isLoadingUser = false
   const handlePointerCancel = () => {
     clearLongTapTimeout();
     longTapTriggeredRef.current = false;
-  };
-
-  const handleItemActivateFromMenu = async () => {
-    if (!selectedItem) {
-      return;
-    }
-
-    await onItemTap(selectedItem.key);
-    setSelectedItem(null);
   };
 
   return (
@@ -165,6 +163,8 @@ export function Home({ inventory, onWake, onItemTap, lang, isLoadingUser = false
                 onPointerUp={() => handleItemPointerUp(item.key)}
                 onPointerCancel={handlePointerCancel}
                 onPointerLeave={handlePointerCancel}
+                onClick={() => handleItemClick(item.key)}
+                onContextMenu={(event) => event.preventDefault()}
               >
                 <span className="item-icon" aria-hidden="true">
                   {item.icon}
@@ -176,11 +176,22 @@ export function Home({ inventory, onWake, onItemTap, lang, isLoadingUser = false
           </div>
         )}
         {backpack.length > 0 && <p className="small backpack-footnote">{t(lang, 'home.itemTapHint')}</p>}
+        {itemActionMessage && <p className="small backpack-footnote">{itemActionMessage}</p>}
       </div>
 
       {selectedItem && (
-        <div className="item-menu-overlay" role="dialog" aria-modal="true" aria-label={selectedItem.label}>
-          <div className="item-menu card">
+        <div
+          className="item-menu-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label={selectedItem.label}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              setSelectedItem(null);
+            }
+          }}
+        >
+          <div className="item-menu card" onClick={(event) => event.stopPropagation()}>
             <div className="item-menu-header">
               <span className="item-icon" aria-hidden="true">
                 {selectedItem.icon}
@@ -189,14 +200,6 @@ export function Home({ inventory, onWake, onItemTap, lang, isLoadingUser = false
             </div>
             <p>{selectedItem.description}</p>
             <p className="small">{t(lang, 'home.itemMenuLongTapHint')}</p>
-            <div className="row">
-              <button type="button" onClick={() => void handleItemActivateFromMenu()}>
-                {t(lang, 'home.activateItem')}
-              </button>
-              <button type="button" className="secondary" onClick={() => setSelectedItem(null)}>
-                {t(lang, 'home.closeItemMenu')}
-              </button>
-            </div>
           </div>
         </div>
       )}

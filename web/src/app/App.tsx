@@ -68,6 +68,7 @@ export function App() {
   const [settingsName, setSettingsName] = useState('');
   const [settingsLanguage, setSettingsLanguage] = useState<SupportedLanguage>('en');
   const [settingsBackTab, setSettingsBackTab] = useState<PublicTab>('home');
+  const [itemActionMessage, setItemActionMessage] = useState('');
   const isLoadingUser = !user && !error;
 
   const lang: SupportedLanguage = useMemo(() => detectLanguage(user?.language_code), [user?.language_code]);
@@ -149,13 +150,20 @@ export function App() {
 
   const useItem = async (itemKey: BackpackItemKey) => {
     if (isDemoMode) {
+      setItemActionMessage(t(lang, 'home.itemActivatedStub'));
       return;
     }
 
-    await api('/items/use', {
-      method: 'POST',
-      body: JSON.stringify({ item_key: itemKey })
-    });
+    try {
+      await api('/items/use', {
+        method: 'POST',
+        body: JSON.stringify({ item_key: itemKey })
+      });
+      setItemActionMessage(t(lang, 'home.itemActivatedStub'));
+    } catch (error) {
+      setItemActionMessage(t(lang, 'home.itemActivationError'));
+      throw error;
+    }
   };
 
   const openSettings = () => {
@@ -198,6 +206,7 @@ export function App() {
             inventory={inventory}
             onWake={wake}
             onItemTap={useItem}
+            itemActionMessage={itemActionMessage}
             lang={lang}
             isLoadingUser={isLoadingUser}
           />
