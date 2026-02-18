@@ -26,6 +26,8 @@ export interface UserProfile {
 
 export interface ConfigValues {
   steps_per_wake: number;
+  sandwiches_per_wake: number;
+  coffee_per_wake: number;
   sandwich_per_ref_action: number;
   coffee_per_ref2_action: number;
 }

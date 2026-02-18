@@ -3,6 +3,8 @@ import { getDb } from './db';
 
 const defaults: ConfigValues = {
   steps_per_wake: 1,
+  sandwiches_per_wake: 1,
+  coffee_per_wake: 1,
   sandwich_per_ref_action: 1,
   coffee_per_ref2_action: 1
 };
@@ -14,6 +16,8 @@ export async function loadConfig(): Promise<ConfigValues> {
 
   return {
     steps_per_wake: Number(map.get('steps_per_wake') ?? defaults.steps_per_wake),
+    sandwiches_per_wake: Number(map.get('sandwiches_per_wake') ?? defaults.sandwiches_per_wake),
+    coffee_per_wake: Number(map.get('coffee_per_wake') ?? defaults.coffee_per_wake),
     sandwich_per_ref_action: Number(map.get('sandwich_per_ref_action') ?? defaults.sandwich_per_ref_action),
     coffee_per_ref2_action: Number(map.get('coffee_per_ref2_action') ?? defaults.coffee_per_ref2_action)
   };

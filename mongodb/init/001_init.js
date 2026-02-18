@@ -31,6 +31,8 @@ db.purchases.createIndex({ user_id: 1, created_at: -1 });
 [
   { key: 'cooldown_ms', value: 28800000 },
   { key: 'steps_per_wake', value: 1 },
+  { key: 'sandwiches_per_wake', value: 1 },
+  { key: 'coffee_per_wake', value: 1 },
   { key: 'sandwich_per_ref_action', value: 1 },
   { key: 'coffee_per_ref2_action', value: 1 }
 ].forEach((doc) => {
