@@ -9,6 +9,13 @@ type Dictionary = {
     | 'tabs.premium'
     | 'hero.demo'
     | 'hero.welcome'
+    | 'settings.title'
+    | 'settings.name'
+    | 'settings.language'
+    | 'settings.languageEnglish'
+    | 'settings.languageSpanish'
+    | 'settings.save'
+    | 'settings.cancel'
     | 'home.kingStatus'
     | 'home.steps'
     | 'home.nextWakeIn'
@@ -20,6 +27,12 @@ type Dictionary = {
     | 'home.itemsFlexHint'
     | 'home.sandwiches'
     | 'home.coffee'
+    | 'home.itemTapHint'
+    | 'home.itemDescriptionSandwiches'
+    | 'home.itemDescriptionCoffee'
+    | 'home.itemMenuLongTapHint'
+    | 'home.itemActivatedStub'
+    | 'home.itemActivationError'
     | 'missions.title'
     | 'missions.type'
     | 'missions.complete'
@@ -49,6 +62,13 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'tabs.premium': 'Boost',
     'hero.demo': 'Demo mode for local preview.',
     'hero.welcome': 'Welcome, {{name}}',
+    'settings.title': 'Settings',
+    'settings.name': 'Name',
+    'settings.language': 'Language',
+    'settings.languageEnglish': 'English',
+    'settings.languageSpanish': 'Spanish',
+    'settings.save': 'Save',
+    'settings.cancel': 'Cancel',
     'home.kingStatus': '👑 King Status',
     'home.steps': '🏃 {{steps}} steps',
     'home.nextWakeIn': 'Next wake in',
@@ -60,6 +80,12 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'home.itemsFlexHint': 'Sandwiches and coffee are game items that can grant steps through future mechanics. Reward types and effects are configurable for flexible balancing.',
     'home.sandwiches': 'Sandwiches',
     'home.coffee': 'Coffee',
+    'home.itemTapHint': 'Tap an item to activate it. Long tap to open description and actions.',
+    'home.itemDescriptionSandwiches': 'Sandwich item. Current effects are configurable on backend and can be changed as game economy evolves.',
+    'home.itemDescriptionCoffee': 'Coffee item. Current effects are configurable on backend and can be changed as game economy evolves.',
+    'home.itemMenuLongTapHint': 'Long tap opens this menu. Tap outside to close.',
+    'home.itemActivatedStub': 'Item activated. Effects will be extended in upcoming updates.',
+    'home.itemActivationError': 'Could not activate item right now. Please try again.',
     'missions.title': 'Missions',
     'missions.type': 'Type: {{type}}',
     'missions.complete': 'Complete',
@@ -87,6 +113,13 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'tabs.premium': 'Premium',
     'hero.demo': 'Modo demo para vista local.',
     'hero.welcome': 'Bienvenido, {{name}}',
+    'settings.title': 'Configuración',
+    'settings.name': 'Nombre',
+    'settings.language': 'Idioma',
+    'settings.languageEnglish': 'Inglés',
+    'settings.languageSpanish': 'Español',
+    'settings.save': 'Guardar',
+    'settings.cancel': 'Cancelar',
     'home.kingStatus': '👑 Estado del Rey',
     'home.steps': '🏃 {{steps}} pasos',
     'home.nextWakeIn': 'Próximo despertar en',
@@ -98,6 +131,12 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'home.itemsFlexHint': 'Sándwiches y café son ítems del juego que podrán otorgar pasos con mecánicas futuras. Los tipos de recompensa y sus efectos son configurables para mantener flexibilidad.',
     'home.sandwiches': 'Sándwiches',
     'home.coffee': 'Café',
+    'home.itemTapHint': 'Toca un ítem para activarlo. Mantén pulsado para abrir descripción y acciones.',
+    'home.itemDescriptionSandwiches': 'Ítem sándwich. Los efectos actuales son configurables en backend y pueden cambiar con la economía del juego.',
+    'home.itemDescriptionCoffee': 'Ítem café. Los efectos actuales son configurables en backend y pueden cambiar con la economía del juego.',
+    'home.itemMenuLongTapHint': 'La pulsación larga abre este menú. Toca fuera para cerrarlo.',
+    'home.itemActivatedStub': 'Ítem activado. Los efectos se ampliarán en próximas actualizaciones.',
+    'home.itemActivationError': 'No se pudo activar el ítem ahora. Inténtalo de nuevo.',
     'missions.title': 'Misiones',
     'missions.type': 'Tipo: {{type}}',
     'missions.complete': 'Completar',

@@ -124,6 +124,9 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   min-height: 92px;
   display: grid;
   align-content: space-between;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
 }
 
 .item-slot.common { box-shadow: inset 0 0 0 1px rgba(146, 189, 255, 0.25); }
@@ -131,6 +134,11 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .item-icon { font-size: 30px; }
 .item-name { font-size: 12px; color: rgba(241, 244, 255, 0.78); }
 
+
+.item-slot:focus-visible {
+  outline: 2px solid rgba(255, 236, 174, 0.85);
+  outline-offset: 2px;
+}
 
 .backpack-empty {
   border-radius: 12px;
@@ -145,6 +153,31 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .backpack-footnote {
   margin-top: 10px;
+}
+
+.item-menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 6, 18, 0.72);
+  display: grid;
+  align-items: end;
+  z-index: 30;
+  padding: 12px;
+}
+
+.item-menu {
+  margin: 0;
+  border-radius: 18px 18px 14px 14px;
+}
+
+.item-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.item-menu-header h3 {
+  margin: 0;
 }
 
 .bottom-tabs {
@@ -214,3 +247,35 @@ input {
 
 .row { display: flex; gap: 8px; }
 .small { font-size: 12px; color: rgba(240, 242, 255, 0.74); margin: 0; }
+
+.hero-button {
+  width: 100%;
+  text-align: left;
+  display: block;
+  padding: 18px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  background: linear-gradient(145deg, rgba(255, 170, 72, 0.26), rgba(130, 103, 255, 0.35));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 14px 32px rgba(9, 11, 34, 0.45);
+}
+
+
+.field-label {
+  font-size: 12px;
+  color: rgba(240, 242, 255, 0.82);
+}
+
+select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+}
+
+.settings-tab {
+  display: grid;
+  gap: 10px;
+}

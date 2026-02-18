@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { t, type SupportedLanguage } from '../i18n';
+
+type BackpackItemKey = 'sandwiches' | 'coffee';
 
 type Props = {
   inventory: any;
@@ -10,12 +12,15 @@ type Props = {
 };
 
 type BackpackItem = {
-  key: 'sandwiches' | 'coffee';
+  key: BackpackItemKey;
   label: string;
+  description: string;
   icon: string;
   amount: number;
   rarity: 'common' | 'rare';
 };
+
+const LONG_TAP_MS = 550;
 
 const formatCountdown = (targetMs: number, nowMs: number, lang: SupportedLanguage) => {
   const diff = Math.max(targetMs - nowMs, 0);
@@ -40,6 +45,7 @@ const buildBackpack = (inventory: any, lang: SupportedLanguage): BackpackItem[] 
     {
       key: 'sandwiches',
       label: t(lang, 'home.sandwiches'),
+      description: t(lang, 'home.itemDescriptionSandwiches'),
       icon: '🥪',
       amount: Number(inventory?.sandwiches || 0),
       rarity: 'common'
@@ -47,6 +53,7 @@ const buildBackpack = (inventory: any, lang: SupportedLanguage): BackpackItem[] 
     {
       key: 'coffee',
       label: t(lang, 'home.coffee'),
+      description: t(lang, 'home.itemDescriptionCoffee'),
       icon: '☕',
       amount: Number(inventory?.coffee || 0),
       rarity: 'rare'
@@ -67,7 +74,10 @@ export function Home({ inventory, onWake, onUseItem, lang, isLoadingUser = false
       setNow(Date.now());
     }, 1000);
 
-    return () => window.clearInterval(timer);
+    return () => {
+      window.clearInterval(timer);
+      clearLongTapTimeout();
+    };
   }, []);
 
   const wakeIntervalMs = Number(inventory?.wake_interval_ms || 28_800_000);
@@ -157,7 +167,34 @@ export function Home({ inventory, onWake, onUseItem, lang, isLoadingUser = false
             {itemActionText ? <p className="small">{itemActionText}</p> : null}
           </>
         )}
+        {backpack.length > 0 && <p className="small backpack-footnote">{t(lang, 'home.itemTapHint')}</p>}
+        {itemActionMessage && <p className="small backpack-footnote">{itemActionMessage}</p>}
       </div>
+
+      {selectedItem && (
+        <div
+          className="item-menu-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label={selectedItem.label}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              setSelectedItem(null);
+            }
+          }}
+        >
+          <div className="item-menu card" onClick={(event) => event.stopPropagation()}>
+            <div className="item-menu-header">
+              <span className="item-icon" aria-hidden="true">
+                {selectedItem.icon}
+              </span>
+              <h3>{selectedItem.label}</h3>
+            </div>
+            <p>{selectedItem.description}</p>
+            <p className="small">{t(lang, 'home.itemMenuLongTapHint')}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
