@@ -7,11 +7,7 @@ import { withSentry, captureException } from './lib/sentry';
 import { enforceRateLimit } from './lib/rate-limit';
 import { requiredEnv } from './lib/env';
 import { ensureDefaultMissions } from './lib/mission-seeds';
-
-function normalizeLanguage(languageCode: string | null | undefined) {
-  const code = String(languageCode || 'en').toLowerCase();
-  return code.startsWith('es') ? 'es' : 'en';
-}
+import { normalizeSupportedLanguage } from './lib/language';
 
 function resolveLocalizedText(
   map: Record<string, unknown> | null | undefined,
@@ -39,7 +35,7 @@ const baseHandler: Handler = async (event) => {
 
     if (event.httpMethod === 'GET') {
       const now = new Date();
-      const language = normalizeLanguage((user as { language_code?: string | null }).language_code);
+      const language = normalizeSupportedLanguage((user as { language_code?: string | null }).language_code) || 'en';
       const missions = await db
         .collection('missions')
         .find({

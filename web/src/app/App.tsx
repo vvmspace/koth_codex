@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { api, setSessionToken } from './api';
 import { getTelegramInitData } from './auth';
 import { detectLanguage, t, type SupportedLanguage } from './i18n';
+import { isValidProfileName, normalizeProfileName, profileNameValidationMessage } from './validation';
 import { Home } from './screens/Home';
 import { Leaderboard } from './screens/Leaderboard';
 import { Missions } from './screens/Missions';
@@ -145,10 +146,10 @@ export function App() {
   };
 
   const saveSettings = async () => {
-    const trimmedName = settingsName.trim();
+    const trimmedName = normalizeProfileName(settingsName);
 
-    if (!trimmedName) {
-      setError('Name is required');
+    if (!isValidProfileName(trimmedName)) {
+      setError(profileNameValidationMessage(lang));
       return;
     }
 
@@ -240,7 +241,6 @@ export function App() {
             onNameChange={setSettingsName}
             onLanguageChange={setSettingsLanguage}
             onSave={saveSettings}
-            onCancel={closeSettings}
           />
         )}
       </main>

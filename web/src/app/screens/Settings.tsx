@@ -6,8 +6,7 @@ export function Settings({
   selectedLanguage,
   onNameChange,
   onLanguageChange,
-  onSave,
-  onCancel
+  onSave
 }: {
   lang: SupportedLanguage;
   name: string;
@@ -15,7 +14,6 @@ export function Settings({
   onNameChange: (value: string) => void;
   onLanguageChange: (value: SupportedLanguage) => void;
   onSave: () => void;
-  onCancel: () => void;
 }) {
   return (
     <div className="card settings-tab">
@@ -27,6 +25,7 @@ export function Settings({
       <input
         id="settings-name"
         value={name}
+        maxLength={32}
         onChange={(event) => onNameChange(event.target.value)}
         placeholder={t(lang, 'settings.name')}
       />
@@ -46,9 +45,6 @@ export function Settings({
       <div className="row">
         <button type="button" onClick={onSave}>
           {t(lang, 'settings.save')}
-        </button>
-        <button type="button" className="secondary" onClick={onCancel}>
-          {t(lang, 'settings.cancel')}
         </button>
       </div>
     </div>
