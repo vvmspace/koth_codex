@@ -31,8 +31,8 @@ type Dictionary = {
     | 'home.itemDescriptionSandwiches'
     | 'home.itemDescriptionCoffee'
     | 'home.itemMenuLongTapHint'
-    | 'home.activateItem'
-    | 'home.closeItemMenu'
+    | 'home.itemActivatedStub'
+    | 'home.itemActivationError'
     | 'missions.title'
     | 'missions.type'
     | 'missions.complete'
@@ -83,9 +83,9 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'home.itemTapHint': 'Tap an item to activate it. Long tap to open description and actions.',
     'home.itemDescriptionSandwiches': 'Sandwich item. Current effects are configurable on backend and can be changed as game economy evolves.',
     'home.itemDescriptionCoffee': 'Coffee item. Current effects are configurable on backend and can be changed as game economy evolves.',
-    'home.itemMenuLongTapHint': 'Long tap opens this menu. Use Activate to trigger the item action.',
-    'home.activateItem': 'Activate item',
-    'home.closeItemMenu': 'Close',
+    'home.itemMenuLongTapHint': 'Long tap opens this menu. Tap outside to close.',
+    'home.itemActivatedStub': 'Item activated. Effects will be extended in upcoming updates.',
+    'home.itemActivationError': 'Could not activate item right now. Please try again.',
     'missions.title': 'Missions',
     'missions.type': 'Type: {{type}}',
     'missions.complete': 'Complete',
@@ -134,9 +134,9 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'home.itemTapHint': 'Toca un ítem para activarlo. Mantén pulsado para abrir descripción y acciones.',
     'home.itemDescriptionSandwiches': 'Ítem sándwich. Los efectos actuales son configurables en backend y pueden cambiar con la economía del juego.',
     'home.itemDescriptionCoffee': 'Ítem café. Los efectos actuales son configurables en backend y pueden cambiar con la economía del juego.',
-    'home.itemMenuLongTapHint': 'La pulsación larga abre este menú. Usa Activar para ejecutar la acción del ítem.',
-    'home.activateItem': 'Activar ítem',
-    'home.closeItemMenu': 'Cerrar',
+    'home.itemMenuLongTapHint': 'La pulsación larga abre este menú. Toca fuera para cerrarlo.',
+    'home.itemActivatedStub': 'Ítem activado. Los efectos se ampliarán en próximas actualizaciones.',
+    'home.itemActivationError': 'No se pudo activar el ítem ahora. Inténtalo de nuevo.',
     'missions.title': 'Misiones',
     'missions.type': 'Tipo: {{type}}',
     'missions.complete': 'Completar',
