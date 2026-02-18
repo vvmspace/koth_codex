@@ -30,7 +30,10 @@ const baseHandler: Handler = async (event) => {
         })
         .toArray();
       const userMissions = await db.collection('user_missions').find({ user_id: new ObjectId(user.id) }).toArray();
-      return json(200, { missions, user_missions: userMissions });
+      return json(200, {
+        missions: missions.map((mission) => ({ ...mission, id: String(mission._id) })),
+        user_missions: userMissions.map((mission) => ({ ...mission, id: String(mission._id), mission_id: String(mission.mission_id) }))
+      });
     }
 
     if (event.httpMethod === 'POST') {
@@ -53,6 +56,13 @@ const baseHandler: Handler = async (event) => {
         if (!channelId) return json(400, { error: 'No channel configured' });
         const ok = await checkChannelMembership(channelId, user.telegram_user_id);
         if (!ok) return json(400, { error: 'User is not a channel member or bot has insufficient access.' });
+      }
+
+      if (mission.type === 'connect_wallet') {
+        const userDoc = await db.collection('users').findOne({ _id: new ObjectId(user.id) });
+        if (!userDoc?.ton_wallet_address) {
+          return json(400, { error: 'Connect TON wallet first.' });
+        }
       }
 
       const reward = mission.reward || {};

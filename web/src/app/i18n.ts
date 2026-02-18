@@ -64,6 +64,8 @@ type Dictionary = {
     | 'premium.title'
     | 'premium.subtitle'
     | 'premium.connectWallet'
+    | 'premium.connectedWallet'
+    | 'premium.walletConnected'
     | 'premium.buyStub'
     | 'premium.intentCreated'
     | 'premium.connectStub']: string;
@@ -133,6 +135,8 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'premium.title': 'Premium (TON Scaffold)',
     'premium.subtitle': 'TonConnect UI and on-chain verification will be added later.',
     'premium.connectWallet': 'Connect wallet',
+    'premium.connectedWallet': 'Wallet connected',
+    'premium.walletConnected': 'Connected: {{address}}',
     'premium.buyStub': 'Buy Premium (stub)',
     'premium.intentCreated': 'TON payment intent created (stub).',
     'premium.connectStub': 'TonConnect placeholder: integrate wallet SDK later.'
@@ -200,6 +204,8 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'premium.title': 'Premium (estructura TON)',
     'premium.subtitle': 'TonConnect y la verificación on-chain se agregarán después.',
     'premium.connectWallet': 'Conectar wallet',
+    'premium.connectedWallet': 'Wallet conectada',
+    'premium.walletConnected': 'Conectada: {{address}}',
     'premium.buyStub': 'Comprar Premium (stub)',
     'premium.intentCreated': 'Intento de pago TON creado (stub).',
     'premium.connectStub': 'Placeholder de TonConnect: integrar SDK de wallet luego.'
