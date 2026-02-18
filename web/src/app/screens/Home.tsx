@@ -90,7 +90,7 @@ export function Home({ inventory, onWake, onUseItem, lang, isLoadingUser = false
   const wakeIntervalMs = Number(inventory?.wake_interval_ms || 28_800_000);
   const lastAwakeMs = inventory?.last_awake ? new Date(inventory.last_awake).getTime() : null;
   const next = lastAwakeMs ? lastAwakeMs + wakeIntervalMs : now;
-  const disabled = isLoadingUser || !inventory || next > now;
+  const wakeDisabled = isLoadingUser || !inventory || next > now;
   const timer = useMemo(() => formatCountdown(next, now, lang), [next, now, lang]);
 
   const backpack = useMemo(() => buildBackpack(inventory, lang), [inventory, lang]);
@@ -120,7 +120,7 @@ export function Home({ inventory, onWake, onUseItem, lang, isLoadingUser = false
         <strong>{timer}</strong>
       </div>
 
-      <button className="wake-button" onClick={() => void onWake()} disabled={disabled}>
+      <button className="wake-button" onClick={() => void onWake()} disabled={wakeDisabled}>
         {t(lang, 'home.wake')}
       </button>
 
@@ -148,7 +148,6 @@ export function Home({ inventory, onWake, onUseItem, lang, isLoadingUser = false
                     void runItemAction(item.key, 'tap');
                   }}
                   onPointerDown={(event) => {
-                    if (disabled) return;
                     const element = event.currentTarget;
                     clearLongTapTimeout();
 
@@ -165,7 +164,6 @@ export function Home({ inventory, onWake, onUseItem, lang, isLoadingUser = false
                   onPointerLeave={() => {
                     clearLongTapTimeout();
                   }}
-                  disabled={disabled}
                 >
                   <span className="item-icon" aria-hidden="true">{item.icon}</span>
                   <span className="item-name">{item.label}</span>
