@@ -8,6 +8,7 @@ type Props = {
   leaderboard: any;
   onWake: () => Promise<void>;
   onUseItem: (itemKey: 'sandwiches' | 'coffee', mode: 'tap' | 'hold') => Promise<void>;
+  onOpenLeaderboard: () => void;
   lang: SupportedLanguage;
   isLoadingUser?: boolean;
 };
@@ -64,7 +65,7 @@ const buildBackpack = (inventory: any, lang: SupportedLanguage): BackpackItem[] 
 
 const HOLD_DELAY_MS = 550;
 
-export function Home({ inventory, leaderboard, onWake, onUseItem, lang, isLoadingUser = false }: Props) {
+export function Home({ inventory, leaderboard, onWake, onUseItem, onOpenLeaderboard, lang, isLoadingUser = false }: Props) {
   const [now, setNow] = useState(Date.now());
   const [itemActionText, setItemActionText] = useState<string>('');
   const [selectedItem, setSelectedItem] = useState<BackpackItem | null>(null);
@@ -102,13 +103,13 @@ export function Home({ inventory, leaderboard, onWake, onUseItem, lang, isLoadin
   const rankTier = useMemo(() => {
     if (percentile === null) return null;
     if (percentile <= 30) {
-      return { label: t(lang, 'home.rankTierTop30'), className: 'rank-badge top30' };
+      return { className: 'rank-badge top30' };
     }
     if (percentile <= 50) {
-      return { label: t(lang, 'home.rankTierTop50'), className: 'rank-badge top50' };
+      return { className: 'rank-badge top50' };
     }
-    return { label: t(lang, 'home.rankTierKeepGoing'), className: 'rank-badge others' };
-  }, [lang, percentile]);
+    return { className: 'rank-badge others' };
+  }, [percentile]);
 
   const runItemAction = async (itemKey: 'sandwiches' | 'coffee', mode: 'tap' | 'hold') => {
     try {
@@ -128,12 +129,13 @@ export function Home({ inventory, leaderboard, onWake, onUseItem, lang, isLoadin
       <div className="status-row">
         <h2>{t(lang, 'home.kingStatus')}</h2>
         <div className="status-badges">
-          <div className="steps-badge">{t(lang, 'home.steps', { steps: inventory?.steps ?? 0 })}</div>
+          <button type="button" className="steps-badge" onClick={onOpenLeaderboard}>
+            {t(lang, 'home.steps', { steps: inventory?.steps ?? 0 })}
+          </button>
           {rankTier && (
-            <div className={rankTier.className}>
+            <button type="button" className={rankTier.className} onClick={onOpenLeaderboard}>
               {t(lang, 'home.rankBadge', { rank: currentRank, total: totalUsers })}
-              <span>{rankTier.label}</span>
-            </div>
+            </button>
           )}
         </div>
       </div>
