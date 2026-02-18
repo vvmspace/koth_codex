@@ -4,8 +4,7 @@ import { requireUser } from './lib/auth';
 import { getDb } from './lib/db';
 import { json } from './lib/http';
 import { withSentry, captureException } from './lib/sentry';
-
-const SUPPORTED_LANGUAGES = new Set(['en', 'es']);
+import { normalizeSupportedLanguage } from './lib/language';
 
 const baseHandler: Handler = async (event) => {
   try {
@@ -22,14 +21,15 @@ const baseHandler: Handler = async (event) => {
 
     const parsedBody = JSON.parse(event.body || '{}');
     const firstNameRaw = typeof parsedBody.first_name === 'string' ? parsedBody.first_name.trim() : '';
-    const languageCodeRaw = typeof parsedBody.language_code === 'string' ? parsedBody.language_code.trim().toLowerCase() : '';
+    const languageCodeRaw = typeof parsedBody.language_code === 'string' ? parsedBody.language_code : '';
+    const languageCode = normalizeSupportedLanguage(languageCodeRaw);
 
     if (!firstNameRaw) {
       return json(400, { error: 'first_name is required' });
     }
 
-    if (!SUPPORTED_LANGUAGES.has(languageCodeRaw)) {
-      return json(400, { error: 'language_code must be en or es' });
+    if (!languageCode) {
+      return json(400, { error: 'language_code must be en or es (regional variants like es-ES are also accepted)' });
     }
 
     const now = new Date();
@@ -39,7 +39,7 @@ const baseHandler: Handler = async (event) => {
       {
         $set: {
           first_name: firstNameRaw,
-          language_code: languageCodeRaw,
+          language_code: languageCode,
           updated_at: now
         }
       }
@@ -53,7 +53,13 @@ const baseHandler: Handler = async (event) => {
     return json(200, { user: { ...updatedUser, id: String(updatedUser._id) } });
   } catch (error) {
     captureException(error, { path: event.path, http_method: event.httpMethod });
-    return json(401, { error: (error as Error).message });
+    const message = (error as Error).message;
+
+    if (message.includes('Missing bearer token') || message.includes('Invalid user token') || message.includes('User not found')) {
+      return json(401, { error: message });
+    }
+
+    return json(500, { error: message || 'Failed to update user profile' });
   }
 };
 

@@ -3,6 +3,7 @@ import { verifyTelegramInitData, signSession } from './lib/auth';
 import { json } from './lib/http';
 import { withSentry, captureException } from './lib/sentry';
 import { getDb } from './lib/db';
+import { normalizeSupportedLanguage } from './lib/language';
 
 function createReferralCode(telegramUserId: number) {
   return telegramUserId.toString(36);
@@ -25,6 +26,7 @@ const baseHandler: Handler = async (event) => {
     if (!initData) return json(400, { error: 'initData required' });
 
     const tgUser = verifyTelegramInitData(initData);
+    const normalizedLanguage = normalizeSupportedLanguage(tgUser.language_code) || null;
     const db = await getDb();
     const now = new Date();
 
@@ -38,7 +40,7 @@ const baseHandler: Handler = async (event) => {
         },
         $setOnInsert: {
           first_name: tgUser.first_name ?? null,
-          language_code: tgUser.language_code ?? null,
+          language_code: normalizedLanguage,
           referral_code: createReferralCode(tgUser.id),
           referrer_id: null,
           steps: 0,
@@ -61,10 +63,10 @@ const baseHandler: Handler = async (event) => {
       );
     }
 
-    if (tgUser.language_code) {
+    if (normalizedLanguage) {
       await db.collection('users').updateOne(
         { telegram_user_id: tgUser.id, $or: [{ language_code: null }, { language_code: '' }] },
-        { $set: { language_code: tgUser.language_code, updated_at: now } }
+        { $set: { language_code: normalizedLanguage, updated_at: now } }
       );
     }
 
