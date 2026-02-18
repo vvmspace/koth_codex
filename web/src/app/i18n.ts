@@ -20,6 +20,12 @@ type Dictionary = {
     | 'home.itemsFlexHint'
     | 'home.sandwiches'
     | 'home.coffee'
+    | 'home.itemTapHint'
+    | 'home.itemDescriptionSandwiches'
+    | 'home.itemDescriptionCoffee'
+    | 'home.itemMenuLongTapHint'
+    | 'home.activateItem'
+    | 'home.closeItemMenu'
     | 'missions.title'
     | 'missions.type'
     | 'missions.complete'
@@ -60,6 +66,12 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'home.itemsFlexHint': 'Sandwiches and coffee are game items that can grant steps through future mechanics. Reward types and effects are configurable for flexible balancing.',
     'home.sandwiches': 'Sandwiches',
     'home.coffee': 'Coffee',
+    'home.itemTapHint': 'Tap an item to activate it. Long tap to open description and actions.',
+    'home.itemDescriptionSandwiches': 'Sandwich item. Current effects are configurable on backend and can be changed as game economy evolves.',
+    'home.itemDescriptionCoffee': 'Coffee item. Current effects are configurable on backend and can be changed as game economy evolves.',
+    'home.itemMenuLongTapHint': 'Long tap opens this menu. Use Activate to trigger the item action.',
+    'home.activateItem': 'Activate item',
+    'home.closeItemMenu': 'Close',
     'missions.title': 'Missions',
     'missions.type': 'Type: {{type}}',
     'missions.complete': 'Complete',
@@ -98,6 +110,12 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'home.itemsFlexHint': 'Sándwiches y café son ítems del juego que podrán otorgar pasos con mecánicas futuras. Los tipos de recompensa y sus efectos son configurables para mantener flexibilidad.',
     'home.sandwiches': 'Sándwiches',
     'home.coffee': 'Café',
+    'home.itemTapHint': 'Toca un ítem para activarlo. Mantén pulsado para abrir descripción y acciones.',
+    'home.itemDescriptionSandwiches': 'Ítem sándwich. Los efectos actuales son configurables en backend y pueden cambiar con la economía del juego.',
+    'home.itemDescriptionCoffee': 'Ítem café. Los efectos actuales son configurables en backend y pueden cambiar con la economía del juego.',
+    'home.itemMenuLongTapHint': 'La pulsación larga abre este menú. Usa Activar para ejecutar la acción del ítem.',
+    'home.activateItem': 'Activar ítem',
+    'home.closeItemMenu': 'Cerrar',
     'missions.title': 'Misiones',
     'missions.type': 'Tipo: {{type}}',
     'missions.complete': 'Completar',
