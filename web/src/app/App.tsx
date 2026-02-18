@@ -225,6 +225,7 @@ export function App() {
             leaderboard={leaderboard}
             onWake={wake}
             onUseItem={useItem}
+            onOpenLeaderboard={() => setTab('leaderboard')}
             lang={lang}
             isLoadingUser={isLoadingUser}
           />

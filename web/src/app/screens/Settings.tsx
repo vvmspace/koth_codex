@@ -23,6 +23,7 @@ export function Settings({
         {t(lang, 'settings.name')}
       </label>
       <input
+        className="form-control"
         id="settings-name"
         value={name}
         maxLength={32}
@@ -34,6 +35,7 @@ export function Settings({
         {t(lang, 'settings.language')}
       </label>
       <select
+        className="form-control"
         id="settings-language"
         value={selectedLanguage}
         onChange={(event) => onLanguageChange(event.target.value as SupportedLanguage)}
