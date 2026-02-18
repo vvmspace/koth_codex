@@ -40,6 +40,8 @@ type Dictionary = {
     | 'missions.type'
     | 'missions.complete'
     | 'missions.completed'
+    | 'missions.connectWalletAndComplete'
+    | 'missions.walletNotConnected'
     | 'leaderboard.title'
     | 'leaderboard.steps'
     | 'leaderboard.yourRank'
@@ -111,6 +113,8 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'missions.type': 'Type: {{type}}',
     'missions.complete': 'Complete',
     'missions.completed': 'Completed',
+    'missions.connectWalletAndComplete': 'Connect wallet & complete',
+    'missions.walletNotConnected': 'TON wallet is not connected yet.',
     'leaderboard.title': 'Leaderboard',
     'leaderboard.steps': '{{steps}} steps',
     'leaderboard.yourRank': 'Your rank: {{rank}}',
@@ -180,6 +184,8 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'missions.type': 'Tipo: {{type}}',
     'missions.complete': 'Completar',
     'missions.completed': 'Completada',
+    'missions.connectWalletAndComplete': 'Conectar wallet y completar',
+    'missions.walletNotConnected': 'La wallet TON aún no está conectada.',
     'leaderboard.title': 'Clasificación',
     'leaderboard.steps': '{{steps}} pasos',
     'leaderboard.yourRank': 'Tu posición: {{rank}}',
