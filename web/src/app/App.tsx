@@ -144,13 +144,36 @@ export function App() {
     setTab(settingsBackTab);
   };
 
-  const saveSettings = () => {
-    setUser((prev: any) => ({
-      ...(prev || {}),
-      first_name: settingsName.trim() || prev?.first_name || 'King',
-      language_code: settingsLanguage
-    }));
-    closeSettings();
+  const saveSettings = async () => {
+    const trimmedName = settingsName.trim();
+
+    if (!trimmedName) {
+      setError('Name is required');
+      return;
+    }
+
+    if (isDemoMode) {
+      setUser((prev: any) => ({
+        ...(prev || {}),
+        first_name: trimmedName,
+        language_code: settingsLanguage
+      }));
+      closeSettings();
+      return;
+    }
+
+    try {
+      const response = await api<{ user: any }>('/profile', {
+        method: 'POST',
+        body: JSON.stringify({ first_name: trimmedName, language_code: settingsLanguage })
+      });
+
+      setUser(response.user);
+      setError('');
+      closeSettings();
+    } catch (e) {
+      setError((e as Error).message);
+    }
   };
 
   const completeMission = async (missionId: string) => {
