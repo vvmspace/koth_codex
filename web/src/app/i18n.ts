@@ -32,6 +32,10 @@ type Dictionary = {
     | 'home.itemMenuLongTapHint'
     | 'home.itemActivatedStub'
     | 'home.itemActivationError'
+    | 'home.rankBadge'
+    | 'home.rankTierTop30'
+    | 'home.rankTierTop50'
+    | 'home.rankTierKeepGoing'
     | 'missions.title'
     | 'missions.type'
     | 'missions.complete'
@@ -40,10 +44,23 @@ type Dictionary = {
     | 'leaderboard.steps'
     | 'leaderboard.yourRank'
     | 'leaderboard.rankNA'
+    | 'leaderboard.activityTitle'
+    | 'leaderboard.activityHint'
     | 'referral.title'
     | 'referral.copy'
     | 'referral.share'
-    | 'referral.safeShare'
+    | 'referral.rewardsTitle'
+    | 'referral.rewardsBody'
+    | 'referral.promoIdeasTitle'
+    | 'referral.promoIdeasIntro'
+    | 'referral.promoIdea1'
+    | 'referral.promoIdea2'
+    | 'referral.promoIdea3'
+    | 'referral.promoIdea4'
+    | 'referral.promoIdea5'
+    | 'referral.promoIdea6'
+    | 'referral.promoIdea7'
+    | 'referral.promoIdea8'
     | 'premium.title'
     | 'premium.subtitle'
     | 'premium.connectWallet'
@@ -84,6 +101,10 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'home.itemMenuLongTapHint': 'Long tap opens this menu. Tap outside to close.',
     'home.itemActivatedStub': 'Item activated. Effects will be extended in upcoming updates.',
     'home.itemActivationError': 'Could not activate item right now. Please try again.',
+    'home.rankBadge': '🏅 Rank {{rank}}/{{total}}',
+    'home.rankTierTop30': 'Top 30% 🔥',
+    'home.rankTierTop50': 'Top 50% ⚡',
+    'home.rankTierKeepGoing': 'Keep pushing 💪',
     'missions.title': 'Missions',
     'missions.type': 'Type: {{type}}',
     'missions.complete': 'Complete',
@@ -92,10 +113,23 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'leaderboard.steps': '{{steps}} steps',
     'leaderboard.yourRank': 'Your rank: {{rank}}',
     'leaderboard.rankNA': 'N/A',
+    'leaderboard.activityTitle': 'Activity matters',
+    'leaderboard.activityHint': 'We reward active players. Keep your place inside Top 50%, and push for Top 30% for stronger momentum.',
     'referral.title': 'Referral',
     'referral.copy': 'Copy',
     'referral.share': 'Share',
-    'referral.safeShare': 'Option: share this link in chats where it is allowed.',
+    'referral.rewardsTitle': 'How rewards work',
+    'referral.rewardsBody': 'When your invited friend wakes the King, you get a sandwich. When your friend\'s invited friend wakes the King, your friend gets a sandwich and you get coffee.',
+    'referral.promoIdeasTitle': 'Ideas for sharing your link',
+    'referral.promoIdeasIntro': 'Promote your referral link where sharing is allowed:',
+    'referral.promoIdea1': 'Thematic chats focused on TMA games',
+    'referral.promoIdea2': 'Social media posts',
+    'referral.promoIdea3': 'Send it directly to a friend',
+    'referral.promoIdea4': 'Print a QR code and place it in a permitted public location',
+    'referral.promoIdea5': 'Write a post on Reddit',
+    'referral.promoIdea6': 'Forum posts',
+    'referral.promoIdea7': 'Forum signatures',
+    'referral.promoIdea8': 'Links in social profile bios',
     'premium.title': 'Premium (TON Scaffold)',
     'premium.subtitle': 'TonConnect UI and on-chain verification will be added later.',
     'premium.connectWallet': 'Connect wallet',
@@ -134,6 +168,10 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'home.itemMenuLongTapHint': 'La pulsación larga abre este menú. Toca fuera para cerrarlo.',
     'home.itemActivatedStub': 'Ítem activado. Los efectos se ampliarán en próximas actualizaciones.',
     'home.itemActivationError': 'No se pudo activar el ítem ahora. Inténtalo de nuevo.',
+    'home.rankBadge': '🏅 Puesto {{rank}}/{{total}}',
+    'home.rankTierTop30': 'Top 30% 🔥',
+    'home.rankTierTop50': 'Top 50% ⚡',
+    'home.rankTierKeepGoing': 'Sigue subiendo 💪',
     'missions.title': 'Misiones',
     'missions.type': 'Tipo: {{type}}',
     'missions.complete': 'Completar',
@@ -142,10 +180,23 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'leaderboard.steps': '{{steps}} pasos',
     'leaderboard.yourRank': 'Tu posición: {{rank}}',
     'leaderboard.rankNA': 'N/D',
+    'leaderboard.activityTitle': 'La actividad importa',
+    'leaderboard.activityHint': 'Premiamos a los jugadores activos. Mantente dentro del Top 50% e intenta llegar al Top 30% para crecer más rápido.',
     'referral.title': 'Referidos',
     'referral.copy': 'Copiar',
     'referral.share': 'Compartir',
-    'referral.safeShare': 'Opción: comparte este enlace en chats donde esté permitido.',
+    'referral.rewardsTitle': 'Cómo funcionan las recompensas',
+    'referral.rewardsBody': 'Cuando tu amigo invitado despierta al Rey, recibes un sándwich. Cuando el amigo de tu amigo despierta al Rey, tu amigo recibe un sándwich y tú recibes café.',
+    'referral.promoIdeasTitle': 'Ideas para compartir tu enlace',
+    'referral.promoIdeasIntro': 'Comparte tu enlace de referido donde esté permitido:',
+    'referral.promoIdea1': 'Chats temáticos sobre juegos TMA',
+    'referral.promoIdea2': 'Publicaciones en redes sociales',
+    'referral.promoIdea3': 'Envíalo directamente a un amigo',
+    'referral.promoIdea4': 'Imprime un código QR y colócalo en un lugar público permitido',
+    'referral.promoIdea5': 'Escribe una publicación en Reddit',
+    'referral.promoIdea6': 'Publicaciones en foros',
+    'referral.promoIdea7': 'Firmas en foros',
+    'referral.promoIdea8': 'Enlaces en biografías de perfiles sociales',
     'premium.title': 'Premium (estructura TON)',
     'premium.subtitle': 'TonConnect y la verificación on-chain se agregarán después.',
     'premium.connectWallet': 'Conectar wallet',

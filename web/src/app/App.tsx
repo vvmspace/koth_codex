@@ -52,7 +52,8 @@ const DEMO_LEADERBOARD = {
     { user_id: '2', display_name: 'Bob', country_flag: '🇺🇸', steps: 20, rank: 2 },
     { user_id: 'demo-user', display_name: 'Local demo', country_flag: '🏁', steps: 10, rank: 3 }
   ],
-  current_user_rank: 3
+  current_user_rank: 3,
+  total_users: 10
 };
 
 export function App() {
@@ -197,6 +198,7 @@ export function App() {
         {tab === 'home' && (
           <Home
             inventory={inventory}
+            leaderboard={leaderboard}
             onWake={wake}
             onUseItem={useItem}
             lang={lang}

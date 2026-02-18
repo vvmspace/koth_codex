@@ -18,7 +18,10 @@ const baseHandler: Handler = async (event) => {
       .limit(limit)
       .toArray();
 
-    const higherCount = await db.collection('users').countDocuments({ steps: { $gt: user.steps } });
+    const [higherCount, totalUsers] = await Promise.all([
+      db.collection('users').countDocuments({ steps: { $gt: user.steps } }),
+      db.collection('users').countDocuments({})
+    ]);
 
     return json(200, {
       top: top.map((u, idx) => ({
@@ -27,7 +30,8 @@ const baseHandler: Handler = async (event) => {
         steps: Number(u.steps || 0),
         rank: idx + 1
       })),
-      current_user_rank: higherCount + 1
+      current_user_rank: higherCount + 1,
+      total_users: totalUsers
     });
   } catch (error) {
     captureException(error, { path: event.path, http_method: event.httpMethod });
