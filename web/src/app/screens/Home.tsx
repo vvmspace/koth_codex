@@ -173,7 +173,6 @@ export function Home({ inventory, onWake, onUseItem, lang, isLoadingUser = false
             </div>
           </>
         )}
-        {backpack.length > 0 && <p className="small backpack-footnote">{t(lang, 'home.itemTapHint')}</p>}
         {itemActionText && <p className="small backpack-footnote">{itemActionText}</p>}
       </div>
 
