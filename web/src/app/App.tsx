@@ -11,8 +11,6 @@ import { Settings } from './screens/Settings';
 
 type Tab = 'home' | 'missions' | 'leaderboard' | 'referral' | 'premium' | 'settings';
 type PublicTab = Exclude<Tab, 'settings'>;
-type BackpackItemKey = 'sandwiches' | 'coffee';
-
 const DEMO_USER = {
   id: 'demo-user',
   first_name: 'Local',
@@ -68,7 +66,6 @@ export function App() {
   const [settingsName, setSettingsName] = useState('');
   const [settingsLanguage, setSettingsLanguage] = useState<SupportedLanguage>('en');
   const [settingsBackTab, setSettingsBackTab] = useState<PublicTab>('home');
-  const [itemActionMessage, setItemActionMessage] = useState('');
   const isLoadingUser = !user && !error;
 
   const lang: SupportedLanguage = useMemo(() => detectLanguage(user?.language_code), [user?.language_code]);
@@ -131,6 +128,28 @@ export function App() {
 
     await api('/action/wake', { method: 'POST', body: '{}' });
     await load();
+  };
+
+  const openSettings = () => {
+    if (tab !== 'settings') {
+      setSettingsBackTab(tab as PublicTab);
+    }
+    setSettingsName(user?.first_name ?? '');
+    setSettingsLanguage(detectLanguage(user?.language_code));
+    setTab('settings');
+  };
+
+  const closeSettings = () => {
+    setTab(settingsBackTab);
+  };
+
+  const saveSettings = () => {
+    setUser((prev: any) => ({
+      ...(prev || {}),
+      first_name: settingsName.trim() || prev?.first_name || 'King',
+      language_code: settingsLanguage
+    }));
+    closeSettings();
   };
 
   const completeMission = async (missionId: string) => {
