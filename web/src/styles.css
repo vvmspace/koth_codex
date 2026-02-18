@@ -50,7 +50,7 @@ body {
   align-items: center;
 }
 
-.steps-badge {
+.status-badges .steps-badge {
   background: rgba(255, 203, 118, 0.15);
   border: 1px solid rgba(255, 210, 135, 0.45);
   color: #ffe8c2;
@@ -65,11 +65,17 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
 }
 
-.rank-badge {
+.status-badges .steps-badge,
+.status-badges .rank-badge {
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.status-badges .rank-badge {
   border-radius: 999px;
   padding: 6px 10px;
   font-size: 12px;
