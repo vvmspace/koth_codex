@@ -98,7 +98,7 @@ export function Home({ inventory, onWake, onUseItem, lang, isLoadingUser = false
   const runItemAction = async (itemKey: 'sandwiches' | 'coffee', mode: 'tap' | 'hold') => {
     try {
       await onUseItem(itemKey, mode);
-      setItemActionText(t(lang, 'home.itemActivatedStub'));
+      setItemActionText('');
     } catch {
       setItemActionText(t(lang, 'home.itemActivationError'));
     }
@@ -175,7 +175,6 @@ export function Home({ inventory, onWake, onUseItem, lang, isLoadingUser = false
             </div>
           </>
         )}
-        {backpack.length > 0 && <p className="small backpack-footnote">{t(lang, 'home.itemTapHint')}</p>}
         {itemActionText && <p className="small backpack-footnote">{itemActionText}</p>}
       </div>
 

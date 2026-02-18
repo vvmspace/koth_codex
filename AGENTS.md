@@ -1,4 +1,5 @@
 ROLE
+- The application must have production-ready behavior across authentication, game actions, and error handling.
 You are an expert senior full-stack engineer. Build a minimal, production-lean skeleton for a Telegram Mini App (TMA) game "King of the Hill" with Telegram auth, referrals, cooldown-limited actions, inventory items, missions, and an extendable payments hook for TON later. Optimize for "ship fast, keep it simple, easy to extend".
 
 GOAL
