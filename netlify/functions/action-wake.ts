@@ -42,7 +42,11 @@ const baseHandler: Handler = async (event) => {
           last_awake: now,
           updated_at: now
         },
-        $inc: { steps: config.steps_per_wake }
+        $inc: {
+          steps: config.steps_per_wake,
+          sandwiches: config.sandwiches_per_wake,
+          coffee: config.coffee_per_wake
+        }
       }
     );
 
@@ -50,8 +54,8 @@ const baseHandler: Handler = async (event) => {
       user_id: new ObjectId(user.id),
       kind: 'wake',
       delta_steps: config.steps_per_wake,
-      delta_sandwiches: 0,
-      delta_coffee: 0,
+      delta_sandwiches: config.sandwiches_per_wake,
+      delta_coffee: config.coffee_per_wake,
       idempotency_key: idempotencyKey,
       meta: { at: now.toISOString(), wake_interval_ms: wakeIntervalMs },
       created_at: now

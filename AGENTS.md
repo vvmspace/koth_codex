@@ -52,6 +52,7 @@ B) Main action: Wake the King
   - wake interval is configured through env var `WAKE_INTERVAL_MS` (milliseconds), default `28800000`.
 - On success:
   - increment steps by CONFIG.steps_per_wake (default: 1).
+  - grant acting user sandwiches += CONFIG.sandwiches_per_wake (default: 1) and coffee += CONFIG.coffee_per_wake (default: 1).
   - set `last_awake` = now.
   - all cooldown timers in backend and UI are calculated from `last_awake + WAKE_INTERVAL_MS` (no separate stored next-available timestamp).
   - referral rewards:
@@ -145,6 +146,8 @@ config:
 - seed keys:
   - `cooldown_ms`
   - `steps_per_wake`
+  - `sandwiches_per_wake`
+  - `coffee_per_wake`
   - `sandwich_per_ref_action`
   - `coffee_per_ref2_action`
 
