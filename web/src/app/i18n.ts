@@ -27,7 +27,6 @@ type Dictionary = {
     | 'home.itemsFlexHint'
     | 'home.sandwiches'
     | 'home.coffee'
-    | 'home.itemTapHint'
     | 'home.itemDescriptionSandwiches'
     | 'home.itemDescriptionCoffee'
     | 'home.itemMenuLongTapHint'
@@ -73,14 +72,13 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'home.steps': '🏃 {{steps}} steps',
     'home.nextWakeIn': 'Next wake in',
     'home.readyNow': 'Ready now',
-    'home.wake': 'Wake up The King',
+    'home.wake': 'Wake up the King',
     'home.backpack': '🎒 Backpack',
     'home.backpackEmpty': 'Your backpack is empty. Invite friends to start earning rewards.',
     'home.referralRewardsHint': 'Referral rewards: when your invited friend wakes the King, you get sandwiches. If their invited friend wakes the King too, your friend gets sandwiches and you get coffee (2 levels).',
     'home.itemsFlexHint': 'Sandwiches and coffee are game items that can grant steps through future mechanics. Reward types and effects are configurable for flexible balancing.',
     'home.sandwiches': 'Sandwiches',
     'home.coffee': 'Coffee',
-    'home.itemTapHint': 'Tap an item to activate it. Long tap to open item description.',
     'home.itemDescriptionSandwiches': 'Sandwich item. Current effects are configurable on backend and can be changed as game economy evolves.',
     'home.itemDescriptionCoffee': 'Coffee item. Current effects are configurable on backend and can be changed as game economy evolves.',
     'home.itemMenuLongTapHint': 'Long tap opens this menu. Tap outside to close.',
@@ -124,14 +122,13 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'home.steps': '🏃 {{steps}} pasos',
     'home.nextWakeIn': 'Próximo despertar en',
     'home.readyNow': 'Disponible ahora',
-    'home.wake': 'Wake up The King',
+    'home.wake': 'Despierta al Rey',
     'home.backpack': '🎒 Mochila',
     'home.backpackEmpty': 'Tu mochila está vacía. Invita amigos para empezar a ganar recompensas.',
     'home.referralRewardsHint': 'Recompensas por referidos: cuando tu amigo invitado despierta al Rey, tú ganas sándwiches. Si el amigo de tu amigo también despierta al Rey, tu amigo gana sándwiches y tú ganas café (2 niveles).',
     'home.itemsFlexHint': 'Sándwiches y café son ítems del juego que podrán otorgar pasos con mecánicas futuras. Los tipos de recompensa y sus efectos son configurables para mantener flexibilidad.',
     'home.sandwiches': 'Sándwiches',
     'home.coffee': 'Café',
-    'home.itemTapHint': 'Toca un ítem para activarlo. Mantén pulsado para abrir la descripción del ítem.',
     'home.itemDescriptionSandwiches': 'Ítem sándwich. Los efectos actuales son configurables en backend y pueden cambiar con la economía del juego.',
     'home.itemDescriptionCoffee': 'Ítem café. Los efectos actuales son configurables en backend y pueden cambiar con la economía del juego.',
     'home.itemMenuLongTapHint': 'La pulsación larga abre este menú. Toca fuera para cerrarlo.',
