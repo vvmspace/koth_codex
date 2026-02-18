@@ -20,8 +20,6 @@ type BackpackItem = {
   rarity: 'common' | 'rare';
 };
 
-const LONG_TAP_MS = 550;
-
 const formatCountdown = (targetMs: number, nowMs: number, lang: SupportedLanguage) => {
   const diff = Math.max(targetMs - nowMs, 0);
   if (diff <= 0) {
@@ -68,6 +66,15 @@ const HOLD_DELAY_MS = 550;
 export function Home({ inventory, onWake, onUseItem, lang, isLoadingUser = false }: Props) {
   const [now, setNow] = useState(Date.now());
   const [itemActionText, setItemActionText] = useState<string>('');
+  const [selectedItem, setSelectedItem] = useState<BackpackItem | null>(null);
+  const longTapTimeoutRef = useRef<number | null>(null);
+
+  const clearLongTapTimeout = () => {
+    if (longTapTimeoutRef.current) {
+      window.clearTimeout(longTapTimeoutRef.current);
+      longTapTimeoutRef.current = null;
+    }
+  };
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -89,9 +96,16 @@ export function Home({ inventory, onWake, onUseItem, lang, isLoadingUser = false
   const backpack = useMemo(() => buildBackpack(inventory, lang), [inventory, lang]);
 
   const runItemAction = async (itemKey: 'sandwiches' | 'coffee', mode: 'tap' | 'hold') => {
-    await onUseItem(itemKey, mode);
-    const actionName = mode === 'hold' ? 'hold' : 'tap';
-    setItemActionText(`${itemKey}: ${actionName}`);
+    try {
+      await onUseItem(itemKey, mode);
+      setItemActionText(t(lang, 'home.itemActivatedStub'));
+    } catch {
+      setItemActionText(t(lang, 'home.itemActivationError'));
+    }
+  };
+
+  const openItemInfo = (item: BackpackItem) => {
+    setSelectedItem(item);
   };
 
   return (
@@ -136,25 +150,20 @@ export function Home({ inventory, onWake, onUseItem, lang, isLoadingUser = false
                   onPointerDown={(event) => {
                     if (disabled) return;
                     const element = event.currentTarget;
-                    const holdTimeout = window.setTimeout(() => {
+                    clearLongTapTimeout();
+
+                    longTapTimeoutRef.current = window.setTimeout(() => {
                       element.dataset.holdTriggered = 'true';
-                      void runItemAction(item.key, 'hold');
+                      openItemInfo(item);
                     }, HOLD_DELAY_MS);
 
                     element.dataset.holdTriggered = 'false';
-                    element.dataset.holdTimeout = String(holdTimeout);
                   }}
-                  onPointerUp={(event) => {
-                    const timeoutId = Number(event.currentTarget.dataset.holdTimeout || 0);
-                    if (timeoutId) {
-                      window.clearTimeout(timeoutId);
-                    }
+                  onPointerUp={() => {
+                    clearLongTapTimeout();
                   }}
-                  onPointerLeave={(event) => {
-                    const timeoutId = Number(event.currentTarget.dataset.holdTimeout || 0);
-                    if (timeoutId) {
-                      window.clearTimeout(timeoutId);
-                    }
+                  onPointerLeave={() => {
+                    clearLongTapTimeout();
                   }}
                   disabled={disabled}
                 >
@@ -164,11 +173,10 @@ export function Home({ inventory, onWake, onUseItem, lang, isLoadingUser = false
                 </button>
               ))}
             </div>
-            {itemActionText ? <p className="small">{itemActionText}</p> : null}
           </>
         )}
         {backpack.length > 0 && <p className="small backpack-footnote">{t(lang, 'home.itemTapHint')}</p>}
-        {itemActionMessage && <p className="small backpack-footnote">{itemActionMessage}</p>}
+        {itemActionText && <p className="small backpack-footnote">{itemActionText}</p>}
       </div>
 
       {selectedItem && (
