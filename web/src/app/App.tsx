@@ -135,7 +135,7 @@ export function App() {
     if (tab !== 'settings') {
       setSettingsBackTab(tab as PublicTab);
     }
-    setSettingsName(user?.first_name ?? '');
+    setSettingsName(user?.first_name || user?.username || 'King');
     setSettingsLanguage(detectLanguage(user?.language_code));
     setTab('settings');
   };

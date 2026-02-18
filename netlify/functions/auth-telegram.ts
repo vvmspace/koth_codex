@@ -53,6 +53,21 @@ const baseHandler: Handler = async (event) => {
       { upsert: true }
     );
 
+
+    if (tgUser.first_name) {
+      await db.collection('users').updateOne(
+        { telegram_user_id: tgUser.id, $or: [{ first_name: null }, { first_name: '' }] },
+        { $set: { first_name: tgUser.first_name, updated_at: now } }
+      );
+    }
+
+    if (tgUser.language_code) {
+      await db.collection('users').updateOne(
+        { telegram_user_id: tgUser.id, $or: [{ language_code: null }, { language_code: '' }] },
+        { $set: { language_code: tgUser.language_code, updated_at: now } }
+      );
+    }
+
     const user = await db.collection('users').findOne({ telegram_user_id: tgUser.id });
     if (!user) return json(500, { error: 'Failed to upsert user' });
 
