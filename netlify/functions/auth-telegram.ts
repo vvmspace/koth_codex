@@ -45,7 +45,6 @@ const baseHandler: Handler = async (event) => {
           coffee: 0,
           premium_until: null,
           last_awake: null,
-          next_available_at: now,
           created_at: now
         }
       },

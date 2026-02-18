@@ -22,7 +22,6 @@ export interface UserProfile {
   coffee: number;
   premium_until: string | null;
   last_awake: string | null;
-  next_available_at: string;
 }
 
 export interface ConfigValues {

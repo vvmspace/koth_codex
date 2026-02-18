@@ -22,7 +22,8 @@ const DEMO_INVENTORY = {
   steps: 10,
   sandwiches: 2,
   coffee: 1,
-  next_available_at: new Date(Date.now() - 60_000).toISOString()
+  last_awake: new Date(Date.now() - 9 * 60 * 60 * 1000).toISOString(),
+  wake_interval_ms: 8 * 60 * 60 * 1000
 };
 
 const DEMO_MISSIONS = {
@@ -123,7 +124,8 @@ export function App() {
       setInventory((prev: any) => ({
         ...prev,
         steps: (prev?.steps || 0) + 1,
-        next_available_at: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString()
+        last_awake: new Date().toISOString(),
+        wake_interval_ms: 8 * 60 * 60 * 1000
       }));
       return;
     }

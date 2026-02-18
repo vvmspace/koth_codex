@@ -66,7 +66,9 @@ export function Home({ inventory, onWake, lang, isLoadingUser = false }: Props) 
     return () => window.clearInterval(timer);
   }, []);
 
-  const next = inventory?.next_available_at ? new Date(inventory.next_available_at).getTime() : now;
+  const wakeIntervalMs = Number(inventory?.wake_interval_ms || 28_800_000);
+  const lastAwakeMs = inventory?.last_awake ? new Date(inventory.last_awake).getTime() : null;
+  const next = lastAwakeMs ? lastAwakeMs + wakeIntervalMs : now;
   const disabled = isLoadingUser || !inventory || next > now;
   const timer = useMemo(() => formatCountdown(next, now, lang), [next, now, lang]);
 
