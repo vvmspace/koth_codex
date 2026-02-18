@@ -7,8 +7,10 @@ import { Leaderboard } from './screens/Leaderboard';
 import { Missions } from './screens/Missions';
 import { Premium } from './screens/Premium';
 import { Referral } from './screens/Referral';
+import { Settings } from './screens/Settings';
 
-type Tab = 'home' | 'missions' | 'leaderboard' | 'referral' | 'premium';
+type Tab = 'home' | 'missions' | 'leaderboard' | 'referral' | 'premium' | 'settings';
+type PublicTab = Exclude<Tab, 'settings'>;
 type BackpackItemKey = 'sandwiches' | 'coffee';
 
 const DEMO_USER = {
@@ -55,14 +57,6 @@ const DEMO_LEADERBOARD = {
   current_user_rank: 3
 };
 
-const tabs: Array<{ id: Tab; label: string; icon: string }> = [
-  { id: 'home', label: 'Home', icon: '🏠' },
-  { id: 'missions', label: 'Quests', icon: '🎯' },
-  { id: 'leaderboard', label: 'Arena', icon: '🏆' },
-  { id: 'referral', label: 'Friends', icon: '👥' },
-  { id: 'premium', label: 'Boost', icon: '💎' }
-];
-
 export function App() {
   const [tab, setTab] = useState<Tab>('home');
   const [user, setUser] = useState<any>(null);
@@ -71,11 +65,14 @@ export function App() {
   const [leaderboard, setLeaderboard] = useState<any>(null);
   const [error, setError] = useState('');
   const [isDemoMode, setIsDemoMode] = useState(false);
+  const [settingsName, setSettingsName] = useState('');
+  const [settingsLanguage, setSettingsLanguage] = useState<SupportedLanguage>('en');
+  const [settingsBackTab, setSettingsBackTab] = useState<PublicTab>('home');
   const isLoadingUser = !user && !error;
 
   const lang: SupportedLanguage = useMemo(() => detectLanguage(user?.language_code), [user?.language_code]);
 
-  const tabs: Array<{ id: Tab; label: string; icon: string }> = useMemo(
+  const tabs: Array<{ id: PublicTab; label: string; icon: string }> = useMemo(
     () => [
       { id: 'home', label: t(lang, 'tabs.home'), icon: '🏠' },
       { id: 'missions', label: t(lang, 'tabs.missions'), icon: '🎯' },
@@ -161,13 +158,37 @@ export function App() {
     });
   };
 
+  const openSettings = () => {
+    setSettingsName(user?.first_name || '');
+    setSettingsLanguage(detectLanguage(user?.language_code));
+    setSettingsBackTab(tab === 'settings' ? 'home' : (tab as PublicTab));
+    setTab('settings');
+  };
+
+  const saveSettings = () => {
+    setUser((prev: any) => {
+      if (!prev) {
+        return prev;
+      }
+      return {
+        ...prev,
+        first_name: settingsName.trim() || prev.first_name,
+        language_code: settingsLanguage
+      };
+    });
+    setTab(settingsBackTab);
+  };
+
+  const closeSettings = () => {
+    setTab(settingsBackTab);
+  };
 
   return (
     <div className="container">
-      <header className="hero">
+      <button type="button" className="hero hero-button" onClick={openSettings}>
         <h1>👑 King of the Hill</h1>
         <p>{isDemoMode ? t(lang, 'hero.demo') : t(lang, 'hero.welcome', { name: user?.first_name || 'King' })}</p>
-      </header>
+      </button>
 
       {error && <p className="small">{error}</p>}
 
@@ -185,6 +206,17 @@ export function App() {
         {tab === 'leaderboard' && <Leaderboard data={leaderboard} lang={lang} />}
         {tab === 'referral' && <Referral user={user} lang={lang} />}
         {tab === 'premium' && <Premium lang={lang} />}
+        {tab === 'settings' && (
+          <Settings
+            lang={lang}
+            name={settingsName}
+            selectedLanguage={settingsLanguage}
+            onNameChange={setSettingsName}
+            onLanguageChange={setSettingsLanguage}
+            onSave={saveSettings}
+            onCancel={closeSettings}
+          />
+        )}
       </main>
 
       <nav className="bottom-tabs" aria-label="Main navigation">
