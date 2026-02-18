@@ -311,3 +311,8 @@ UPDATE (Backpack UX + Referral explanation)
   - Level 1: when your invited friend wakes the King, you receive sandwiches.
   - Level 2: when your friend's invited friend wakes the King, Level 1 receives sandwiches and Level 2 inviter receives coffee.
 - Sandwiches and coffee are game items; their gameplay effect (e.g., granting steps) must remain configurable and extensible so reward types/effects can change without hardcoded frontend assumptions.
+
+- Backpack interaction details (UX):
+  - Tap on item: activate/use item immediately (no modal/menu before activation).
+  - Long tap on item: open an informational item menu with item description only (no Activate/Close buttons).
+  - The informational menu closes when user taps outside the menu content area.

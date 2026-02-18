@@ -161,16 +161,6 @@ export function App() {
     });
   };
 
-  const buyItem = async (itemKey: BackpackItemKey) => {
-    if (isDemoMode) {
-      return;
-    }
-
-    await api('/items/buy', {
-      method: 'POST',
-      body: JSON.stringify({ item_key: itemKey })
-    });
-  };
 
   return (
     <div className="container">
@@ -187,7 +177,6 @@ export function App() {
             inventory={inventory}
             onWake={wake}
             onItemTap={useItem}
-            onItemLongTap={buyItem}
             lang={lang}
             isLoadingUser={isLoadingUser}
           />

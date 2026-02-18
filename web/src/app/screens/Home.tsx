@@ -7,7 +7,6 @@ type Props = {
   inventory: any;
   onWake: () => Promise<void>;
   onItemTap: (itemKey: BackpackItemKey) => Promise<void>;
-  onItemLongTap: (itemKey: BackpackItemKey) => Promise<void>;
   lang: SupportedLanguage;
   isLoadingUser?: boolean;
 };
@@ -15,6 +14,7 @@ type Props = {
 type BackpackItem = {
   key: BackpackItemKey;
   label: string;
+  description: string;
   icon: string;
   amount: number;
   rarity: 'common' | 'rare';
@@ -45,6 +45,7 @@ const buildBackpack = (inventory: any, lang: SupportedLanguage): BackpackItem[] 
     {
       key: 'sandwiches',
       label: t(lang, 'home.sandwiches'),
+      description: t(lang, 'home.itemDescriptionSandwiches'),
       icon: '🥪',
       amount: Number(inventory?.sandwiches || 0),
       rarity: 'common'
@@ -52,6 +53,7 @@ const buildBackpack = (inventory: any, lang: SupportedLanguage): BackpackItem[] 
     {
       key: 'coffee',
       label: t(lang, 'home.coffee'),
+      description: t(lang, 'home.itemDescriptionCoffee'),
       icon: '☕',
       amount: Number(inventory?.coffee || 0),
       rarity: 'rare'
@@ -61,8 +63,9 @@ const buildBackpack = (inventory: any, lang: SupportedLanguage): BackpackItem[] 
   return allItems.filter((item) => item.amount > 0);
 };
 
-export function Home({ inventory, onWake, onItemTap, onItemLongTap, lang, isLoadingUser = false }: Props) {
+export function Home({ inventory, onWake, onItemTap, lang, isLoadingUser = false }: Props) {
   const [now, setNow] = useState(Date.now());
+  const [selectedItem, setSelectedItem] = useState<BackpackItem | null>(null);
   const longTapTimeoutRef = useRef<number | null>(null);
   const longTapTriggeredRef = useRef(false);
 
@@ -71,7 +74,10 @@ export function Home({ inventory, onWake, onItemTap, onItemLongTap, lang, isLoad
       setNow(Date.now());
     }, 1000);
 
-    return () => window.clearInterval(timer);
+    return () => {
+      window.clearInterval(timer);
+      clearLongTapTimeout();
+    };
   }, []);
 
   const wakeIntervalMs = Number(inventory?.wake_interval_ms || 28_800_000);
@@ -95,7 +101,8 @@ export function Home({ inventory, onWake, onItemTap, onItemLongTap, lang, isLoad
     longTapTimeoutRef.current = window.setTimeout(() => {
       longTapTriggeredRef.current = true;
       longTapTimeoutRef.current = null;
-      void onItemLongTap(itemKey);
+      const item = backpack.find((entry) => entry.key === itemKey) || null;
+      setSelectedItem(item);
     }, LONG_TAP_MS);
   };
 
@@ -112,6 +119,15 @@ export function Home({ inventory, onWake, onItemTap, onItemLongTap, lang, isLoad
   const handlePointerCancel = () => {
     clearLongTapTimeout();
     longTapTriggeredRef.current = false;
+  };
+
+  const handleItemActivateFromMenu = async () => {
+    if (!selectedItem) {
+      return;
+    }
+
+    await onItemTap(selectedItem.key);
+    setSelectedItem(null);
   };
 
   return (
@@ -159,7 +175,31 @@ export function Home({ inventory, onWake, onItemTap, onItemLongTap, lang, isLoad
             ))}
           </div>
         )}
+        {backpack.length > 0 && <p className="small backpack-footnote">{t(lang, 'home.itemTapHint')}</p>}
       </div>
+
+      {selectedItem && (
+        <div className="item-menu-overlay" role="dialog" aria-modal="true" aria-label={selectedItem.label}>
+          <div className="item-menu card">
+            <div className="item-menu-header">
+              <span className="item-icon" aria-hidden="true">
+                {selectedItem.icon}
+              </span>
+              <h3>{selectedItem.label}</h3>
+            </div>
+            <p>{selectedItem.description}</p>
+            <p className="small">{t(lang, 'home.itemMenuLongTapHint')}</p>
+            <div className="row">
+              <button type="button" onClick={() => void handleItemActivateFromMenu()}>
+                {t(lang, 'home.activateItem')}
+              </button>
+              <button type="button" className="secondary" onClick={() => setSelectedItem(null)}>
+                {t(lang, 'home.closeItemMenu')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
