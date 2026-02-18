@@ -149,6 +149,23 @@ export function App() {
     await load();
   };
 
+  const useItem = async (itemKey: 'sandwiches' | 'coffee', mode: 'tap' | 'hold') => {
+    if (isDemoMode) {
+      setInventory((prev: any) => ({
+        ...prev,
+        [itemKey]: Math.max(0, Number(prev?.[itemKey] || 0) - 1),
+        steps: Number(prev?.steps || 0) + (mode === 'hold' ? 2 : 1)
+      }));
+      return;
+    }
+
+    await api('/items/use', {
+      method: 'POST',
+      body: JSON.stringify({ item_key: itemKey, mode })
+    });
+    await load();
+  };
+
   return (
     <div className="container">
       <header className="hero">
@@ -159,7 +176,15 @@ export function App() {
       {error && <p className="small">{error}</p>}
 
       <main>
-        {tab === 'home' && <Home inventory={inventory} onWake={wake} lang={lang} isLoadingUser={isLoadingUser} />}
+        {tab === 'home' && (
+          <Home
+            inventory={inventory}
+            onWake={wake}
+            onUseItem={useItem}
+            lang={lang}
+            isLoadingUser={isLoadingUser}
+          />
+        )}
         {tab === 'missions' && <Missions data={missions} onComplete={completeMission} lang={lang} />}
         {tab === 'leaderboard' && <Leaderboard data={leaderboard} lang={lang} />}
         {tab === 'referral' && <Referral user={user} lang={lang} />}

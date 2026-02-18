@@ -4,6 +4,7 @@ import { t, type SupportedLanguage } from '../i18n';
 type Props = {
   inventory: any;
   onWake: () => Promise<void>;
+  onUseItem: (itemKey: 'sandwiches' | 'coffee', mode: 'tap' | 'hold') => Promise<void>;
   lang: SupportedLanguage;
   isLoadingUser?: boolean;
 };
@@ -55,8 +56,11 @@ const buildBackpack = (inventory: any, lang: SupportedLanguage): BackpackItem[] 
   return allItems.filter((item) => item.amount > 0);
 };
 
-export function Home({ inventory, onWake, lang, isLoadingUser = false }: Props) {
+const HOLD_DELAY_MS = 550;
+
+export function Home({ inventory, onWake, onUseItem, lang, isLoadingUser = false }: Props) {
   const [now, setNow] = useState(Date.now());
+  const [itemActionText, setItemActionText] = useState<string>('');
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -73,6 +77,12 @@ export function Home({ inventory, onWake, lang, isLoadingUser = false }: Props) 
   const timer = useMemo(() => formatCountdown(next, now, lang), [next, now, lang]);
 
   const backpack = useMemo(() => buildBackpack(inventory, lang), [inventory, lang]);
+
+  const runItemAction = async (itemKey: 'sandwiches' | 'coffee', mode: 'tap' | 'hold') => {
+    await onUseItem(itemKey, mode);
+    const actionName = mode === 'hold' ? 'hold' : 'tap';
+    setItemActionText(`${itemKey}: ${actionName}`);
+  };
 
   return (
     <div className="game-panel card">
@@ -102,13 +112,49 @@ export function Home({ inventory, onWake, lang, isLoadingUser = false }: Props) 
           <>
             <div className="backpack-grid">
               {backpack.map((item) => (
-                <div key={item.key} className={`item-slot ${item.rarity}`}>
+                <button
+                  key={item.key}
+                  type="button"
+                  className={`item-slot ${item.rarity}`}
+                  onClick={(event) => {
+                    if (event.currentTarget.dataset.holdTriggered === 'true') {
+                      event.currentTarget.dataset.holdTriggered = 'false';
+                      return;
+                    }
+                    void runItemAction(item.key, 'tap');
+                  }}
+                  onPointerDown={(event) => {
+                    if (disabled) return;
+                    const element = event.currentTarget;
+                    const holdTimeout = window.setTimeout(() => {
+                      element.dataset.holdTriggered = 'true';
+                      void runItemAction(item.key, 'hold');
+                    }, HOLD_DELAY_MS);
+
+                    element.dataset.holdTriggered = 'false';
+                    element.dataset.holdTimeout = String(holdTimeout);
+                  }}
+                  onPointerUp={(event) => {
+                    const timeoutId = Number(event.currentTarget.dataset.holdTimeout || 0);
+                    if (timeoutId) {
+                      window.clearTimeout(timeoutId);
+                    }
+                  }}
+                  onPointerLeave={(event) => {
+                    const timeoutId = Number(event.currentTarget.dataset.holdTimeout || 0);
+                    if (timeoutId) {
+                      window.clearTimeout(timeoutId);
+                    }
+                  }}
+                  disabled={disabled}
+                >
                   <span className="item-icon" aria-hidden="true">{item.icon}</span>
                   <span className="item-name">{item.label}</span>
                   <strong>x{item.amount}</strong>
-                </div>
+                </button>
               ))}
             </div>
+            {itemActionText ? <p className="small">{itemActionText}</p> : null}
           </>
         )}
       </div>
