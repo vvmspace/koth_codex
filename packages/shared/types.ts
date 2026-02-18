@@ -1,6 +1,6 @@
 export type Json = string | number | boolean | null | { [key: string]: Json } | Json[];
 
-export type MissionType = 'join_channel' | 'manual_confirm';
+export type MissionType = 'join_channel' | 'manual_confirm' | 'connect_wallet';
 
 export interface Reward {
   steps?: number;
