@@ -240,7 +240,6 @@ export function App() {
             onNameChange={setSettingsName}
             onLanguageChange={setSettingsLanguage}
             onSave={saveSettings}
-            onCancel={closeSettings}
           />
         )}
       </main>

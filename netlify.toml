@@ -41,6 +41,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/profile"
+  to = "/.netlify/functions/profile"
+  status = 200
+
+[[redirects]]
   from = "/api/items/buy"
   to = "/.netlify/functions/items-buy"
   status = 200

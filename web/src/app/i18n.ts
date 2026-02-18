@@ -15,7 +15,6 @@ type Dictionary = {
     | 'settings.languageEnglish'
     | 'settings.languageSpanish'
     | 'settings.save'
-    | 'settings.cancel'
     | 'home.kingStatus'
     | 'home.steps'
     | 'home.nextWakeIn'
@@ -84,10 +83,9 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'settings.title': 'Settings',
     'settings.name': 'Name',
     'settings.language': 'Language',
-    'settings.languageEnglish': 'English',
-    'settings.languageSpanish': 'Spanish',
+    'settings.languageEnglish': '🇬🇧 English',
+    'settings.languageSpanish': '🇪🇸 Español',
     'settings.save': 'Save',
-    'settings.cancel': 'Cancel',
     'home.kingStatus': '👑 King Status',
     'home.steps': '🏃 {{steps}} steps',
     'home.nextWakeIn': 'Next wake in',
@@ -154,10 +152,9 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'settings.title': 'Configuración',
     'settings.name': 'Nombre',
     'settings.language': 'Idioma',
-    'settings.languageEnglish': 'Inglés',
-    'settings.languageSpanish': 'Español',
+    'settings.languageEnglish': '🇬🇧 English',
+    'settings.languageSpanish': '🇪🇸 Español',
     'settings.save': 'Guardar',
-    'settings.cancel': 'Cancelar',
     'home.kingStatus': '👑 Estado del Rey',
     'home.steps': '🏃 {{steps}} pasos',
     'home.nextWakeIn': 'Próximo despertar en',
