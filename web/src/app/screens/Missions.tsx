@@ -61,10 +61,11 @@ export function Missions({
     (data?.user_missions || []).filter((m: any) => m.status === 'completed').map((m: any) => m.mission_id)
   );
 
-  const visibleMissions = (data?.missions || []).filter((mission: any) => !completed.has(mission.id));
+  const visibleMissions = data?.missions || [];
 
   const completeMission = async (mission: any) => {
     if (submittingMissionId === mission.id) return;
+    if (completed.has(mission.id)) return;
 
     setMissionError('');
     setSubmittingMissionId(mission.id);
@@ -106,6 +107,7 @@ export function Missions({
           onClick={() => {
             if (m.type !== 'connect_wallet') return;
             if (submittingMissionId === m.id) return;
+            if (completed.has(m.id)) return;
             void completeMission(m);
           }}
           onKeyDown={(event) => {
@@ -113,6 +115,7 @@ export function Missions({
             if (event.key !== 'Enter' && event.key !== ' ') return;
             event.preventDefault();
             if (submittingMissionId === m.id) return;
+            if (completed.has(m.id)) return;
             void completeMission(m);
           }}
           role={m.type === 'connect_wallet' ? 'button' : undefined}
@@ -126,9 +129,11 @@ export function Missions({
               event.stopPropagation();
               void completeMission(m);
             }}
-            disabled={submittingMissionId === m.id}
+            disabled={submittingMissionId === m.id || completed.has(m.id)}
           >
-            {m.type === 'connect_wallet'
+            {completed.has(m.id)
+              ? t(lang, 'missions.completed')
+              : m.type === 'connect_wallet'
               ? t(lang, 'missions.connectWalletAndComplete')
               : t(lang, 'missions.complete')}
           </button>
