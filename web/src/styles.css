@@ -60,6 +60,47 @@ body {
   font-weight: 700;
 }
 
+
+.status-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.rank-badge {
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rank-badge span {
+  opacity: 0.95;
+}
+
+.rank-badge.top30 {
+  background: rgba(63, 202, 138, 0.2);
+  border: 1px solid rgba(95, 233, 169, 0.5);
+  color: #caffdf;
+}
+
+.rank-badge.top50 {
+  background: rgba(255, 211, 99, 0.2);
+  border: 1px solid rgba(255, 226, 133, 0.5);
+  color: #ffe9b9;
+}
+
+.rank-badge.others {
+  background: rgba(255, 108, 108, 0.2);
+  border: 1px solid rgba(255, 145, 145, 0.48);
+  color: #ffd4d4;
+}
+
 .countdown-panel {
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -234,6 +275,15 @@ input {
 }
 .list li:last-child { border-bottom: none; }
 
+.leaderboard-activity {
+  margin-top: 12px;
+  padding: 12px;
+}
+
+.leaderboard-activity h3 {
+  margin-bottom: 6px;
+}
+
 .leaderboard-name {
   display: inline-flex;
   align-items: center;
@@ -278,4 +328,33 @@ select {
 .settings-tab {
   display: grid;
   gap: 10px;
+}
+
+.referral-layout {
+  display: grid;
+  gap: 12px;
+}
+
+.referral-info-block {
+  background: linear-gradient(140deg, rgba(255, 179, 102, 0.16), rgba(121, 102, 255, 0.18) 52%, rgba(48, 83, 170, 0.2));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.referral-info-block h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.referral-info-block p {
+  margin: 0;
+  color: rgba(246, 240, 255, 0.92);
+  line-height: 1.45;
+}
+
+.referral-info-block ul {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  color: rgba(243, 245, 255, 0.92);
+  display: grid;
+  gap: 6px;
 }

@@ -15,6 +15,10 @@ export function Leaderboard({ data, lang }: { data: any; lang: SupportedLanguage
         ))}
       </ol>
       <p>{t(lang, 'leaderboard.yourRank', { rank: data?.current_user_rank ?? t(lang, 'leaderboard.rankNA') })}</p>
+      <div className="leaderboard-activity card">
+        <h3>{t(lang, 'leaderboard.activityTitle')}</h3>
+        <p className="small">{t(lang, 'leaderboard.activityHint')}</p>
+      </div>
     </div>
   );
 }

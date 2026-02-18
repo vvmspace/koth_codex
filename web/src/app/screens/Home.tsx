@@ -5,6 +5,7 @@ type BackpackItemKey = 'sandwiches' | 'coffee';
 
 type Props = {
   inventory: any;
+  leaderboard: any;
   onWake: () => Promise<void>;
   onUseItem: (itemKey: 'sandwiches' | 'coffee', mode: 'tap' | 'hold') => Promise<void>;
   lang: SupportedLanguage;
@@ -63,7 +64,7 @@ const buildBackpack = (inventory: any, lang: SupportedLanguage): BackpackItem[] 
 
 const HOLD_DELAY_MS = 550;
 
-export function Home({ inventory, onWake, onUseItem, lang, isLoadingUser = false }: Props) {
+export function Home({ inventory, leaderboard, onWake, onUseItem, lang, isLoadingUser = false }: Props) {
   const [now, setNow] = useState(Date.now());
   const [itemActionText, setItemActionText] = useState<string>('');
   const [selectedItem, setSelectedItem] = useState<BackpackItem | null>(null);
@@ -94,6 +95,20 @@ export function Home({ inventory, onWake, onUseItem, lang, isLoadingUser = false
   const timer = useMemo(() => formatCountdown(next, now, lang), [next, now, lang]);
 
   const backpack = useMemo(() => buildBackpack(inventory, lang), [inventory, lang]);
+  const totalUsers = Number(leaderboard?.total_users ?? 0);
+  const currentRank = Number(leaderboard?.current_user_rank ?? 0);
+  const percentile = totalUsers > 0 && currentRank > 0 ? (currentRank / totalUsers) * 100 : null;
+
+  const rankTier = useMemo(() => {
+    if (percentile === null) return null;
+    if (percentile <= 30) {
+      return { label: t(lang, 'home.rankTierTop30'), className: 'rank-badge top30' };
+    }
+    if (percentile <= 50) {
+      return { label: t(lang, 'home.rankTierTop50'), className: 'rank-badge top50' };
+    }
+    return { label: t(lang, 'home.rankTierKeepGoing'), className: 'rank-badge others' };
+  }, [lang, percentile]);
 
   const runItemAction = async (itemKey: 'sandwiches' | 'coffee', mode: 'tap' | 'hold') => {
     try {
@@ -112,7 +127,15 @@ export function Home({ inventory, onWake, onUseItem, lang, isLoadingUser = false
     <div className="game-panel card">
       <div className="status-row">
         <h2>{t(lang, 'home.kingStatus')}</h2>
-        <div className="steps-badge">{t(lang, 'home.steps', { steps: inventory?.steps ?? 0 })}</div>
+        <div className="status-badges">
+          <div className="steps-badge">{t(lang, 'home.steps', { steps: inventory?.steps ?? 0 })}</div>
+          {rankTier && (
+            <div className={rankTier.className}>
+              {t(lang, 'home.rankBadge', { rank: currentRank, total: totalUsers })}
+              <span>{rankTier.label}</span>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="countdown-panel">
