@@ -9,6 +9,7 @@ import { Premium } from './screens/Premium';
 import { Referral } from './screens/Referral';
 
 type Tab = 'home' | 'missions' | 'leaderboard' | 'referral' | 'premium';
+type BackpackItemKey = 'sandwiches' | 'coffee';
 
 const DEMO_USER = {
   id: 'demo-user',
@@ -149,6 +150,28 @@ export function App() {
     await load();
   };
 
+  const useItem = async (itemKey: BackpackItemKey) => {
+    if (isDemoMode) {
+      return;
+    }
+
+    await api('/items/use', {
+      method: 'POST',
+      body: JSON.stringify({ item_key: itemKey })
+    });
+  };
+
+  const buyItem = async (itemKey: BackpackItemKey) => {
+    if (isDemoMode) {
+      return;
+    }
+
+    await api('/items/buy', {
+      method: 'POST',
+      body: JSON.stringify({ item_key: itemKey })
+    });
+  };
+
   return (
     <div className="container">
       <header className="hero">
@@ -159,7 +182,16 @@ export function App() {
       {error && <p className="small">{error}</p>}
 
       <main>
-        {tab === 'home' && <Home inventory={inventory} onWake={wake} lang={lang} isLoadingUser={isLoadingUser} />}
+        {tab === 'home' && (
+          <Home
+            inventory={inventory}
+            onWake={wake}
+            onItemTap={useItem}
+            onItemLongTap={buyItem}
+            lang={lang}
+            isLoadingUser={isLoadingUser}
+          />
+        )}
         {tab === 'missions' && <Missions data={missions} onComplete={completeMission} lang={lang} />}
         {tab === 'leaderboard' && <Leaderboard data={leaderboard} lang={lang} />}
         {tab === 'referral' && <Referral user={user} lang={lang} />}

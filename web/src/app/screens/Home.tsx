@@ -1,20 +1,26 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { t, type SupportedLanguage } from '../i18n';
+
+type BackpackItemKey = 'sandwiches' | 'coffee';
 
 type Props = {
   inventory: any;
   onWake: () => Promise<void>;
+  onItemTap: (itemKey: BackpackItemKey) => Promise<void>;
+  onItemLongTap: (itemKey: BackpackItemKey) => Promise<void>;
   lang: SupportedLanguage;
   isLoadingUser?: boolean;
 };
 
 type BackpackItem = {
-  key: 'sandwiches' | 'coffee';
+  key: BackpackItemKey;
   label: string;
   icon: string;
   amount: number;
   rarity: 'common' | 'rare';
 };
+
+const LONG_TAP_MS = 550;
 
 const formatCountdown = (targetMs: number, nowMs: number, lang: SupportedLanguage) => {
   const diff = Math.max(targetMs - nowMs, 0);
@@ -55,8 +61,10 @@ const buildBackpack = (inventory: any, lang: SupportedLanguage): BackpackItem[] 
   return allItems.filter((item) => item.amount > 0);
 };
 
-export function Home({ inventory, onWake, lang, isLoadingUser = false }: Props) {
+export function Home({ inventory, onWake, onItemTap, onItemLongTap, lang, isLoadingUser = false }: Props) {
   const [now, setNow] = useState(Date.now());
+  const longTapTimeoutRef = useRef<number | null>(null);
+  const longTapTriggeredRef = useRef(false);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -73,6 +81,38 @@ export function Home({ inventory, onWake, lang, isLoadingUser = false }: Props) 
   const timer = useMemo(() => formatCountdown(next, now, lang), [next, now, lang]);
 
   const backpack = useMemo(() => buildBackpack(inventory, lang), [inventory, lang]);
+
+  const clearLongTapTimeout = () => {
+    if (longTapTimeoutRef.current !== null) {
+      window.clearTimeout(longTapTimeoutRef.current);
+      longTapTimeoutRef.current = null;
+    }
+  };
+
+  const handleItemPointerDown = (itemKey: BackpackItemKey) => {
+    longTapTriggeredRef.current = false;
+    clearLongTapTimeout();
+    longTapTimeoutRef.current = window.setTimeout(() => {
+      longTapTriggeredRef.current = true;
+      longTapTimeoutRef.current = null;
+      void onItemLongTap(itemKey);
+    }, LONG_TAP_MS);
+  };
+
+  const handleItemPointerUp = (itemKey: BackpackItemKey) => {
+    clearLongTapTimeout();
+    if (longTapTriggeredRef.current) {
+      longTapTriggeredRef.current = false;
+      return;
+    }
+
+    void onItemTap(itemKey);
+  };
+
+  const handlePointerCancel = () => {
+    clearLongTapTimeout();
+    longTapTriggeredRef.current = false;
+  };
 
   return (
     <div className="game-panel card">
@@ -99,17 +139,25 @@ export function Home({ inventory, onWake, lang, isLoadingUser = false }: Props) 
             <p className="small">{t(lang, 'home.itemsFlexHint')}</p>
           </div>
         ) : (
-          <>
-            <div className="backpack-grid">
-              {backpack.map((item) => (
-                <div key={item.key} className={`item-slot ${item.rarity}`}>
-                  <span className="item-icon" aria-hidden="true">{item.icon}</span>
-                  <span className="item-name">{item.label}</span>
-                  <strong>x{item.amount}</strong>
-                </div>
-              ))}
-            </div>
-          </>
+          <div className="backpack-grid">
+            {backpack.map((item) => (
+              <button
+                key={item.key}
+                className={`item-slot ${item.rarity}`}
+                type="button"
+                onPointerDown={() => handleItemPointerDown(item.key)}
+                onPointerUp={() => handleItemPointerUp(item.key)}
+                onPointerCancel={handlePointerCancel}
+                onPointerLeave={handlePointerCancel}
+              >
+                <span className="item-icon" aria-hidden="true">
+                  {item.icon}
+                </span>
+                <span className="item-name">{item.label}</span>
+                <strong>x{item.amount}</strong>
+              </button>
+            ))}
+          </div>
         )}
       </div>
     </div>
