@@ -7,8 +7,10 @@ import { Leaderboard } from './screens/Leaderboard';
 import { Missions } from './screens/Missions';
 import { Premium } from './screens/Premium';
 import { Referral } from './screens/Referral';
+import { Settings } from './screens/Settings';
 
-type Tab = 'home' | 'missions' | 'leaderboard' | 'referral' | 'premium';
+type Tab = 'home' | 'missions' | 'leaderboard' | 'referral' | 'premium' | 'settings';
+type PublicTab = Exclude<Tab, 'settings'>;
 type BackpackItemKey = 'sandwiches' | 'coffee';
 
 const DEMO_USER = {
@@ -63,14 +65,14 @@ export function App() {
   const [leaderboard, setLeaderboard] = useState<any>(null);
   const [error, setError] = useState('');
   const [isDemoMode, setIsDemoMode] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [settingsName, setSettingsName] = useState('');
   const [settingsLanguage, setSettingsLanguage] = useState<SupportedLanguage>('en');
+  const [settingsBackTab, setSettingsBackTab] = useState<PublicTab>('home');
   const isLoadingUser = !user && !error;
 
   const lang: SupportedLanguage = useMemo(() => detectLanguage(user?.language_code), [user?.language_code]);
 
-  const tabs: Array<{ id: Tab; label: string; icon: string }> = useMemo(
+  const tabs: Array<{ id: PublicTab; label: string; icon: string }> = useMemo(
     () => [
       { id: 'home', label: t(lang, 'tabs.home'), icon: '🏠' },
       { id: 'missions', label: t(lang, 'tabs.missions'), icon: '🎯' },
@@ -159,7 +161,8 @@ export function App() {
   const openSettings = () => {
     setSettingsName(user?.first_name || '');
     setSettingsLanguage(detectLanguage(user?.language_code));
-    setIsSettingsOpen(true);
+    setSettingsBackTab(tab === 'settings' ? 'home' : (tab as PublicTab));
+    setTab('settings');
   };
 
   const saveSettings = () => {
@@ -173,7 +176,11 @@ export function App() {
         language_code: settingsLanguage
       };
     });
-    setIsSettingsOpen(false);
+    setTab(settingsBackTab);
+  };
+
+  const closeSettings = () => {
+    setTab(settingsBackTab);
   };
 
   return (
@@ -200,52 +207,18 @@ export function App() {
         {tab === 'leaderboard' && <Leaderboard data={leaderboard} lang={lang} />}
         {tab === 'referral' && <Referral user={user} lang={lang} />}
         {tab === 'premium' && <Premium lang={lang} />}
-      </main>
-
-      {isSettingsOpen && (
-        <div className="modal-overlay" role="dialog" aria-modal="true" aria-label={t(lang, 'settings.title')}>
-          <button
-            type="button"
-            className="modal-backdrop"
-            aria-label={t(lang, 'settings.cancel')}
-            onClick={() => setIsSettingsOpen(false)}
+        {tab === 'settings' && (
+          <Settings
+            lang={lang}
+            name={settingsName}
+            selectedLanguage={settingsLanguage}
+            onNameChange={setSettingsName}
+            onLanguageChange={setSettingsLanguage}
+            onSave={saveSettings}
+            onCancel={closeSettings}
           />
-          <div className="card modal-content">
-            <h3>{t(lang, 'settings.title')}</h3>
-
-            <label className="field-label" htmlFor="settings-name">
-              {t(lang, 'settings.name')}
-            </label>
-            <input
-              id="settings-name"
-              value={settingsName}
-              onChange={(event) => setSettingsName(event.target.value)}
-              placeholder={t(lang, 'settings.name')}
-            />
-
-            <label className="field-label" htmlFor="settings-language">
-              {t(lang, 'settings.language')}
-            </label>
-            <select
-              id="settings-language"
-              value={settingsLanguage}
-              onChange={(event) => setSettingsLanguage(event.target.value as SupportedLanguage)}
-            >
-              <option value="en">{t(lang, 'settings.languageEnglish')}</option>
-              <option value="es">{t(lang, 'settings.languageSpanish')}</option>
-            </select>
-
-            <div className="row">
-              <button type="button" onClick={saveSettings}>
-                {t(lang, 'settings.save')}
-              </button>
-              <button type="button" className="secondary" onClick={() => setIsSettingsOpen(false)}>
-                {t(lang, 'settings.cancel')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+        )}
+      </main>
 
       <nav className="bottom-tabs" aria-label="Main navigation">
         {tabs.map((item) => (
