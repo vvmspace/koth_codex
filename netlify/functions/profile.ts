@@ -5,6 +5,7 @@ import { getDb } from './lib/db';
 import { json } from './lib/http';
 import { withSentry, captureException } from './lib/sentry';
 import { normalizeSupportedLanguage } from './lib/language';
+import { isValidProfileName, normalizeProfileName, profileNameErrorMessage } from './lib/profile-validation';
 
 const baseHandler: Handler = async (event) => {
   try {
@@ -20,12 +21,12 @@ const baseHandler: Handler = async (event) => {
     }
 
     const parsedBody = JSON.parse(event.body || '{}');
-    const firstNameRaw = typeof parsedBody.first_name === 'string' ? parsedBody.first_name.trim() : '';
+    const firstNameRaw = normalizeProfileName(parsedBody.first_name);
     const languageCodeRaw = typeof parsedBody.language_code === 'string' ? parsedBody.language_code : '';
     const languageCode = normalizeSupportedLanguage(languageCodeRaw);
 
-    if (!firstNameRaw) {
-      return json(400, { error: 'first_name is required' });
+    if (!isValidProfileName(firstNameRaw)) {
+      return json(400, { error: profileNameErrorMessage() });
     }
 
     if (!languageCode) {

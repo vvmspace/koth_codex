@@ -25,6 +25,7 @@ export function Settings({
       <input
         id="settings-name"
         value={name}
+        maxLength={32}
         onChange={(event) => onNameChange(event.target.value)}
         placeholder={t(lang, 'settings.name')}
       />

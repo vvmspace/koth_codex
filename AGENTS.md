@@ -41,6 +41,17 @@ DELIVERABLES
 5) Minimal UI that works inside Telegram.
 
 CORE DOMAIN RULES
+LANGUAGE CODE FORMAT (CRITICAL)
+- Persist only canonical app language codes in DB: `en` or `es`.
+- Accept Telegram/user locale variants (`en-US`, `en_US`, `es-ES`, etc.) only as input, then normalize to base language before DB writes.
+- Never store regional variants in `users.language_code`.
+- When locale is missing/unknown, fallback to `en`.
+
+PROFILE NAME INPUT FORMAT (CRITICAL)
+- `first_name` accepted length: 2..32 chars after trim/space normalization.
+- Allowed chars: Unicode letters, numbers, spaces, dot (`.`), underscore (`_`), apostrophe (`'`), hyphen (`-`).
+- Validate in both frontend and backend before write.
+
 A) Auth
 - Frontend reads Telegram initData from window.Telegram.WebApp.initData.
 - Frontend sends initData to backend endpoint POST /api/auth/telegram.
