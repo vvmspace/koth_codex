@@ -320,3 +320,6 @@ UPDATE (Backpack UX + Referral explanation)
   - Tap on item: activate/use item immediately (no modal/menu before activation).
   - Long tap on item: open an informational item menu with item description only (no Activate/Close buttons).
   - The informational menu closes when user taps outside the menu content area.
+
+- Deployment/data consistency rule:
+  - Any change that affects DB schema, seed data, or required records must include an automatic deploy-time update path (migration/seed-on-deploy) so production data is updated on deploy without manual DB patching.

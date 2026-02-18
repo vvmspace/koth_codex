@@ -6,6 +6,7 @@ import { json } from './lib/http';
 import { withSentry, captureException } from './lib/sentry';
 import { enforceRateLimit } from './lib/rate-limit';
 import { requiredEnv } from './lib/env';
+import { ensureDefaultMissions } from './lib/mission-seeds';
 
 async function checkChannelMembership(channelId: string, telegramUserId: number) {
   const token = requiredEnv('TELEGRAM_BOT_TOKEN');
@@ -19,6 +20,7 @@ const baseHandler: Handler = async (event) => {
   try {
     const user = await requireUser(event);
     const db = await getDb();
+    await ensureDefaultMissions(db);
 
     if (event.httpMethod === 'GET') {
       const now = new Date();
