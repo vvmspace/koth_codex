@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { TonConnectUI } from '@tonconnect/ui';
+import { TonConnectUI, type ConnectedWallet } from '@tonconnect/ui';
 import { api } from '../api';
 import { t, type SupportedLanguage } from '../i18n';
 
@@ -10,14 +10,13 @@ export function Premium({ lang }: { lang: SupportedLanguage }) {
   const tonConnect = useMemo(
     () =>
       new TonConnectUI({
-        manifestUrl: `${window.location.origin}/tonconnect-manifest.json`,
-        buttonRootId: 'ton-connect-button'
+        manifestUrl: `${window.location.origin}/tonconnect-manifest.json`
       }),
     []
   );
 
   useEffect(() => {
-    const unsubscribe = tonConnect.onStatusChange(async (wallet) => {
+    const unsubscribe = tonConnect.onStatusChange(async (wallet: ConnectedWallet | null) => {
       const address = wallet?.account?.address ?? null;
       setWalletAddress(address);
 
@@ -60,7 +59,6 @@ export function Premium({ lang }: { lang: SupportedLanguage }) {
     <div className="card">
       <h2>{t(lang, 'premium.title')}</h2>
       <p className="small">{t(lang, 'premium.subtitle')}</p>
-      <div id="ton-connect-button" />
       <div className="row">
         <button className="secondary" onClick={() => void connectWallet()} disabled={isConnecting}>
           {walletAddress ? t(lang, 'premium.connectedWallet') : t(lang, 'premium.connectWallet')}

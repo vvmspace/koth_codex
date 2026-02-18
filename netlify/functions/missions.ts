@@ -72,11 +72,14 @@ const baseHandler: Handler = async (event) => {
       const { mission_id } = JSON.parse(event.body || '{}');
       if (!ObjectId.isValid(mission_id)) return json(400, { error: 'Invalid mission_id' });
 
-      const mission = await db.collection('missions').findOne({ _id: new ObjectId(mission_id) });
+      const missionObjectId = new ObjectId(mission_id);
+      const userObjectId = new ObjectId(user.id);
+
+      const mission = await db.collection('missions').findOne({ _id: missionObjectId });
       if (!mission || !mission.is_active) return json(404, { error: 'Mission not found' });
 
-      const existing = await db.collection('ledger').findOne({ idempotency_key: idem });
-      if (existing) return json(200, { ok: true, deduped: true });
+      const existingIdem = await db.collection('ledger').findOne({ idempotency_key: idem });
+      if (existingIdem) return json(200, { ok: true, deduped: true });
 
       if (mission.type === 'join_channel') {
         const channelId = String(mission.payload?.channel_id || process.env.REQUIRED_CHANNEL_ID || '');
@@ -86,32 +89,50 @@ const baseHandler: Handler = async (event) => {
       }
 
       if (mission.type === 'connect_wallet') {
-        const userDoc = await db.collection('users').findOne({ _id: new ObjectId(user.id) });
+        const userDoc = await db.collection('users').findOne({ _id: userObjectId });
         if (!userDoc?.ton_wallet_address) {
           return json(400, { error: 'Connect TON wallet first.' });
         }
       }
 
+      const completionTime = new Date();
+      let existingCompletion: { status?: string } | null = null;
+
+      try {
+        existingCompletion = (await db.collection('user_missions').findOneAndUpdate(
+          { user_id: userObjectId, mission_id: missionObjectId },
+          {
+            $setOnInsert: { user_id: userObjectId, mission_id: missionObjectId },
+            $set: { status: 'completed', completed_at: completionTime }
+          },
+          { upsert: true, returnDocument: 'before' }
+        )) as { status?: string } | null;
+      } catch (error) {
+        if ((error as { code?: number }).code === 11000) {
+          return json(200, { ok: true, deduped: true, already_completed: true });
+        }
+        throw error;
+      }
+
+      if (existingCompletion?.status === 'completed') {
+        return json(200, { ok: true, deduped: true, already_completed: true });
+      }
+
       const reward = mission.reward || {};
       await db.collection('users').updateOne(
-        { _id: new ObjectId(user.id) },
+        { _id: userObjectId },
         {
           $inc: {
             steps: Number(reward.steps || 0),
             sandwiches: Number(reward.sandwiches || 0),
             coffee: Number(reward.coffee || 0)
-          }
+          },
+          $set: { updated_at: new Date() }
         }
       );
 
-      await db.collection('user_missions').updateOne(
-        { user_id: new ObjectId(user.id), mission_id: new ObjectId(mission_id) },
-        { $set: { status: 'completed', completed_at: new Date() } },
-        { upsert: true }
-      );
-
       await db.collection('ledger').insertOne({
-        user_id: new ObjectId(user.id),
+        user_id: userObjectId,
         kind: 'mission_reward',
         delta_steps: Number(reward.steps || 0),
         delta_sandwiches: Number(reward.sandwiches || 0),
