@@ -42,7 +42,6 @@ bot.command('start', async (ctx) => {
       coffee: 0,
       premium_until: null,
       last_awake: null,
-      next_available_at: new Date(),
       created_at: new Date(),
       updated_at: new Date()
     });

@@ -26,7 +26,8 @@ const baseHandler: Handler = async (event) => {
 
     const eligibility = getWakeEligibility({
       now,
-      nextAvailableAt: new Date(user.next_available_at)
+      lastAwake: user.last_awake ? new Date(user.last_awake) : null,
+      wakeIntervalMs
     });
 
     if (!eligibility.available) return json(400, { error: 'Action unavailable', eligibility });
@@ -34,14 +35,11 @@ const baseHandler: Handler = async (event) => {
     const existing = await db.collection('ledger').findOne({ idempotency_key: idempotencyKey });
     if (existing) return json(200, { ok: true, deduped: true, eligibility });
 
-    const next = new Date(now.getTime() + wakeIntervalMs);
-
     await db.collection('users').updateOne(
       { _id: new ObjectId(user.id) },
       {
         $set: {
           last_awake: now,
-          next_available_at: next,
           updated_at: now
         },
         $inc: { steps: config.steps_per_wake }
@@ -97,7 +95,6 @@ const baseHandler: Handler = async (event) => {
     return json(200, {
       ok: true,
       last_awake: now.toISOString(),
-      next_available_at: next.toISOString(),
       wake_interval_ms: wakeIntervalMs
     });
   } catch (error) {

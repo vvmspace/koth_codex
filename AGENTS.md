@@ -48,12 +48,12 @@ A) Auth
 B) Main action: Wake the King
 - Endpoint: POST /api/action/wake
 - Server enforces:
-  - action is available only if now >= next_available_at
+  - action is available only if last_awake is null OR now >= (last_awake + WAKE_INTERVAL_MS)
   - wake interval is configured through env var `WAKE_INTERVAL_MS` (milliseconds), default `28800000`.
 - On success:
   - increment steps by CONFIG.steps_per_wake (default: 1).
   - set `last_awake` = now.
-  - update next_available_at = now + WAKE_INTERVAL_MS (default: 8h).
+  - all cooldown timers in backend and UI are calculated from `last_awake + WAKE_INTERVAL_MS` (no separate stored next-available timestamp).
   - referral rewards:
     - if user.referrer_id exists (level 1): grant to referrer sandwiches += CONFIG.sandwich_per_ref_action (default: 1).
     - if referrer.referrer_id exists (level 2): grant to level2 coffee += CONFIG.coffee_per_ref2_action (default: 1).
@@ -133,8 +133,7 @@ users:
 - `sandwiches`: NumberLong, required, default 0
 - `coffee`: NumberLong, required, default 0
 - `premium_until`: ISODate | null
-- `last_awake`: ISODate | null
-- `next_available_at`: ISODate, required, default now
+- `last_awake`: ISODate | null (source of truth for cooldown timers: `last_awake + WAKE_INTERVAL_MS`)
 - `created_at`: ISODate, required, default now
 - `updated_at`: ISODate, required, default now
 
