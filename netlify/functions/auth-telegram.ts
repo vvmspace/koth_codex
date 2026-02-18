@@ -33,12 +33,12 @@ const baseHandler: Handler = async (event) => {
       {
         $set: {
           username: tgUser.username ?? null,
-          first_name: tgUser.first_name ?? null,
           last_name: tgUser.last_name ?? null,
-          language_code: tgUser.language_code ?? null,
           updated_at: now
         },
         $setOnInsert: {
+          first_name: tgUser.first_name ?? null,
+          language_code: tgUser.language_code ?? null,
           referral_code: createReferralCode(tgUser.id),
           referrer_id: null,
           steps: 0,
