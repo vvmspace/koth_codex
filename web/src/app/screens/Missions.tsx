@@ -162,7 +162,7 @@ export function Missions({
               {link && (
                 <button
                   type="button"
-                  className="secondary mission-link-button"
+                  className="secondary mission-link-button btn-with-icon"
                   onClick={(event) => {
                     event.stopPropagation();
                     const win = window as any;
@@ -173,22 +173,25 @@ export function Missions({
                     window.open(link, '_blank', 'noopener,noreferrer');
                   }}
                 >
-                  {t(lang, 'missions.openLink')}
+                  <span className="btn-icon" aria-hidden="true">↗</span><span>{t(lang, 'missions.openLink')}</span>
                 </button>
               )}
               <button
-                className={`mission-complete-button ${m.type === 'connect_wallet' ? 'wallet' : 'default'}`}
+                className={`mission-complete-button btn-with-icon ${m.type === 'connect_wallet' ? 'wallet' : 'default'}`}
                 onClick={(event) => {
                   event.stopPropagation();
                   void completeMission(m);
                 }}
                 disabled={submittingMissionId === m.id || completed.has(m.id)}
               >
-                {completed.has(m.id)
-                  ? t(lang, 'missions.completed')
-                  : m.type === 'connect_wallet'
-                  ? t(lang, 'missions.connectWalletAndComplete')
-                  : t(lang, 'missions.complete')}
+                <span className="btn-icon" aria-hidden="true">{m.type === 'connect_wallet' ? '◇' : '✓'}</span>
+                <span>
+                  {completed.has(m.id)
+                    ? t(lang, 'missions.completed')
+                    : m.type === 'connect_wallet'
+                    ? t(lang, 'missions.connectWalletAndComplete')
+                    : t(lang, 'missions.complete')}
+                </span>
               </button>
             </div>
           </div>

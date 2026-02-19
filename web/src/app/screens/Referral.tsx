@@ -21,12 +21,12 @@ export function Referral({ user, lang }: { user: any; lang: SupportedLanguage })
         <h2>🔗 {t(lang, 'referral.title')}</h2>
         <input className="form-control" readOnly value={link} />
         <div className="row" style={{ marginTop: 8 }}>
-          <button className="secondary referral-copy-button" onClick={() => navigator.clipboard.writeText(link)}>
-            📋 {t(lang, 'referral.copy')}
+          <button className="secondary referral-copy-button btn-with-icon" onClick={() => navigator.clipboard.writeText(link)}>
+            <span className="btn-icon" aria-hidden="true">⧉</span><span>{t(lang, 'referral.copy')}</span>
           </button>
-          <button className="referral-share-button" onClick={share}>🚀 {t(lang, 'referral.share')}</button>
+          <button className="referral-share-button btn-with-icon" onClick={share}><span className="btn-icon" aria-hidden="true">⇪</span><span>{t(lang, 'referral.share')}</span></button>
           <button
-            className="secondary referral-open-button"
+            className="secondary referral-open-button btn-with-icon"
             onClick={() => {
               const win = window as any;
               if (win.Telegram?.WebApp?.openTelegramLink) {
@@ -36,7 +36,7 @@ export function Referral({ user, lang }: { user: any; lang: SupportedLanguage })
               window.open(link, '_blank', 'noopener,noreferrer');
             }}
           >
-            ↗ Open
+            <span className="btn-icon" aria-hidden="true">↗</span><span>Open</span>
           </button>
         </div>
       </div>
