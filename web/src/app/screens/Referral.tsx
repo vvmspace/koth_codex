@@ -18,11 +18,26 @@ export function Referral({ user, lang }: { user: any; lang: SupportedLanguage })
   return (
     <div className="referral-layout">
       <div className="card">
-        <h2>{t(lang, 'referral.title')}</h2>
-        <input readOnly value={link} />
+        <h2>🔗 {t(lang, 'referral.title')}</h2>
+        <input className="form-control" readOnly value={link} />
         <div className="row" style={{ marginTop: 8 }}>
-          <button className="secondary" onClick={() => navigator.clipboard.writeText(link)}>{t(lang, 'referral.copy')}</button>
-          <button onClick={share}>{t(lang, 'referral.share')}</button>
+          <button className="secondary" onClick={() => navigator.clipboard.writeText(link)}>
+            📋 {t(lang, 'referral.copy')}
+          </button>
+          <button onClick={share}>🚀 {t(lang, 'referral.share')}</button>
+          <button
+            className="secondary"
+            onClick={() => {
+              const win = window as any;
+              if (win.Telegram?.WebApp?.openTelegramLink) {
+                win.Telegram.WebApp.openTelegramLink(link);
+                return;
+              }
+              window.open(link, '_blank', 'noopener,noreferrer');
+            }}
+          >
+            ↗ Open
+          </button>
         </div>
       </div>
 

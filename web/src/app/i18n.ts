@@ -39,6 +39,7 @@ type Dictionary = {
     | 'missions.complete'
     | 'missions.completed'
     | 'missions.connectWalletAndComplete'
+    | 'missions.openLink'
     | 'missions.walletNotConnected'
     | 'missions.empty'
     | 'leaderboard.title'
@@ -112,6 +113,7 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'missions.complete': 'Complete',
     'missions.completed': 'Completed',
     'missions.connectWalletAndComplete': 'Connect wallet & complete',
+    'missions.openLink': 'Open link',
     'missions.walletNotConnected': 'TON wallet is not connected yet.',
     'missions.empty': 'All active missions are completed. New missions will appear soon.',
     'leaderboard.title': 'Leaderboard',
@@ -183,6 +185,7 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'missions.complete': 'Completar',
     'missions.completed': 'Completada',
     'missions.connectWalletAndComplete': 'Conectar wallet y completar',
+    'missions.openLink': 'Abrir enlace',
     'missions.walletNotConnected': 'La wallet TON aún no está conectada.',
     'missions.empty': 'Todas las misiones activas están completadas. Pronto aparecerán nuevas.',
     'leaderboard.title': 'Clasificación',

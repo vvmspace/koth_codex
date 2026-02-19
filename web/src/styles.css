@@ -414,3 +414,79 @@ select.form-control {
   display: grid;
   gap: 6px;
 }
+
+
+.mission-card {
+  background: linear-gradient(155deg, rgba(105, 84, 219, 0.18), rgba(22, 30, 72, 0.95));
+  border-color: rgba(175, 157, 255, 0.3);
+}
+
+.mission-card.is-completed {
+  border-color: rgba(130, 255, 187, 0.36);
+  box-shadow: inset 0 0 0 1px rgba(130, 255, 187, 0.26), 0 10px 22px rgba(8, 11, 26, 0.45);
+}
+
+.mission-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.mission-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mission-icon {
+  width: 30px;
+  height: 30px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 9px;
+  background: radial-gradient(circle at 20% 18%, rgba(255,255,255,0.35), rgba(255,255,255,0.08));
+  border: 1px solid rgba(255, 255, 255, 0.24);
+}
+
+.mission-status-pill {
+  min-width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  background: rgba(108, 242, 171, 0.18);
+  border: 1px solid rgba(108, 242, 171, 0.48);
+  color: #bcffe0;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.mission-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bottom-tabs button {
+  transition: all 0.2s ease;
+}
+
+.bottom-tabs button.active {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 10px 18px rgba(82, 57, 190, 0.34);
+}
+
+.tab-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  display: inline-grid;
+  place-items: center;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.bottom-tabs button.active .tab-icon {
+  background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.35), rgba(255,255,255,0.12));
+  border-color: rgba(255,255,255,0.24);
+}

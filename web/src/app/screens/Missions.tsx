@@ -37,6 +37,28 @@ async function waitForWalletAddress(tonConnect: TonConnectUI, timeoutMs = 12_000
   });
 }
 
+function missionIcon(type: string) {
+  if (type === 'join_channel') return '📣';
+  if (type === 'connect_wallet') return '💎';
+  if (type === 'manual_confirm') return '✅';
+  return '🎯';
+}
+
+function missionLink(mission: any): string | null {
+  const payload = mission?.payload;
+  if (!payload || typeof payload !== 'object') return null;
+
+  const possible = [payload.link, payload.url, payload.post_url, payload.channel_url];
+  const candidate = possible.find((value) => typeof value === 'string' && value.startsWith('http'));
+  if (candidate) return candidate;
+
+  if (typeof payload.channel_id === 'string' && payload.channel_id.startsWith('@')) {
+    return `https://t.me/${payload.channel_id.slice(1)}`;
+  }
+
+  return null;
+}
+
 export function Missions({
   data,
   onComplete,
@@ -100,45 +122,77 @@ export function Missions({
 
       {visibleMissions.length === 0 && <p className="small">{t(lang, 'missions.empty')}</p>}
 
-      {visibleMissions.map((m: any) => (
-        <div
-          key={m.id}
-          className="card"
-          onClick={() => {
-            if (m.type !== 'connect_wallet') return;
-            if (submittingMissionId === m.id) return;
-            if (completed.has(m.id)) return;
-            void completeMission(m);
-          }}
-          onKeyDown={(event) => {
-            if (m.type !== 'connect_wallet') return;
-            if (event.key !== 'Enter' && event.key !== ' ') return;
-            event.preventDefault();
-            if (submittingMissionId === m.id) return;
-            if (completed.has(m.id)) return;
-            void completeMission(m);
-          }}
-          role={m.type === 'connect_wallet' ? 'button' : undefined}
-          tabIndex={m.type === 'connect_wallet' ? 0 : undefined}
-          style={{ cursor: m.type === 'connect_wallet' ? 'pointer' : 'default' }}
-        >
-          <h3>{m.title}</h3>
-          <p>{m.description}</p>
-          <button
-            onClick={(event) => {
-              event.stopPropagation();
+      {visibleMissions.map((m: any) => {
+        const link = missionLink(m);
+
+        return (
+          <div
+            key={m.id}
+            className={`card mission-card ${completed.has(m.id) ? 'is-completed' : ''}`}
+            onClick={() => {
+              if (m.type !== 'connect_wallet') return;
+              if (submittingMissionId === m.id) return;
+              if (completed.has(m.id)) return;
               void completeMission(m);
             }}
-            disabled={submittingMissionId === m.id || completed.has(m.id)}
+            onKeyDown={(event) => {
+              if (m.type !== 'connect_wallet') return;
+              if (event.key !== 'Enter' && event.key !== ' ') return;
+              event.preventDefault();
+              if (submittingMissionId === m.id) return;
+              if (completed.has(m.id)) return;
+              void completeMission(m);
+            }}
+            role={m.type === 'connect_wallet' ? 'button' : undefined}
+            tabIndex={m.type === 'connect_wallet' ? 0 : undefined}
+            style={{ cursor: m.type === 'connect_wallet' ? 'pointer' : 'default' }}
           >
-            {completed.has(m.id)
-              ? t(lang, 'missions.completed')
-              : m.type === 'connect_wallet'
-              ? t(lang, 'missions.connectWalletAndComplete')
-              : t(lang, 'missions.complete')}
-          </button>
-        </div>
-      ))}
+            <div className="mission-header">
+              <h3>
+                <span className="mission-icon" aria-hidden="true">
+                  {missionIcon(m.type)}
+                </span>{' '}
+                {m.title}
+              </h3>
+              {completed.has(m.id) && <span className="mission-status-pill">✓</span>}
+            </div>
+
+            <p>{m.description}</p>
+            <div className="mission-actions">
+              {link && (
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    const win = window as any;
+                    if (win.Telegram?.WebApp?.openTelegramLink && link.includes('t.me/')) {
+                      win.Telegram.WebApp.openTelegramLink(link);
+                      return;
+                    }
+                    window.open(link, '_blank', 'noopener,noreferrer');
+                  }}
+                >
+                  {t(lang, 'missions.openLink')}
+                </button>
+              )}
+              <button
+                onClick={(event) => {
+                  event.stopPropagation();
+                  void completeMission(m);
+                }}
+                disabled={submittingMissionId === m.id || completed.has(m.id)}
+              >
+                {completed.has(m.id)
+                  ? t(lang, 'missions.completed')
+                  : m.type === 'connect_wallet'
+                  ? t(lang, 'missions.connectWalletAndComplete')
+                  : t(lang, 'missions.complete')}
+              </button>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
