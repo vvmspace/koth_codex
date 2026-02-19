@@ -26,6 +26,8 @@ Fill `.env`:
 - `APP_BASE_URL`
 - `VITE_TELEGRAM_BOT_USERNAME`
 - `SENTRY_DSN` (optional, enables backend error tracking)
+- `SENTRY_TRACES_SAMPLE_RATE` (optional, e.g. `0.1` to sample 10% transactions)
+- `SLOW_REQUEST_THRESHOLD_MS` (optional, default `1200`, emits slow-request Sentry messages)
 - `WAKE_INTERVAL_MS` (optional, default `28800000`, 8h between wakes)
 
 ## MongoDB init
@@ -52,6 +54,21 @@ yarn test
 yarn typecheck
 yarn build
 ```
+
+## Performance tracing (Frontend ↔ Netlify ↔ MongoDB)
+- Frontend sends `x-trace-id` for each API request and logs `[api-trace]` to browser console with:
+  - `front_total_ms`
+  - `server_total_ms`
+  - `db_total_ms`
+  - `db_ops`
+  - `network_plus_edge_ms`
+- Netlify functions return timing headers:
+  - `x-trace-id`
+  - `x-server-total-ms`
+  - `x-db-total-ms`
+  - `x-db-ops`
+  - `server-timing`
+- Backend sends a Sentry warning message `Slow Netlify function request` when request latency exceeds `SLOW_REQUEST_THRESHOLD_MS`, with trace metadata (path, method, total, db breakdown).
 
 ## Missions seeded by init script
 - `Join channel` (`join_channel`) is always active by default and uses channel id `-1003655493510` unless overridden by `REQUIRED_CHANNEL_ID`.
