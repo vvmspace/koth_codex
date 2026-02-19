@@ -132,7 +132,44 @@ button {
   color: #fff;
   background: linear-gradient(120deg, #6659ff, #8d59ff);
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
+  transition: transform 0.16s ease, box-shadow 0.2s ease, border-color 0.2s ease, filter 0.2s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 8px 16px rgba(36, 23, 96, 0.35);
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: saturate(1.08);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+
+.btn-with-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-icon {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 14px;
+  line-height: 1;
+  transition: color 0.2s ease, text-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.btn-with-icon:hover:not(:disabled) .btn-icon,
+.btn-with-icon:focus-visible .btn-icon {
+  color: var(--icon-hover-color, #7be7ff);
+  text-shadow: 0 0 10px currentColor;
+}
+
+.btn-with-icon:active:not(:disabled) .btn-icon {
+  color: var(--icon-active-color, #ffc685);
+  transform: scale(0.95);
 }
 
 .wake-button {
@@ -147,7 +184,12 @@ button {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 12px 24px rgba(185, 74, 30, 0.4);
 }
 
-button.secondary { background: rgba(255, 255, 255, 0.06); }
+button.secondary {
+  background: linear-gradient(130deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05));
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #e9edff;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(7, 11, 29, 0.32);
+}
 button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .inventory-panel {
@@ -413,4 +455,125 @@ select.form-control {
   color: rgba(243, 245, 255, 0.92);
   display: grid;
   gap: 6px;
+}
+
+
+.mission-card {
+  background: linear-gradient(155deg, rgba(105, 84, 219, 0.18), rgba(22, 30, 72, 0.95));
+  border-color: rgba(175, 157, 255, 0.3);
+}
+
+.mission-card.is-completed {
+  border-color: rgba(130, 255, 187, 0.36);
+  box-shadow: inset 0 0 0 1px rgba(130, 255, 187, 0.26), 0 10px 22px rgba(8, 11, 26, 0.45);
+}
+
+.mission-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.mission-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mission-icon {
+  width: 30px;
+  height: 30px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 9px;
+  background: radial-gradient(circle at 20% 18%, rgba(255,255,255,0.35), rgba(255,255,255,0.08));
+  border: 1px solid rgba(255, 255, 255, 0.24);
+}
+
+.mission-status-pill {
+  min-width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  background: rgba(108, 242, 171, 0.18);
+  border: 1px solid rgba(108, 242, 171, 0.48);
+  color: #bcffe0;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.mission-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bottom-tabs button {
+  transition: all 0.2s ease;
+}
+
+.bottom-tabs button.active {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 10px 18px rgba(82, 57, 190, 0.34);
+}
+
+.tab-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  display: inline-grid;
+  place-items: center;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.bottom-tabs button.active .tab-icon {
+  background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.35), rgba(255,255,255,0.12));
+  border-color: rgba(255,255,255,0.24);
+}
+
+
+.mission-link-button {
+  --icon-hover-color: #9beaff;
+  --icon-active-color: #d7a8ff;
+  background: linear-gradient(135deg, rgba(64, 111, 255, 0.46), rgba(50, 205, 255, 0.26));
+  border-color: rgba(130, 195, 255, 0.65);
+}
+
+.mission-complete-button.default {
+  --icon-hover-color: #ffd79a;
+  --icon-active-color: #95ffdb;
+  background: linear-gradient(135deg, #7a5fff, #9b66ff);
+  border-color: rgba(217, 202, 255, 0.62);
+}
+
+.mission-complete-button.wallet {
+  --icon-hover-color: #a7f4ff;
+  --icon-active-color: #ffe89e;
+  background: linear-gradient(135deg, #13b8c8, #5f81ff 55%, #9f65ff);
+  border-color: rgba(170, 230, 255, 0.68);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 10px 22px rgba(34, 80, 168, 0.45);
+}
+
+.referral-copy-button {
+  --icon-hover-color: #ffe8ad;
+  --icon-active-color: #8cf9de;
+  background: linear-gradient(140deg, rgba(255, 204, 107, 0.28), rgba(255, 153, 82, 0.22));
+  border-color: rgba(255, 198, 136, 0.56);
+}
+
+.referral-share-button {
+  --icon-hover-color: #abf2ff;
+  --icon-active-color: #ffd4a8;
+  background: linear-gradient(135deg, #5b7cff, #8b61ff 58%, #bf5bf7);
+  border-color: rgba(224, 210, 255, 0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.26), 0 10px 18px rgba(68, 46, 173, 0.46);
+}
+
+.referral-open-button {
+  --icon-hover-color: #99ffd8;
+  --icon-active-color: #ffdca9;
+  background: linear-gradient(135deg, rgba(88, 244, 201, 0.24), rgba(64, 138, 255, 0.2));
+  border-color: rgba(138, 255, 229, 0.52);
 }
