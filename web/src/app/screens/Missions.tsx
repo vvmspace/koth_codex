@@ -162,7 +162,7 @@ export function Missions({
               {link && (
                 <button
                   type="button"
-                  className="secondary"
+                  className="secondary mission-link-button"
                   onClick={(event) => {
                     event.stopPropagation();
                     const win = window as any;
@@ -177,6 +177,7 @@ export function Missions({
                 </button>
               )}
               <button
+                className={`mission-complete-button ${m.type === 'connect_wallet' ? 'wallet' : 'default'}`}
                 onClick={(event) => {
                   event.stopPropagation();
                   void completeMission(m);

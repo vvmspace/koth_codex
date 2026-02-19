@@ -132,7 +132,18 @@ button {
   color: #fff;
   background: linear-gradient(120deg, #6659ff, #8d59ff);
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
+  transition: transform 0.16s ease, box-shadow 0.2s ease, border-color 0.2s ease, filter 0.2s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 8px 16px rgba(36, 23, 96, 0.35);
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: saturate(1.08);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .wake-button {
@@ -147,7 +158,12 @@ button {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 12px 24px rgba(185, 74, 30, 0.4);
 }
 
-button.secondary { background: rgba(255, 255, 255, 0.06); }
+button.secondary {
+  background: linear-gradient(130deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05));
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #e9edff;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.28), 0 8px 14px rgba(7, 11, 29, 0.32);
+}
 button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .inventory-panel {
@@ -489,4 +505,37 @@ select.form-control {
 .bottom-tabs button.active .tab-icon {
   background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.35), rgba(255,255,255,0.12));
   border-color: rgba(255,255,255,0.24);
+}
+
+
+.mission-link-button {
+  background: linear-gradient(135deg, rgba(64, 111, 255, 0.46), rgba(50, 205, 255, 0.26));
+  border-color: rgba(130, 195, 255, 0.65);
+}
+
+.mission-complete-button.default {
+  background: linear-gradient(135deg, #7a5fff, #9b66ff);
+  border-color: rgba(217, 202, 255, 0.62);
+}
+
+.mission-complete-button.wallet {
+  background: linear-gradient(135deg, #13b8c8, #5f81ff 55%, #9f65ff);
+  border-color: rgba(170, 230, 255, 0.68);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 10px 22px rgba(34, 80, 168, 0.45);
+}
+
+.referral-copy-button {
+  background: linear-gradient(140deg, rgba(255, 204, 107, 0.28), rgba(255, 153, 82, 0.22));
+  border-color: rgba(255, 198, 136, 0.56);
+}
+
+.referral-share-button {
+  background: linear-gradient(135deg, #5b7cff, #8b61ff 58%, #bf5bf7);
+  border-color: rgba(224, 210, 255, 0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.26), 0 10px 18px rgba(68, 46, 173, 0.46);
+}
+
+.referral-open-button {
+  background: linear-gradient(135deg, rgba(88, 244, 201, 0.24), rgba(64, 138, 255, 0.2));
+  border-color: rgba(138, 255, 229, 0.52);
 }
