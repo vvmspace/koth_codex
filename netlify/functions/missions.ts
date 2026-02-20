@@ -20,6 +20,15 @@ function resolveLocalizedText(
   return typeof localized === 'string' ? localized : String(fallback || '');
 }
 
+function missionTypeDependencySatisfied(
+  mission: { payload?: Record<string, unknown> | null },
+  completedMissionTypes: Set<string>
+) {
+  const requiredType = mission.payload?.requires_mission_type;
+  if (typeof requiredType !== 'string' || !requiredType) return true;
+  return completedMissionTypes.has(requiredType);
+}
+
 async function checkChannelMembership(channelId: string, telegramUserId: number) {
   const token = requiredEnv('TELEGRAM_BOT_TOKEN');
   const url = `https://api.telegram.org/bot${token}/getChatMember?chat_id=${encodeURIComponent(channelId)}&user_id=${telegramUserId}`;
@@ -45,8 +54,19 @@ const baseHandler: Handler = async (event) => {
         })
         .toArray();
       const userMissions = await db.collection('user_missions').find({ user_id: new ObjectId(user.id) }).toArray();
+      const completedMissionIdSet = new Set(
+        userMissions.filter((mission) => mission.status === 'completed').map((mission) => String(mission.mission_id))
+      );
+      const completedMissionTypeSet = new Set(
+        missions
+          .filter((mission) => completedMissionIdSet.has(String(mission._id)))
+          .map((mission) => String(mission.type))
+      );
+
+      const visibleMissions = missions.filter((mission) => missionTypeDependencySatisfied(mission, completedMissionTypeSet));
+
       return json(200, {
-        missions: missions.map((mission) => ({
+        missions: visibleMissions.map((mission) => ({
           ...mission,
           title: resolveLocalizedText(
             mission.title_i18n as Record<string, unknown> | undefined,
@@ -99,6 +119,18 @@ const baseHandler: Handler = async (event) => {
         const userDoc = await db.collection('users').findOne({ _id: userObjectId });
         if (!userDoc?.web3_activated_at) {
           return json(400, { error: 'Web3 is not activated. Complete the activation payment first.' });
+        }
+
+        const connectWalletMission = await db.collection('missions').findOne({ type: 'connect_wallet', is_active: true });
+        if (connectWalletMission) {
+          const connectWalletCompleted = await db.collection('user_missions').findOne({
+            user_id: userObjectId,
+            mission_id: connectWalletMission._id,
+            status: 'completed'
+          });
+          if (!connectWalletCompleted) {
+            return json(400, { error: 'Complete Connect wallet mission first.' });
+          }
         }
       }
 

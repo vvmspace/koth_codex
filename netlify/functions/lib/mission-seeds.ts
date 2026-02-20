@@ -21,6 +21,29 @@ export async function ensureDefaultMissions(db: Db) {
   const activateAmount = process.env.TON_ACTIVATE_AMOUNT || '1';
   const receiver = process.env.TON_OUT_ADDRESS || '';
 
+  // Deploy-time data consistency: keep only canonical Web3 mission records active.
+  await db.collection('missions').updateMany(
+    {
+      $or: [
+        { type: 'activate_web_3' },
+        { title: { $in: ['Activate Web 3', 'Old Activate Web3'] } },
+        {
+          type: 'activate_web3',
+          title: { $ne: ACTIVATE_WEB3_MISSION_FILTER.title }
+        }
+      ]
+    },
+    {
+      $set: {
+        is_active: false,
+        updated_at: now,
+        meta: {
+          cleanup_reason: 'legacy_activate_web3_mission_retired'
+        }
+      }
+    }
+  );
+
   await db.collection('missions').updateOne(
     JOIN_CHANNEL_MISSION_FILTER,
     {
@@ -88,7 +111,8 @@ export async function ensureDefaultMissions(db: Db) {
         },
         payload: {
           receiver,
-          link: receiver ? `https://tonviewer.com/${receiver}` : null
+          link: receiver ? `https://tonviewer.com/${receiver}` : null,
+          requires_mission_type: 'connect_wallet'
         },
         reward: { sandwiches: 20, coffee: 20 },
         is_active: true,
