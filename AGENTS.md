@@ -340,3 +340,6 @@ UPDATE (Backpack UX + Referral explanation)
 
 - Deployment/data consistency rule:
   - Any change that affects DB schema, seed data, or required records must include an automatic deploy-time update path (migration/seed-on-deploy) so production data is updated on deploy without manual DB patching.
+
+- Missions dependency note:
+  - `activate_web3` must depend on `connect_wallet` completion. Hide or block dependent missions until prerequisite missions are completed.

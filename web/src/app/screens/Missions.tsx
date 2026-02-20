@@ -232,6 +232,8 @@ export function Missions({
                 <span>
                   {completed.has(m.id)
                     ? t(lang, 'missions.completed')
+                    : m.type === 'activate_web3'
+                    ? t(lang, 'missions.payAndComplete')
                     : isWalletAction
                     ? t(lang, 'missions.connectWalletAndComplete')
                     : t(lang, 'missions.complete')}

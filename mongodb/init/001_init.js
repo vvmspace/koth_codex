@@ -107,7 +107,8 @@ db.missions.updateOne(
       },
       payload: {
         receiver: tonOutAddress,
-        link: `https://tonviewer.com/${tonOutAddress}`
+        link: `https://tonviewer.com/${tonOutAddress}`,
+        requires_mission_type: 'connect_wallet'
       },
       reward: { sandwiches: 20, coffee: 20 },
       is_active: true,
@@ -117,4 +118,23 @@ db.missions.updateOne(
     }
   },
   { upsert: true }
+);
+
+db.missions.updateMany(
+  {
+    $or: [
+      { type: 'activate_web_3' },
+      { title: { $in: ['Activate Web 3', 'Old Activate Web3'] } },
+      { type: 'activate_web3', title: { $ne: 'Activate Web3' } }
+    ]
+  },
+  {
+    $set: {
+      is_active: false,
+      updated_at: now,
+      meta: {
+        cleanup_reason: 'legacy_activate_web3_mission_retired'
+      }
+    }
+  }
 );
