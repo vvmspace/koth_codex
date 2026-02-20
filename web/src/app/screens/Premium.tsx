@@ -23,7 +23,7 @@ export function Premium({ lang }: { lang: SupportedLanguage }) {
       if (!address) return;
 
       try {
-        await api('/payments/ton/confirm', {
+        await api('/payments/ton/connect', {
           method: 'POST',
           body: JSON.stringify({ wallet_address: address })
         });

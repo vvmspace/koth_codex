@@ -74,12 +74,21 @@ yarn build
 ## Missions seeded by init script
 - `Join channel` (`join_channel`) is always active by default and uses channel id `-1003655493510` unless overridden by `TELEGRAM_CHANNEL_ID`.
 - `Connect wallet` (`connect_wallet`) rewards **50 sandwiches + 50 coffee** after wallet connection and mission completion.
-- `Activate Web3` (`manual_confirm`) is active by default with payment target `TON_OUTPUT_ADDRESS` and rewards **100 sandwiches + 100 coffee**.
+- `Activate Web3` (`ton_payment`) is active by default as a TON item purchase flow (1 TON by default), supports pending/claim re-check, and rewards **100 sandwiches + 100 coffee** only after on-chain verification.
 
 ## TON wallet connection
 - Frontend uses TonConnect manifest from `web/public/tonconnect-manifest.json`.
 - Replace placeholder URLs/icons in the manifest before production deploy.
-- Connected wallet address is saved via `POST /api/payments/ton/confirm`.
+- Connected wallet address is saved via `POST /api/payments/ton/connect`.
+- `POST /api/payments/ton/create-intent` creates purchase intent (output address + amount).
+- `POST /api/payments/ton/confirm` verifies tx id asynchronously and rewards only when sender/recipient/amount/confirmations pass.
+
+
+
+## Self-hosted TON lite stack
+- A production-ready `docker-compose.yml` is included to run `ton-http-api` + `redis` + `watchtower` on your server.
+- Default public host is `https://ton.kingofthehill.pro` (set this in your reverse proxy and DNS).
+- Backend should use `TON_API_BASE_URL=https://ton.kingofthehill.pro`.
 
 ## API
 - `POST /api/auth/telegram`
@@ -90,8 +99,9 @@ yarn build
 - `POST /api/missions/complete`
 - `POST /api/items/buy` (stub)
 - `POST /api/items/use` (stub)
-- `POST /api/payments/ton/create-intent` (stub)
-- `POST /api/payments/ton/confirm` (stub)
+- `POST /api/payments/ton/connect`
+- `POST /api/payments/ton/create-intent`
+- `POST /api/payments/ton/confirm`
 - `POST /api/admin/missions/create`
 - `POST /api/admin/missions/activate-latest-post`
 - `POST /api/admin/users/set-premium`
