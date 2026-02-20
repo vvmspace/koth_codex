@@ -87,11 +87,12 @@ yarn build
 
 ## Self-hosted TON lite stack
 - A production-ready `docker-compose.yml` is included to run `ton-http-api` + `redis` + `watchtower` on your server.
-- Default public host is `https://ton.kingofthehill.pro` (set this in your reverse proxy and DNS).
+- Default public host is `ton.kingofthehill.pro` (set via `TON_API_PUBLIC_HOST`, and configure your reverse proxy + DNS).
 - Backend should use `TON_API_BASE_URL=https://ton.kingofthehill.pro`.
 - `docker compose up` uses the repository-shipped `ton-lite/global-config.json` mounted to `/opt/ton-config/global-config.json`.
+- Startup now includes `ton-lite/validate-config.mjs` preflight; it stops boot if lite-server entries use loopback (`127.0.0.1`) because Docker containers cannot reach host loopback by default.
 - No config bootstrap script is used during startup; update `ton-lite/global-config.json` directly if you need to rotate lite servers.
-- If you see `LITE_SERVER_NETWORK` / Tonlib worker exit `code 12`, verify UDP/ADNL egress from your host/firewall, keep `TON_PARALLEL_REQUESTS_PER_LITESERVER` low (default `2`), and tune `TON_REQUEST_TIMEOUT_SECONDS` (default `30`) before restarting the stack.
+- If you see `LITE_SERVER_NETWORK` / Tonlib worker exit `code 12`, verify UDP/ADNL egress from your host/firewall, ensure lite-server IPs are routable from the container (not `127.0.0.1`), keep `TON_PARALLEL_REQUESTS_PER_LITESERVER` low (default `2`), and tune `TON_REQUEST_TIMEOUT_SECONDS` (default `30`) before restarting the stack.
 
 ## API
 - `POST /api/auth/telegram`
