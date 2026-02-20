@@ -20,6 +20,8 @@ export async function ensureDefaultMissions(db: Db) {
   const now = new Date();
   const activateAmount = process.env.TON_ACTIVATE_AMOUNT || '1';
   const receiver = process.env.TON_OUT_ADDRESS || '';
+  const tonApiEndpoint = process.env.TON_API_V4_ENDPOINT || '';
+  const activateWeb3Enabled = Boolean(receiver && activateAmount && tonApiEndpoint);
 
   // Deploy-time data consistency: keep only canonical Web3 mission records active.
   await db.collection('missions').updateMany(
@@ -96,7 +98,7 @@ export async function ensureDefaultMissions(db: Db) {
     { upsert: true }
   );
 
-  await db.collection('missions').updateOne(
+  const activateWeb3Result = await db.collection('missions').findOneAndUpdate(
     ACTIVATE_WEB3_MISSION_FILTER,
     {
       $set: {
@@ -112,17 +114,40 @@ export async function ensureDefaultMissions(db: Db) {
         payload: {
           receiver,
           link: receiver ? `https://tonviewer.com/${receiver}` : null,
-          requires_mission_type: 'connect_wallet'
+          requires_mission_type: 'connect_wallet',
+          disabled_reason: activateWeb3Enabled ? null : 'TON payment is not configured in environment.'
         },
         reward: { sandwiches: 20, coffee: 20 },
-        is_active: true,
+        is_active: activateWeb3Enabled,
         starts_at: null,
-        ends_at: null
+        ends_at: null,
+        updated_at: now
       },
       $setOnInsert: {
         created_at: now
       }
     },
-    { upsert: true }
+    { upsert: true, returnDocument: 'after' }
   );
+
+  const canonicalActivateMissionId = activateWeb3Result?._id || null;
+  if (canonicalActivateMissionId) {
+    await db.collection('missions').updateMany(
+      {
+        type: 'activate_web3',
+        _id: { $ne: canonicalActivateMissionId },
+        is_active: true
+      },
+      {
+        $set: {
+          is_active: false,
+          updated_at: now,
+          meta: {
+            cleanup_reason: 'duplicate_activate_web3_mission_retired',
+            canonical_id: String(canonicalActivateMissionId)
+          }
+        }
+      }
+    );
+  }
 }
