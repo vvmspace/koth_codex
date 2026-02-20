@@ -79,6 +79,24 @@ const baseHandler: Handler = async (event) => {
       const mission = await db.collection('missions').findOne({ _id: missionObjectId });
       if (!mission || !mission.is_active) return json(404, { error: 'Mission not found' });
 
+      if (mission.type === 'ton_payment') {
+        const existingTonMission = await db.collection('user_missions').findOne({ user_id: userObjectId, mission_id: missionObjectId });
+        if (existingTonMission?.status === 'completed') {
+          return json(200, { ok: true, deduped: true, already_completed: true });
+        }
+
+        await db.collection('user_missions').updateOne(
+          { user_id: userObjectId, mission_id: missionObjectId },
+          {
+            $setOnInsert: { user_id: userObjectId, mission_id: missionObjectId },
+            $set: { status: 'pending', completed_at: null }
+          },
+          { upsert: true }
+        );
+
+        return json(200, { ok: true, status: 'pending_payment' });
+      }
+
       const existingIdem = await db.collection('ledger').findOne({ idempotency_key: idem });
       if (existingIdem) return json(200, { ok: true, deduped: true });
 

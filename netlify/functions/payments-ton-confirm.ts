@@ -4,39 +4,47 @@ import { requireUser } from './lib/auth';
 import { getDb } from './lib/db';
 import { json } from './lib/http';
 import { withSentry } from './lib/sentry';
-
-const TON_USER_FRIENDLY_ADDRESS_REGEX = /^(EQ|UQ)[A-Za-z0-9_-]{46,64}$/;
-const TON_RAW_ADDRESS_REGEX = /^-?\d+:[A-Fa-f0-9]{64}$/;
-
-function normalizeTonWalletAddress(input: unknown): string | null {
-  if (typeof input !== 'string') return null;
-  const value = input.trim();
-  if (!value) return null;
-  if (TON_USER_FRIENDLY_ADDRESS_REGEX.test(value) || TON_RAW_ADDRESS_REGEX.test(value)) {
-    return value;
-  }
-  return null;
-}
+import { claimTonMissionReward } from './lib/payments-ton';
 
 const baseHandler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' });
 
   const user = await requireUser(event);
-  const { wallet_address } = JSON.parse(event.body || '{}');
-  const normalizedWalletAddress = normalizeTonWalletAddress(wallet_address);
+  const idem = event.headers['x-idempotency-key'];
+  if (!idem) return json(400, { error: 'Missing x-idempotency-key' });
 
-  if (!normalizedWalletAddress) {
-    return json(400, { error: 'Invalid TON wallet address' });
+  const { mission_id, transaction_id, wallet_address } = JSON.parse(event.body || '{}');
+  if (!ObjectId.isValid(mission_id)) return json(400, { error: 'Invalid mission_id' });
+  if (typeof transaction_id !== 'string' || transaction_id.trim().length < 8) {
+    return json(400, { error: 'Invalid transaction_id' });
+  }
+  if (typeof wallet_address !== 'string' || wallet_address.trim().length < 16) {
+    return json(400, { error: 'Invalid wallet_address' });
   }
 
   const db = await getDb();
 
-  await db.collection('users').updateOne(
-    { _id: new ObjectId(user.id) },
-    { $set: { ton_wallet_address: normalizedWalletAddress, updated_at: new Date() } }
-  );
+  const mission = await db.collection('missions').findOne({ _id: new ObjectId(mission_id) });
+  if (!mission || !mission.is_active || mission.type !== 'ton_payment') {
+    return json(404, { error: 'TON payment mission not found' });
+  }
 
-  return json(200, { ok: true, wallet_address: normalizedWalletAddress });
+  const existingLedger = await db.collection('ledger').findOne({ idempotency_key: idem });
+  if (existingLedger) {
+    return json(200, { ok: true, deduped: true, status: 'confirmed' });
+  }
+
+  const result = await claimTonMissionReward({
+    db,
+    userId: user.id,
+    telegramUserId: user.telegram_user_id,
+    missionId: mission_id,
+    transactionId: transaction_id.trim(),
+    walletAddress: wallet_address.trim(),
+    idempotencyKey: idem
+  });
+
+  return json(200, result);
 };
 
 export const handler = withSentry(baseHandler);

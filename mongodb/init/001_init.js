@@ -91,7 +91,7 @@ db.missions.updateOne(
 
 
 db.missions.updateOne(
-  { type: 'manual_confirm', title: 'Activate Web3' },
+  { type: 'ton_payment', title: 'Activate Web3' },
   {
     $set: {
       description: 'Send 1 TON to the output address and claim your reward.',
@@ -104,8 +104,9 @@ db.missions.updateOne(
         es: 'Pago: 1 TON a TON_OUTPUT_ADDRESS. Recompensa: 100 sándwiches y 100 cafés.'
       },
       payload: {
-        amount_ton: '1',
-        output_address: process.env.TON_OUTPUT_ADDRESS || 'UQBEGqJqonCwu_jO2IazkJoXTj53F4v2PtuHFaALEtM7CJcX'
+        amount_ton: process.env.ACTIVATE_WEB3_AMOUNT_TON || '1',
+        output_address: process.env.TON_OUTPUT_ADDRESS || 'UQBEGqJqonCwu_jO2IazkJoXTj53F4v2PtuHFaALEtM7CJcX',
+        item_key: 'activate_web3'
       },
       reward: { sandwiches: 100, coffee: 100 },
       is_active: true,

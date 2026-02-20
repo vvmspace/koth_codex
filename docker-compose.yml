@@ -1,0 +1,56 @@
+version: '3.9'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: ton-redis
+    restart: unless-stopped
+    command: ["redis-server", "--save", "60", "1000", "--appendonly", "yes"]
+    volumes:
+      - ton_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ton-http-api:
+    image: toncenter/ton-http-api:latest
+    container_name: ton-http-api
+    restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      # Public host you expose via reverse proxy (nginx/caddy/traefik)
+      TON_API_PUBLIC_HOST: ton.kingofthehill.pro
+      TON_API_PORT: 8081
+      TON_API_ROOT_PATH: /
+
+      # TON HTTP API runtime
+      TON_API_CACHE_ENABLED: "1"
+      TON_API_CACHE_REDIS_ENDPOINT: redis:6379
+      TON_API_LOGS_LEVEL: INFO
+      TON_API_JSON_RPC_ENABLED: "1"
+      TON_API_GET_METHODS_ENABLED: "1"
+
+      # Optional API key protection for public access
+      TON_API_KEY: ${TON_API_KEY:-}
+    ports:
+      - "8081:8081"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8081/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: ton-watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 300 ton-http-api redis
+
+volumes:
+  ton_redis_data:

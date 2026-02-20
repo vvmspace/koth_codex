@@ -41,7 +41,7 @@ const DEMO_MISSIONS = {
       id: 'mission-2',
       title: 'React latest post',
       description: 'Manual confirm mission',
-      type: 'manual_confirm',
+      type: 'ton_payment',
       status: 'pending'
     },
     {
@@ -237,7 +237,7 @@ export function App() {
             isLoadingUser={isLoadingUser}
           />
         )}
-        {tab === 'missions' && <Missions data={missions} onComplete={completeMission} lang={lang} />}
+        {tab === 'missions' && <Missions data={missions} onComplete={completeMission} onReload={load} lang={lang} />}
         {tab === 'leaderboard' && <Leaderboard data={leaderboard} lang={lang} />}
         {tab === 'referral' && <Referral user={user} lang={lang} />}
         {tab === 'premium' && <Premium lang={lang} />}
