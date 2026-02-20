@@ -1,30 +1,17 @@
 # TON lite config mount
 
-`docker compose up` auto-downloads TON lite `global-config.json` into this folder before `ton-http-api` starts.
+`docker compose up` reads TON lite `global-config.json` from this folder and mounts it into `ton-http-api`.
 
-## Auto-download behavior
-- Compose init service: `ton-config-init`.
-- Source URL env: `TON_LITESERVER_CONFIG_DOWNLOAD_URL` (default `https://ton.org/global-config.json`).
-- Force refresh env: `TON_FORCE_REFRESH_CONFIG=1` to re-download even if file exists.
+## Runtime behavior
+- Config file path in container: `/opt/ton-config/global-config.json`.
+- This repository ships `ton-lite/global-config.json` and uses it directly at startup.
+- No auto-download/init script is used during container boot.
 
-## Where to get `global-config.json`
-- Official mainnet source: `https://ton.org/global-config.json`.
-- One-command download:
-
-```bash
-./ton-lite/fetch-global-config.sh
-```
-
-- Custom source URL (optional):
-
-```bash
-./ton-lite/fetch-global-config.sh https://example.com/global-config.json
-```
-
-Expected path inside container: `/opt/ton-config/global-config.json`.
+## Updating the config
+If you need to refresh lite server endpoints, replace `ton-lite/global-config.json` yourself (for example, from your trusted TON config source), then restart the stack.
 
 The compose defaults are tuned for reliability on self-hosted nodes:
 - `TON_PARALLEL_REQUESTS_PER_LITESERVER=2`
 - `TON_REQUEST_TIMEOUT_SECONDS=30`
 
-If you need to override, set env vars in your deployment environment.
+If needed, override `TON_LITESERVER_CONFIG_URL` to point to a different path already available inside the container.
