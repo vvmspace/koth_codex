@@ -22,7 +22,7 @@ Fill `.env`:
 - `ADMIN_SECRET`
 - `TELEGRAM_BOT_TOKEN`
 - `TELEGRAM_BOT_USERNAME`
-- `REQUIRED_CHANNEL_ID` (default `-1003655493510`)
+- `TELEGRAM_CHANNEL_ID` (default `-1003655493510`)
 - `APP_BASE_URL`
 - `VITE_TELEGRAM_BOT_USERNAME`
 - `SENTRY_DSN` (optional, enables backend error tracking)
@@ -71,7 +71,7 @@ yarn build
 - Backend sends a Sentry warning message `Slow Netlify function request` when request latency exceeds `SLOW_REQUEST_THRESHOLD_MS`, with trace metadata (path, method, total, db breakdown).
 
 ## Missions seeded by init script
-- `Join channel` (`join_channel`) is always active by default and uses channel id `-1003655493510` unless overridden by `REQUIRED_CHANNEL_ID`.
+- `Join channel` (`join_channel`) is always active by default and uses channel id `-1003655493510` unless overridden by `TELEGRAM_CHANNEL_ID`.
 - `Connect wallet` (`connect_wallet`) rewards **50 sandwiches + 50 coffee** after wallet connection and mission completion.
 
 ## TON wallet connection

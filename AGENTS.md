@@ -281,7 +281,7 @@ ENV VARS (.env.example)
 - ADMIN_SECRET
 - TELEGRAM_BOT_TOKEN
 - TELEGRAM_BOT_USERNAME
-- REQUIRED_CHANNEL_ID (optional, for join_channel mission, default `-1003655493510`)
+- TELEGRAM_CHANNEL_ID (optional, for join_channel mission, default `-1003655493510`)
 - APP_BASE_URL (Netlify URL)
 - SENTRY_DSN (for backend error tracking)
 - WAKE_INTERVAL_MS (milliseconds between wakes, default 28800000 = 8h)
