@@ -1,27 +1,6 @@
 version: '3.9'
 
 services:
-  ton-config-init:
-    image: curlimages/curl:8.12.1
-    container_name: ton-config-init
-    restart: "no"
-    environment:
-      TON_LITESERVER_CONFIG_DOWNLOAD_URL: ${TON_LITESERVER_CONFIG_DOWNLOAD_URL:-https://ton.org/global-config.json}
-      TON_FORCE_REFRESH_CONFIG: ${TON_FORCE_REFRESH_CONFIG:-0}
-    volumes:
-      - ./ton-lite:/ton-lite
-    entrypoint: ["/bin/sh", "-c"]
-    command: >
-      set -e;
-      if [ "$${TON_FORCE_REFRESH_CONFIG}" != "1" ] && [ -s /ton-lite/global-config.json ]; then
-        echo "Using existing /ton-lite/global-config.json";
-        exit 0;
-      fi;
-      echo "Fetching TON lite config from $${TON_LITESERVER_CONFIG_DOWNLOAD_URL}";
-      curl -fsSL "$${TON_LITESERVER_CONFIG_DOWNLOAD_URL}" -o /ton-lite/global-config.json;
-      grep -q '"liteservers"' /ton-lite/global-config.json;
-      echo "Saved /ton-lite/global-config.json"
-
   redis:
     image: redis:7-alpine
     container_name: ton-redis
@@ -40,8 +19,6 @@ services:
     container_name: ton-http-api
     restart: unless-stopped
     depends_on:
-      ton-config-init:
-        condition: service_completed_successfully
       redis:
         condition: service_healthy
     environment:
@@ -57,8 +34,8 @@ services:
       TON_API_LOGS_LEVEL: INFO
       TON_API_JSON_RPC_ENABLED: "1"
       TON_API_GET_METHODS_ENABLED: "1"
-      # Prefer a local config file so startup is not coupled to public config hosts.
-      # Provide TON_LITESERVER_CONFIG_URL in .env when you want to override this path.
+      # Local config is mounted from ./ton-lite/global-config.json.
+      # Provide TON_LITESERVER_CONFIG_URL only when you intentionally store config elsewhere.
       TON_API_TONLIB_LITESERVER_CONFIG: ${TON_LITESERVER_CONFIG_URL:-/opt/ton-config/global-config.json}
       TON_API_TONLIB_KEYSTORE: /tmp/ton-keystore
       # Conservative defaults reduce worker crashes when ADNL connectivity is unstable.
