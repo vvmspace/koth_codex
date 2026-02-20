@@ -1,5 +1,5 @@
 import type { Db } from 'mongodb';
-import { DEFAULT_CHANNEL_ID } from './constants';
+import { TELEGRAM_CHANNEL_ID } from './constants';
 
 
 const JOIN_CHANNEL_MISSION_FILTER = {
@@ -29,7 +29,7 @@ export async function ensureDefaultMissions(db: Db) {
           en: 'Join our channel and claim your reward.',
           es: 'Únete a nuestro canal y reclama tu recompensa.'
         },
-        payload: { channel_id: process.env.REQUIRED_CHANNEL_ID || DEFAULT_CHANNEL_ID },
+        payload: { channel_id: process.env.TELEGRAM_CHANNEL_ID || TELEGRAM_CHANNEL_ID },
         reward: { sandwiches: 5 },
         is_active: true,
         starts_at: null,
