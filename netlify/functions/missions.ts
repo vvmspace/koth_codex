@@ -8,7 +8,7 @@ import { enforceRateLimit } from './lib/rate-limit';
 import { requiredEnv } from './lib/env';
 import { ensureDefaultMissions } from './lib/mission-seeds';
 import { normalizeSupportedLanguage } from './lib/language';
-import { DEFAULT_REQUIRED_CHANNEL_ID } from './lib/constants';
+import { DEFAULT_CHANNEL_ID } from './lib/constants';
 
 function resolveLocalizedText(
   map: Record<string, unknown> | null | undefined,
@@ -83,7 +83,7 @@ const baseHandler: Handler = async (event) => {
       if (existingIdem) return json(200, { ok: true, deduped: true });
 
       if (mission.type === 'join_channel') {
-        const channelId = String(mission.payload?.channel_id || process.env.REQUIRED_CHANNEL_ID || DEFAULT_REQUIRED_CHANNEL_ID);
+        const channelId = String(process.env.REQUIRED_CHANNEL_ID || mission.payload?.channel_id || DEFAULT_CHANNEL_ID);
         const ok = await checkChannelMembership(channelId, user.telegram_user_id);
         if (!ok) return json(400, { error: 'User is not a channel member or bot has insufficient access.' });
       }

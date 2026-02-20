@@ -52,6 +52,9 @@ PROFILE NAME INPUT FORMAT (CRITICAL)
 - Allowed chars: Unicode letters, numbers, spaces, dot (`.`), underscore (`_`), apostrophe (`'`), hyphen (`-`).
 - Validate in both frontend and backend before write.
 
+CHANNEL CONFIG DEFAULT
+- Keep `DEFAULT_CHANNEL_ID` set to `-1003655493510` in code as the fallback default for join-channel mission checks and seeds.
+
 A) Auth
 - Frontend reads Telegram initData from window.Telegram.WebApp.initData.
 - Frontend sends initData to backend endpoint POST /api/auth/telegram.
@@ -281,7 +284,7 @@ ENV VARS (.env.example)
 - ADMIN_SECRET
 - TELEGRAM_BOT_TOKEN
 - TELEGRAM_BOT_USERNAME
-- REQUIRED_CHANNEL_ID (optional, for join_channel mission)
+- REQUIRED_CHANNEL_ID (optional, for join_channel mission, default `-1003655493510`)
 - APP_BASE_URL (Netlify URL)
 - SENTRY_DSN (for backend error tracking)
 - WAKE_INTERVAL_MS (milliseconds between wakes, default 28800000 = 8h)
