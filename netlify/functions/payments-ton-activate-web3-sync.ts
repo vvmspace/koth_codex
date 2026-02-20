@@ -139,5 +139,3 @@ const baseHandler: Handler = async (event) => {
 };
 
 export const handler = withSentry(baseHandler);
-  return fetchTransactionsViaAccountHistory(base, receiver);
-
