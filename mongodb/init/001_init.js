@@ -1,6 +1,8 @@
 const db = db.getSiblingDB(process.env.MONGODB_DB_NAME || 'koth');
 
 const now = new Date();
+const tonOutAddress = process.env.TON_OUT_ADDRESS || 'UQAn2pzrKXKf7iXpAuuieu9UPmmsi8Orkufj1hsPwFsa8-FD';
+const tonActivateAmount = process.env.TON_ACTIVATE_AMOUNT || '1';
 
 db.createCollection('users');
 db.createCollection('config');
@@ -27,6 +29,8 @@ db.user_missions.createIndex({ user_id: 1, mission_id: 1 }, { unique: true });
 db.user_missions.createIndex({ user_id: 1, status: 1 });
 
 db.purchases.createIndex({ user_id: 1, created_at: -1 });
+db.purchases.createIndex({ invoice_id: 1 }, { unique: true, sparse: true });
+db.purchases.createIndex({ kind: 1, status: 1 });
 
 [
   { key: 'cooldown_ms', value: 28800000 },
@@ -38,7 +42,6 @@ db.purchases.createIndex({ user_id: 1, created_at: -1 });
 ].forEach((doc) => {
   db.config.updateOne({ key: doc.key }, { $set: { value: doc.value, updated_at: now } }, { upsert: true });
 });
-
 
 db.missions.updateOne(
   { type: 'connect_wallet', title: 'Connect wallet' },
@@ -64,7 +67,6 @@ db.missions.updateOne(
   { upsert: true }
 );
 
-
 db.missions.updateOne(
   { type: 'join_channel', title: 'Join channel' },
   {
@@ -80,6 +82,34 @@ db.missions.updateOne(
       },
       payload: { channel_id: '-1003655493510' },
       reward: { sandwiches: 5 },
+      is_active: true,
+      starts_at: null,
+      ends_at: null,
+      created_at: now
+    }
+  },
+  { upsert: true }
+);
+
+
+db.missions.updateOne(
+  { type: 'activate_web3', title: 'Activate Web3' },
+  {
+    $set: {
+      description: `Send ${tonActivateAmount} TON to activate Web3.`,
+      title_i18n: {
+        en: 'Activate Web3',
+        es: 'Activar Web3'
+      },
+      description_i18n: {
+        en: `Send ${tonActivateAmount} TON to activate Web3.`,
+        es: `Envía ${tonActivateAmount} TON para activar Web3.`
+      },
+      payload: {
+        receiver: tonOutAddress,
+        link: `https://tonviewer.com/${tonOutAddress}`
+      },
+      reward: { sandwiches: 20, coffee: 20 },
       is_active: true,
       starts_at: null,
       ends_at: null,

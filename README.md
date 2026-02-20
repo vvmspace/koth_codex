@@ -1,4 +1,4 @@
-# King of the Hill — Telegram Mini App MVP
+# King of the Hill - Telegram Mini App MVP
 
 MVP Telegram Mini App game on **Netlify Functions + MongoDB**.
 
@@ -29,6 +29,9 @@ Fill `.env`:
 - `SENTRY_TRACES_SAMPLE_RATE` (optional, e.g. `0.1` to sample 10% transactions)
 - `SLOW_REQUEST_THRESHOLD_MS` (optional, default `1200`, emits slow-request Sentry messages)
 - `WAKE_INTERVAL_MS` (optional, default `28800000`, 8h between wakes)
+- `TON_OUT_ADDRESS` (fixed receiver for Web3 activation mission)
+- `TON_ACTIVATE_AMOUNT` (TON units for activation mission, default `1`)
+- `TON_API_V4_ENDPOINT` (for on-chain verification, e.g. `https://ton-mainnet-v4.kingofthehill.pro/` or local `http://localhost:31777`)
 
 ## MongoDB init
 Run once against your MongoDB:
@@ -47,6 +50,15 @@ netlify dev
 curl -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/setWebhook" \
   -d "url=${APP_BASE_URL}/api/telegram-webhook"
 ```
+
+
+## ton-api-v4 local run
+Start a self-hosted ton-api-v4 instance used by server-side payment verification:
+```bash
+cd ton-api-v4
+docker compose up -d
+```
+This exposes `http://localhost:31777` and matches the reverse proxy `https://ton-mainnet-v4.kingofthehill.pro/`.
 
 ## Build / checks
 ```bash
@@ -73,6 +85,7 @@ yarn build
 ## Missions seeded by init script
 - `Join channel` (`join_channel`) is always active by default and uses channel id `-1003655493510` unless overridden by `TELEGRAM_CHANNEL_ID`.
 - `Connect wallet` (`connect_wallet`) rewards **50 sandwiches + 50 coffee** after wallet connection and mission completion.
+- `Activate Web3` (`activate_web3`) requires a TON transfer with invoice comment and is verified on-chain before mission completion.
 
 ## TON wallet connection
 - Frontend uses TonConnect manifest from `web/public/tonconnect-manifest.json`.
@@ -90,6 +103,8 @@ yarn build
 - `POST /api/items/use` (stub)
 - `POST /api/payments/ton/create-intent` (stub)
 - `POST /api/payments/ton/confirm` (stub)
+- `POST /api/payments/ton/activate-web3/create-intent`
+- `POST /api/payments/ton/activate-web3/sync`
 - `POST /api/admin/missions/create`
 - `POST /api/admin/missions/activate-latest-post`
 - `POST /api/admin/users/set-premium`

@@ -120,15 +120,20 @@ F) Leaderboard
 - Show user display name (from Telegram), steps, rank.
 - Efficient query with index on steps.
 
-PAYMENTS (TON) - SCAFFOLD ONLY
-- Frontend: add a "Premium" screen with a button "Connect wallet" (TonConnect UI placeholder).
-- Backend:
-  - Table: purchases (id, user_id, provider, status, amount, currency, created_at)
-  - Endpoint stubs:
-    - POST /api/payments/ton/create-intent
-    - POST /api/payments/ton/confirm (later: verify on-chain tx)
-- For now, premium can be toggled by admin endpoint for testing:
-  - POST /api/admin/users/set-premium
+PAYMENTS (TON) - MISSION ACTIVATION FLOW
+- We now have a real mission-based TON activation flow:
+  - Mission: Activate Web3
+  - Payment: TON transfer to fixed TON_OUT_ADDRESS with invoice comment
+  - Verification: server-side scan via ton-api-v4 endpoint TON_API_V4_ENDPOINT
+- Required env vars:
+  - TON_OUT_ADDRESS
+  - TON_ACTIVATE_AMOUNT
+  - TON_API_V4_ENDPOINT
+- ton-api-v4 self-host instructions:
+  - File: ton-api-v4/docker-compose.yml
+  - Port mapping: 31777:3000
+  - Domain proxy: https://ton-mainnet-v4.kingofthehill.pro/ points to this port
+- Never trust client-only confirmation, always verify on-chain.
 
 DATABASE SCHEMA (MongoDB)
 Use the following fixed model schema (MongoDB collections).
