@@ -89,6 +89,7 @@ yarn build
 - A production-ready `docker-compose.yml` is included to run `ton-http-api` + `redis` + `watchtower` on your server.
 - Default public host is `https://ton.kingofthehill.pro` (set this in your reverse proxy and DNS).
 - Backend should use `TON_API_BASE_URL=https://ton.kingofthehill.pro`.
+- If you see `LITE_SERVER_NETWORK` / Tonlib worker exit `code 12`, set `TON_LITESERVER_CONFIG_URL` to a reachable config, reduce `TON_PARALLEL_REQUESTS_PER_LITESERVER`, and raise `TON_REQUEST_TIMEOUT_SECONDS` before restarting the stack.
 
 ## API
 - `POST /api/auth/telegram`
