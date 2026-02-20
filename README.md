@@ -24,6 +24,7 @@ Fill `.env`:
 - `TELEGRAM_BOT_USERNAME`
 - `TELEGRAM_CHANNEL_ID` (default `-1003655493510`)
 - `APP_BASE_URL`
+- `TON_OUTPUT_ADDRESS` (default `UQBEGqJqonCwu_jO2IazkJoXTj53F4v2PtuHFaALEtM7CJcX`)
 - `VITE_TELEGRAM_BOT_USERNAME`
 - `SENTRY_DSN` (optional, enables backend error tracking)
 - `SENTRY_TRACES_SAMPLE_RATE` (optional, e.g. `0.1` to sample 10% transactions)
@@ -73,6 +74,7 @@ yarn build
 ## Missions seeded by init script
 - `Join channel` (`join_channel`) is always active by default and uses channel id `-1003655493510` unless overridden by `TELEGRAM_CHANNEL_ID`.
 - `Connect wallet` (`connect_wallet`) rewards **50 sandwiches + 50 coffee** after wallet connection and mission completion.
+- `Activate Web3` (`manual_confirm`) is active by default with payment target `TON_OUTPUT_ADDRESS` and rewards **100 sandwiches + 100 coffee**.
 
 ## TON wallet connection
 - Frontend uses TonConnect manifest from `web/public/tonconnect-manifest.json`.

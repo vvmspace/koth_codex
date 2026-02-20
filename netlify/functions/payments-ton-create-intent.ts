@@ -9,6 +9,7 @@ const baseHandler: Handler = async (event) => {
   if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' });
   const user = await requireUser(event);
   const { amount = 1, currency = 'TON' } = JSON.parse(event.body || '{}');
+  const outputAddress = process.env.TON_OUTPUT_ADDRESS || 'UQBEGqJqonCwu_jO2IazkJoXTj53F4v2PtuHFaALEtM7CJcX';
   const db = await getDb();
   const data = await db.collection('purchases').insertOne({
     user_id: new ObjectId(user.id),
@@ -16,11 +17,11 @@ const baseHandler: Handler = async (event) => {
     status: 'created',
     amount: String(amount),
     currency,
-    meta: { note: 'Scaffold intent only' },
+    meta: { note: 'Scaffold intent only', output_address: outputAddress },
     created_at: new Date()
   });
   const intent = await db.collection('purchases').findOne({ _id: data.insertedId });
-  return json(200, { intent });
+  return json(200, { intent, output_address: outputAddress });
 };
 
 export const handler = withSentry(baseHandler);

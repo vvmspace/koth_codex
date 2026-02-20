@@ -275,6 +275,8 @@ TELEGRAM BOT FLOW
 - Store BOT_USERNAME and BOT_TOKEN in env.
 - When /start includes ref code, call backend logic to set referrer if needed.
 
+- TON output address env var is required: `TON_OUTPUT_ADDRESS=UQBEGqJqonCwu_jO2IazkJoXTj53F4v2PtuHFaALEtM7CJcX` (include in `.env.example`).
+- On task completion, create a screenshot of the tab/screen you worked on and include it in the final report.
 ENV VARS (.env.example)
 - MONGODB_CONNECTION_STRING
 - JWT_SECRET

@@ -43,6 +43,13 @@ const DEMO_MISSIONS = {
       description: 'Manual confirm mission',
       type: 'manual_confirm',
       status: 'pending'
+    },
+    {
+      id: 'mission-3',
+      title: 'Activate Web3',
+      description: 'Payment: 1 TON to TON_OUTPUT_ADDRESS. Reward: 100 sandwiches + 100 coffee.',
+      type: 'manual_confirm',
+      status: 'pending'
     }
   ]
 };
