@@ -41,6 +41,7 @@ type Dictionary = {
     | 'missions.connectWalletAndComplete'
     | 'missions.openLink'
     | 'missions.walletNotConnected'
+    | 'missions.paymentPending'
     | 'missions.empty'
     | 'leaderboard.title'
     | 'leaderboard.steps'
@@ -115,6 +116,7 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'missions.connectWalletAndComplete': 'Connect wallet & complete',
     'missions.openLink': 'Open link',
     'missions.walletNotConnected': 'TON wallet is not connected yet.',
+    'missions.paymentPending': 'Payment pending - reopen mission to retry sync',
     'missions.empty': 'All active missions are completed. New missions will appear soon.',
     'leaderboard.title': 'Leaderboard',
     'leaderboard.steps': '{{steps}} steps',
@@ -187,6 +189,7 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'missions.connectWalletAndComplete': 'Conectar wallet y completar',
     'missions.openLink': 'Abrir enlace',
     'missions.walletNotConnected': 'La wallet TON aún no está conectada.',
+    'missions.paymentPending': 'Pago pendiente - vuelve a abrir la misión para reintentar la sincronización',
     'missions.empty': 'Todas las misiones activas están completadas. Pronto aparecerán nuevas.',
     'leaderboard.title': 'Clasificación',
     'leaderboard.steps': '{{steps}} pasos',

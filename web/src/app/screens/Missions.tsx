@@ -40,6 +40,7 @@ async function waitForWalletAddress(tonConnect: TonConnectUI, timeoutMs = 12_000
 function missionIcon(type: string) {
   if (type === 'join_channel') return '📣';
   if (type === 'connect_wallet') return '💎';
+  if (type === 'activate_web3') return '🪙';
   if (type === 'manual_confirm') return '✅';
   return '🎯';
 }
@@ -57,6 +58,23 @@ function missionLink(mission: any): string | null {
   }
 
   return null;
+}
+
+async function pollActivateWeb3(invoiceId: string, lang: SupportedLanguage) {
+  const startedAt = Date.now();
+  const timeoutMs = 90_000;
+
+  while (Date.now() - startedAt < timeoutMs) {
+    const sync = await api<{ status: 'pending' | 'paid' }>('/payments/ton/activate-web3/sync', {
+      method: 'POST',
+      body: JSON.stringify({ invoice_id: invoiceId })
+    });
+
+    if (sync.status === 'paid') return;
+    await new Promise((resolve) => setTimeout(resolve, 2_000));
+  }
+
+  throw new Error(t(lang, 'missions.paymentPending'));
 }
 
 export function Missions({
@@ -107,6 +125,31 @@ export function Missions({
         });
       }
 
+      if (mission.type === 'activate_web3') {
+        if (!tonConnect.account?.address) {
+          await tonConnect.openModal();
+        }
+
+        const walletAddress = await waitForWalletAddress(tonConnect);
+        if (!walletAddress) {
+          throw new Error(t(lang, 'missions.walletNotConnected'));
+        }
+
+        const intent = await api<{
+          invoice_id: string;
+          transaction: {
+            validUntil: number;
+            messages: Array<{ address: string; amount: string; payload: string }>;
+          };
+        }>('/payments/ton/activate-web3/create-intent', {
+          method: 'POST',
+          body: JSON.stringify({})
+        });
+
+        await tonConnect.sendTransaction(intent.transaction);
+        await pollActivateWeb3(intent.invoice_id, lang);
+      }
+
       await onComplete(mission.id);
     } catch (error) {
       setMissionError((error as Error).message || t(lang, 'missions.walletNotConnected'));
@@ -124,28 +167,29 @@ export function Missions({
 
       {visibleMissions.map((m: any) => {
         const link = missionLink(m);
+        const isWalletAction = m.type === 'connect_wallet' || m.type === 'activate_web3';
 
         return (
           <div
             key={m.id}
             className={`card mission-card ${completed.has(m.id) ? 'is-completed' : ''}`}
             onClick={() => {
-              if (m.type !== 'connect_wallet') return;
+              if (!isWalletAction) return;
               if (submittingMissionId === m.id) return;
               if (completed.has(m.id)) return;
               void completeMission(m);
             }}
             onKeyDown={(event) => {
-              if (m.type !== 'connect_wallet') return;
+              if (!isWalletAction) return;
               if (event.key !== 'Enter' && event.key !== ' ') return;
               event.preventDefault();
               if (submittingMissionId === m.id) return;
               if (completed.has(m.id)) return;
               void completeMission(m);
             }}
-            role={m.type === 'connect_wallet' ? 'button' : undefined}
-            tabIndex={m.type === 'connect_wallet' ? 0 : undefined}
-            style={{ cursor: m.type === 'connect_wallet' ? 'pointer' : 'default' }}
+            role={isWalletAction ? 'button' : undefined}
+            tabIndex={isWalletAction ? 0 : undefined}
+            style={{ cursor: isWalletAction ? 'pointer' : 'default' }}
           >
             <div className="mission-header">
               <h3>
@@ -177,18 +221,18 @@ export function Missions({
                 </button>
               )}
               <button
-                className={`mission-complete-button btn-with-icon ${m.type === 'connect_wallet' ? 'wallet' : 'default'}`}
+                className={`mission-complete-button btn-with-icon ${isWalletAction ? 'wallet' : 'default'}`}
                 onClick={(event) => {
                   event.stopPropagation();
                   void completeMission(m);
                 }}
                 disabled={submittingMissionId === m.id || completed.has(m.id)}
               >
-                <span className="btn-icon" aria-hidden="true">{m.type === 'connect_wallet' ? '◇' : '✓'}</span>
+                <span className="btn-icon" aria-hidden="true">{isWalletAction ? '◇' : '✓'}</span>
                 <span>
                   {completed.has(m.id)
                     ? t(lang, 'missions.completed')
-                    : m.type === 'connect_wallet'
+                    : isWalletAction
                     ? t(lang, 'missions.connectWalletAndComplete')
                     : t(lang, 'missions.complete')}
                 </span>

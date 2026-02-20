@@ -81,6 +81,16 @@
   status = 200
 
 [[redirects]]
+  from = "/api/payments/ton/activate-web3/create-intent"
+  to = "/.netlify/functions/payments-ton-activate-web3-create-intent"
+  status = 200
+
+[[redirects]]
+  from = "/api/payments/ton/activate-web3/sync"
+  to = "/.netlify/functions/payments-ton-activate-web3-sync"
+  status = 200
+
+[[redirects]]
   from = "/api/telegram-webhook"
   to = "/.netlify/functions/telegram-webhook"
   status = 200

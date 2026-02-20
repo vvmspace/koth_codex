@@ -95,6 +95,13 @@ const baseHandler: Handler = async (event) => {
         }
       }
 
+      if (mission.type === 'activate_web3') {
+        const userDoc = await db.collection('users').findOne({ _id: userObjectId });
+        if (!userDoc?.web3_activated_at) {
+          return json(400, { error: 'Web3 is not activated. Complete the activation payment first.' });
+        }
+      }
+
       const completionTime = new Date();
       let existingCompletion: { status?: string } | null = null;
 

@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  ton-api-v4:
+    image: tonwhales/ton-api-v4:v38
+    container_name: ton-api-v4
+    restart: unless-stopped
+    ports:
+      - "31777:3000"
+    environment:
+      - TON_CONFIG=https://raw.githubusercontent.com/ton-blockchain/ton-blockchain.github.io/master/global.config.json
