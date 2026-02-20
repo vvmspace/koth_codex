@@ -89,7 +89,10 @@ yarn build
 - A production-ready `docker-compose.yml` is included to run `ton-http-api` + `redis` + `watchtower` on your server.
 - Default public host is `https://ton.kingofthehill.pro` (set this in your reverse proxy and DNS).
 - Backend should use `TON_API_BASE_URL=https://ton.kingofthehill.pro`.
-- If you see `LITE_SERVER_NETWORK` / Tonlib worker exit `code 12`, set `TON_LITESERVER_CONFIG_URL` to a reachable config, reduce `TON_PARALLEL_REQUESTS_PER_LITESERVER`, and raise `TON_REQUEST_TIMEOUT_SECONDS` before restarting the stack.
+- `docker compose up` now auto-fetches `ton-lite/global-config.json` before starting `ton-http-api` (via `ton-config-init`).
+- By default it downloads from `https://ton.org/global-config.json`; override with `TON_LITESERVER_CONFIG_DOWNLOAD_URL` if needed.
+- You can still fetch manually via `./ton-lite/fetch-global-config.sh` when you want a preflight check.
+- If you see `LITE_SERVER_NETWORK` / Tonlib worker exit `code 12`, verify UDP/ADNL egress from your host/firewall, keep `TON_PARALLEL_REQUESTS_PER_LITESERVER` low (default `2`), and tune `TON_REQUEST_TIMEOUT_SECONDS` (default `30`) before restarting the stack.
 
 ## API
 - `POST /api/auth/telegram`
