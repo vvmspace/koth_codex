@@ -114,7 +114,7 @@ export function Home({ inventory, leaderboard, onWake, onUseItem, onOpenLeaderbo
   const runItemAction = async (itemKey: 'sandwiches' | 'coffee', mode: 'tap' | 'hold') => {
     try {
       await onUseItem(itemKey, mode);
-      setItemActionText(t(lang, 'home.itemActivatedStub'));
+      setItemActionText('');
     } catch {
       setItemActionText(t(lang, 'home.itemActivationError'));
     }

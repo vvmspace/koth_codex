@@ -29,7 +29,6 @@ type Dictionary = {
     | 'home.itemDescriptionSandwiches'
     | 'home.itemDescriptionCoffee'
     | 'home.itemMenuLongTapHint'
-    | 'home.itemActivatedStub'
     | 'home.itemActivationError'
     | 'home.rankBadge'
     | 'home.rankTierTop30'
@@ -104,7 +103,6 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'home.itemDescriptionSandwiches': 'Sandwich item. Current effects are configurable on backend and can be changed as game economy evolves.',
     'home.itemDescriptionCoffee': 'Coffee item. Current effects are configurable on backend and can be changed as game economy evolves.',
     'home.itemMenuLongTapHint': 'Long tap opens this menu. Tap outside to close.',
-    'home.itemActivatedStub': 'Item activated. Effects will be extended in upcoming updates.',
     'home.itemActivationError': 'Could not activate item right now. Please try again.',
     'home.rankBadge': '🏅{{rank}}/{{total}}',
     'home.rankTierTop30': 'Top 30% 🔥',
@@ -177,7 +175,6 @@ const dictionaries: Record<SupportedLanguage, Dictionary> = {
     'home.itemDescriptionSandwiches': 'Ítem sándwich. Los efectos actuales son configurables en backend y pueden cambiar con la economía del juego.',
     'home.itemDescriptionCoffee': 'Ítem café. Los efectos actuales son configurables en backend y pueden cambiar con la economía del juego.',
     'home.itemMenuLongTapHint': 'La pulsación larga abre este menú. Toca fuera para cerrarlo.',
-    'home.itemActivatedStub': 'Ítem activado. Los efectos se ampliarán en próximas actualizaciones.',
     'home.itemActivationError': 'No se pudo activar el ítem ahora. Inténtalo de nuevo.',
     'home.rankBadge': '🏅{{rank}}/{{total}}',
     'home.rankTierTop30': 'Top 30% 🔥',
